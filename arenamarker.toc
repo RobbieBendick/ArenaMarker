@@ -1,0 +1,5 @@
+## Interface: 11306
+## Author: Mageiden / Robdog
+## Title: ArenaMarker
+## Notes: Gives party assist and places markers on friendly players in arena.
+core.lua
