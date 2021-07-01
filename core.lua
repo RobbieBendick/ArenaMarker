@@ -18,7 +18,7 @@ local function markAndRaidAssistTeammates(self, event, ...)
                         --give assist
                         SendChatMessage("/assist "..UnitName("party"..i))
                         --mark party members
-                        if GetRaidTargetIndex("party"..i, i) == nil then
+                        if GetRaidTargetIndex("party"..i) == nil then
                             SetRaidTarget("party"..i, i)
                         end
                     end
