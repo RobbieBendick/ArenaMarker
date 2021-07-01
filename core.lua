@@ -24,7 +24,7 @@ local function markAndRaidAssistTeammates(self, event, ...)
                     end
                 end
             end
-		end
+	end
     end
 end
 
