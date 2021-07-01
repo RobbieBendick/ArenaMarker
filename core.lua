@@ -19,11 +19,40 @@ frame:RegisterEvent("CHAT_MSG_BG_SYSTEM_NEUTRAL")
     TODO: Recursive function &/or duplicates not working
           Breaks when setting assist
 --]]
+
+classes = {
+    ["Rogue"] = 1,
+    ["Druid"] = 2,
+    ["Warlock"] = 3,
+    ["Paladin"] = 3,
+    ["Hunter"] = 4,
+    ["Mage"] = 5,
+    ["Shaman"] = 6,
+    ["Warrior"] = 7,
+    ["Priest"] = 8,
+}
+
+
+usedMarkers = {
+    star = false,
+    circle = false,
+    diamond = false,
+    triangle = false,
+    moon = false,
+    square = false,
+    cross = false,
+    skull = false
+}
+priority = {}
+duplicates = {}
+MissingTable = {}
+
 function tablelength(T)
     local count = 0
     for _ in pairs(T) do
         count = count + 1
     end
+    print(count)
     return count
 end
 
@@ -69,7 +98,7 @@ local function chooseMarker(target, duplicates, table, i, ...)
         end
     end
     if i == 6 then
-        if not table.sqaure then
+        if not table.square then
             SetRaidTarget(target, i)
             table.square = true
         else
@@ -95,10 +124,9 @@ local function chooseMarker(target, duplicates, table, i, ...)
 end
 
 local function setRaidTargetByClass(target, duplicates, table, i, ...)
-    localizedClass, englishClass, classIndex = UnitClass(target);
+    _, englishClass, _ = UnitClass(target);
     print("target: " .. target .. "\nclass: " .. englishClass)
 
-    -- 
     if englishClass == "ROGUE" then
         chooseMarker(target, duplicates, table, 1)
     end
@@ -170,7 +198,7 @@ local function recursiveChooseMarker(target, duplicates, table, i, ...)
         end
     end
     if i == 6 then
-        if not table.sqaure then
+        if not table.square then
             SetRaidTarget(target, i)
             table.square = true
         else
@@ -193,45 +221,45 @@ local function recursiveChooseMarker(target, duplicates, table, i, ...)
     end
 end
 
+
+function getMissingMarkers(table, minNumber, maxNumber)
+    for i = minNumber, maxNumber do
+        -- check which marks are set to false
+        if not table.star then
+        table.insert(MissingTable, i)
+        end
+    end
+end
+
 local function markAndRaidAssistTeammates(self, event, ...)
     local members = GetNumGroupMembers()
-    local usedMarkers = {
-        star = false,
-        circle = false,
-        diamond = false,
-        triangle = false,
-        moon = false,
-        square = false,
-        cross = false,
-        skull = false
-    }
-    local duplicates = {}
+    
     if event == "CHAT_MSG_BG_SYSTEM_NEUTRAL" then
         arg1 = ...
         if (string.find(arg1, "Thirty seconds until the Arena battle begins!") or
-            (string.find(arg1, "Fifteen seconds until the Arena battle begins!"))) then
+            string.find(arg1, "Fifteen seconds until the Arena battle begins!")) then
             members = GetNumGroupMembers()
             if members > 1 then
                 if UnitIsGroupLeader("player") then
                     ConvertToRaid()
                     -- mark player
-                    print("No marker on player")
                     setRaidTargetByClass("player", duplicates, usedMarkers, i)
                     for i = 1, members do
-                        print("AKOWdpAKWDPOAWD")
                         -- give assist
-                        -- SendChatMessage("/assist " .. UnitName(target))
                         -- mark party members
                         print("No marker on party" .. i)
                         setRaidTargetByClass("party" .. i, duplicates, usedMarkers, i)
                         -- SendChatMessage("/assist " .. UnitName(target))
                     end
                     numDuplicates = tablelength(duplicates)
+                    print(numDuplicates)
                     if numDuplicates > 0 then
-                        for i = 1, numDuplicates do
-                            recursiveChooseMarker("party" .. i, duplicates, usedMarkers, 1)
+                        getMissingMarkers(usedMarkers, 1, numDuplicates);
+                        for i=1, members do
+                            if GetRaidTargetIndex("party"..i) == nil then
+                                SetRaidTarget("party"..i, MissingTable[i])
+                            end
                         end
-
                     end
                 end
             end
