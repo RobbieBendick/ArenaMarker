@@ -16,8 +16,8 @@ frame:RegisterEvent("CHAT_MSG_BG_SYSTEM_NEUTRAL")
 --]]
 
 --[[
-    TODO: Breaks when setting assist
-          Marks self at 15 seconds instead of 30
+    TODO: When there's 2 of the same classes, and you happen to be one of those two players, places mark on self first, then instantly swaps to party1, then vice-versa at 15 seconds.
+          Still need to find a way to give raid-assistant to party members.
 --]]
 
 unused_markers = {1,2,3,4,5,6,7,8}  
@@ -31,15 +31,14 @@ function tablelength(T)
 end
 
 local function chooseMarker(target, i, ...)
-    -- check if mark is in unused_markers
-    local item;
+    -- check if the marker we are going to use is available
     for v in pairs(unused_markers) do
         if v == i then
-            item = v
+            print("[ChooseMarker] Value:"..v.."[ChooseMarker] Item:"..i)
+            SetRaidTarget(target, v)
+            table.remove(unused_markers, v)
         end
     end
-    SetRaidTarget(target, item)
-    table.remove(unused_markers, item)
 end
 
 local function setRaidTargetByClass(target, i, ...)
@@ -75,6 +74,15 @@ local function setRaidTargetByClass(target, i, ...)
     end
 end
 
+
+function sleep(n)
+    local t = os.clock()
+    while os.clock() - t <= n do
+      -- nothing
+    end
+end
+
+
 local function markAndRaidAssistTeammates(self, event, ...)
     local members = GetNumGroupMembers()
     
@@ -86,22 +94,26 @@ local function markAndRaidAssistTeammates(self, event, ...)
             if members > 1 then
                 if UnitIsGroupLeader("player") then
                     ConvertToRaid()
-                    -- mark player
+                    -- mark self
                     if GetRaidTargetIndex("player") == nil then
+                        print("marking myself")
                         setRaidTargetByClass("player")
                     end
                     for i = 1, members-1 do
-                        -- mark party members
+                        -- mark party members                        
                         if GetRaidTargetIndex("party"..i) == nil then
+                            print("marker on party" .. i .. " should be out")
                             setRaidTargetByClass("party" .. i)
                         end
-                        -- give assist
                         -- SendChatMessage("/assist " .. UnitName(target))
                     end
+
+                    -- delay 2 seconds, or else GetRaidTargetIndex will return nil and it will instantly throw a random mark on party members.
+                    sleep(2)
                     for i=1, members-1 do
                         local randomIndexOfTable = math.random(tablelength(unused_markers))
                         if GetRaidTargetIndex("party"..i) == nil then
-                            print("RandomIndexOfTable: " .. randomIndexOfTable)
+                            print("RandomIndexOfTable: " .. randomIndexOfTable .. "\n The extra marks should be on aswell!")
                             SetRaidTarget("party"..i, unused_markers[randomIndexOfTable])
                             table.remove(randomIndexOfTable)
                         end
