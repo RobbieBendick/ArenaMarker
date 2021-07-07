@@ -98,8 +98,8 @@ local function markTeammatesAndSelf(self, event, ...)
                     -- delay for a second, else GetRaidTargetIndex will return nil.
                     sleep(1)
                     for i=1, members-1 do
-                        local randomIndexOfTable = math.random(tablelength(unused_markers))
                         if GetRaidTargetIndex("party"..i) == nil then
+                            local randomIndexOfTable = math.random(tablelength(unused_markers))
                             SetRaidTarget("party"..i, unused_markers[randomIndexOfTable])
                             table.remove(randomIndexOfTable)
                         end
