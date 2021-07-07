@@ -77,10 +77,7 @@ end
 local function markTeammatesAndSelf(self, event, ...)
     if event == "CHAT_MSG_BG_SYSTEM_NEUTRAL" then
         arg1 = ...
-        if (string.find(arg1, "One minute until the Arena battle begins!") or
-            string.find(arg1, "Thirty seconds until the Arena battle begins!") or
-            string.find(arg1, "Fifteen seconds until the Arena battle begins!") or
-            string.find(arg1, "The Arena battle has begun!")) then
+        if string.find(arg1, "One minute until the Arena battle begins!" or "Thirty seconds until the Arena battle begins!" or "Fifteen seconds until the Arena battle begins!" or "The Arena battle has begun!") then
             local members = GetNumGroupMembers()
             if members > 1 then
                 if UnitIsGroupLeader("player") then
@@ -90,7 +87,7 @@ local function markTeammatesAndSelf(self, event, ...)
                         print("[ArenaMarker]: Marking the group.")
                         setRaidTargetByClass("player")
                     end
-                    for i = 1, members-1 do
+                    for i=1, members-1 do
                         -- mark party members                        
                         if GetRaidTargetIndex("party"..i) == nil then
                             setRaidTargetByClass("party"..i)
