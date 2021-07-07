@@ -1,5 +1,5 @@
-## Interface: 11306
+## Interface: 20501
 ## Author: Mageiden / Robdog
 ## Title: ArenaMarker
-## Notes: Gives party assist and places markers on friendly players in arena.
+## Notes: Gives your group class-based Raid Markers in arena.
 core.lua
