@@ -87,6 +87,7 @@ local function markTeammatesAndSelf(self, event, ...)
                     ConvertToRaid()
                     -- mark self
                     if GetRaidTargetIndex("player") == nil then
+                        print("[ArenaMarker]: Marking the group.")
                         setRaidTargetByClass("player")
                     end
                     for i = 1, members-1 do
