@@ -77,8 +77,10 @@ end
 local function markTeammatesAndSelf(self, event, ...)
     if event == "CHAT_MSG_BG_SYSTEM_NEUTRAL" then
         arg1 = ...
-        if (string.find(arg1, "Thirty seconds until the Arena battle begins!") or
-            string.find(arg1, "Fifteen seconds until the Arena battle begins!")) then
+        if (string.find(arg1, "One minute until the Arena battle begins!") or
+            string.find(arg1, "Thirty seconds until the Arena battle begins!") or
+            string.find(arg1, "Fifteen seconds until the Arena battle begins!") or
+            string.find(arg1, "The Arena battle has begun!")) then
             local members = GetNumGroupMembers()
             if members > 1 then
                 if UnitIsGroupLeader("player") then
