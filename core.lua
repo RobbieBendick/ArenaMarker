@@ -118,7 +118,7 @@ local function markTeammatesAndSelf(self, event, ...)
                         if GetRaidTargetIndex("party"..j) == nil then
                             for i,v in pairs(unused_markers) do
                                 if v ~= nil then
-                                    string = i
+                                    marker = i
                                     break
                                 end
                             end
