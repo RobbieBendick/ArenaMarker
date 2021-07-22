@@ -15,69 +15,88 @@ frame:RegisterEvent("CHAT_MSG_BG_SYSTEM_NEUTRAL")
         8 = White Skull; Priest
 --]]
 
-unused_markers = {1,2,3,4,5,6,7,8}  
 
-function tablelength(T)
-    local count = 0
-    for _ in pairs(T) do
-        count = count + 1
-    end
-    return count
+local unused_markers = {
+    ["star"] = 1,
+    ["circle"] = 2,
+    ["diamond"] = 3,
+    ["triangle"] = 4,
+    ["moon"] = 5,
+    ["square"] = 6,
+    ["cross"] = 7,
+    ["skull"] = 8
+}
+
+function removeKey(table, key)
+    local element = table[key]
+    table[key] = nil
+    return element
 end
 
-function sleep(n)
-    local t = os.clock()
-    while os.clock() - t <= n do
-      -- nothing
-    end
-end
 
-local function chooseMarker(target, i, ...)
-    -- check if the marker we are going to use is available
-    for v in pairs(unused_markers) do
-        if v == i then
-            SetRaidTarget(target, v)
-            table.remove(unused_markers, v)
-        end
-    end
-end
-
-local function setRaidTargetByClass(target, i, ...)
+local function setRaidTargetByClass(target, ...)
     local _, englishClass, _ = UnitClass(target);
     
     if englishClass == "ROGUE" then
-        chooseMarker(target, 1)
+        if unused_markers["star"] then
+            SetRaidTarget(target, 1)
+            removeKey(unused_markers, "star")
+        end
     end
     if englishClass == "DRUID" then
-        chooseMarker(target, 2)
+        if unused_markers["circle"] then
+            SetRaidTarget(target, 2)
+            removeKey(unused_markers, "circle")
+        end 
     end
     if englishClass == "WARLOCK" then
-        chooseMarker(target, 3)
+        if unused_markers["diamond"] then
+            SetRaidTarget(target, 3)
+            removeKey(unused_markers, "diamond")
+        end 
     end
     if englishClass == "PALADIN" then
-        chooseMarker(target, 3)
+        if unused_markers["diamond"] then
+            SetRaidTarget(target, 3)
+            removeKey(unused_markers, "diamond")
+        end 
     end
     if englishClass == "HUNTER" then
-        chooseMarker(target, 4)
+        if unused_markers["triangle"] then
+            SetRaidTarget(target, 4)
+            removeKey(unused_markers, "triangle")
+        end 
     end
     if englishClass == "MAGE" then
-        chooseMarker(target, 5)
+        if unused_markers["moon"] then
+            SetRaidTarget(target, 5)
+            removeKey(unused_markers, "moon")
+        end 
     end
     if englishclass == "SHAMAN" then
-        chooseMarker(target, 6)
+        if unused_markers["square"] then
+            SetRaidTarget(target, 6)
+            removeKey(unused_markers, "square")
+        end 
     end
     if englishClass == "WARRIOR" then
-        chooseMarker(target, 7)
+        if unused_markers["cross"] then
+            SetRaidTarget(target, 7)
+            removeKey(unused_markers, "cross")
+        end 
     end
     if englishClass == "PRIEST" then
-        chooseMarker(target, 8)
+        if unused_markers["skull"] then
+            SetRaidTarget(target, 8)
+            removeKey(unused_markers, "skull")
+        end 
     end
 end
 
 local function markTeammatesAndSelf(self, event, ...)
     if event == "CHAT_MSG_BG_SYSTEM_NEUTRAL" then
         arg1 = ...
-        if string.find(arg1, "One minute until the Arena battle begins!" or "Thirty seconds until the Arena battle begins!" or "Fifteen seconds until the Arena battle begins!" or "The Arena battle has begun!") then
+        if string.find(arg1, "One minute until the Arena battle begins!") or string.find(arg1, "Thirty seconds until the Arena battle begins!") or string.find(arg1, "Fifteen seconds until the Arena battle begins!") or string.find(arg1, "The Arena battle has begun!") then
             local members = GetNumGroupMembers()
             if members > 1 then
                 if UnitIsGroupLeader("player") then
@@ -87,19 +106,23 @@ local function markTeammatesAndSelf(self, event, ...)
                         print("[ArenaMarker]: Marking the group.")
                         setRaidTargetByClass("player")
                     end
+                    -- mark party members
                     for i=1, members-1 do
-                        -- mark party members                        
                         if GetRaidTargetIndex("party"..i) == nil then
                             setRaidTargetByClass("party"..i)
                         end
                     end
-                    -- delay for a second, else GetRaidTargetIndex will return nil.
-                    sleep(1)
-                    for i=1, members-1 do
-                        if GetRaidTargetIndex("party"..i) == nil then
-                            local randomIndexOfTable = math.random(tablelength(unused_markers))
-                            SetRaidTarget("party"..i, unused_markers[randomIndexOfTable])
-                            table.remove(randomIndexOfTable)
+                    -- mark duplicate class members
+                    local marker = ""
+                    for j=1, members-1 do
+                        if GetRaidTargetIndex("party"..j) == nil then
+                            for i,v in pairs(unused_markers) do
+                                if v ~= nil then
+                                    string = i
+                                    break
+                                end
+                            end
+                            SetRaidTarget("party"..j, unused_markers[string])
                         end
                     end
                 end
