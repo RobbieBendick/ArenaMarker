@@ -122,7 +122,7 @@ local function markTeammatesAndSelf(self, event, ...)
                                     break
                                 end
                             end
-                            SetRaidTarget("party"..j, unused_markers[string])
+                            SetRaidTarget("party"..j, unused_markers[marker])
                         end
                     end
                 end
