@@ -112,7 +112,7 @@ local function markTeammatesAndSelf(self, event, ...)
                             setRaidTargetByClass("party"..i)
                         end
                     end
-                    -- mark duplicate class members
+                    -- mark duplicate class party members
                     local marker = ""
                     for j=1, members-1 do
                         if GetRaidTargetIndex("party"..j) == nil then
