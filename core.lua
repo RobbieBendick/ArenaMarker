@@ -75,7 +75,7 @@ local function setRaidTargetByClass(target, ...)
     end
 end
 
-local function markPlayers(self, event, members)
+local function markPlayers(members)
     if members > 1 then
         if UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") then
             ConvertToRaid()
@@ -94,7 +94,7 @@ local function markPlayers(self, event, members)
     end
 end
 
-local function markPets(self, event, members)
+local function markPets(members)
     for i=1, members-1 do
         if not GetRaidTargetIndex("party"..i.."pet") then
             findUsableMark(unused_markers, "party"..i.."pet")
@@ -108,9 +108,9 @@ local function markTeammatesAndSelf(self, event, ...)
         arg1 = ...
         local members = GetNumGroupMembers()
         if string.find(arg1, "One minute until the Arena battle begins!") or string.find(arg1, "Thirty seconds until the Arena battle begins!") or string.find(arg1, "Fifteen seconds until the Arena battle begins!") then
-            markPlayers(self, event, members)
+            markPlayers(members)
         elseif string.find(arg1, "The Arena battle has begun!") then
-            markPets(self, event, members)
+            markPets(members)
         end
     end
 end
