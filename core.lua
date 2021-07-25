@@ -76,7 +76,7 @@ local function setRaidTargetByClass(target, ...)
 end
 
 local function markPlayers(members)
-    if members > 2 then
+    if members > 1 then
         ConvertToRaid()
         -- mark self
         if not GetRaidTargetIndex("player") then
@@ -84,7 +84,7 @@ local function markPlayers(members)
             setRaidTargetByClass("player")
         end
         -- mark party members
-        for i=2, members-1 do
+        for i=1, members-1 do
             if not GetRaidTargetIndex("party"..i) then
                 setRaidTargetByClass("party"..i)
             end
@@ -93,7 +93,7 @@ local function markPlayers(members)
 end
 
 local function markPets(members)
-    for i=2, members-1 do
+    for i=1, members-1 do
         if not GetRaidTargetIndex("party"..i.."pet") then
             findUsableMark(unused_markers, "party"..i.."pet")
             break
