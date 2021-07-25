@@ -5,26 +5,26 @@ frame:RegisterEvent("CHAT_MSG_BG_SYSTEM_NEUTRAL")
 
 --[[
     Marker numbers:
-        2 = Yellow 4-point Star; Rogue
-        3 = Orange Circle; Druid
-        4 = Purple Diamond; Lock, Paladin
-        5 = Green Triangle; Hunter
-        6 = White Crescent Moon; Mage
-        7 = Blue Square; Shaman
-        8 = Red "X" Cross; Warrior
-        9 = White Skull; Priest
+        1 = Yellow 4-point Star; Rogue
+        2 = Orange Circle; Druid
+        3 = Purple Diamond; Lock, Paladin
+        4 = Green Triangle; Hunter
+        5 = White Crescent Moon; Mage
+        6 = Blue Square; Shaman
+        7 = Red "X" Cross; Warrior
+        8 = White Skull; Priest
 --]]
 
 
 local unused_markers = {
-    ["star"] = 2,
-    ["circle"] = 3,
-    ["diamond"] = 4,
-    ["triangle"] = 5,
-    ["moon"] = 6,
-    ["square"] = 7,
-    ["cross"] = 8,
-    ["skull"] = 9
+    ["star"] = 1,
+    ["circle"] = 2,
+    ["diamond"] = 3,
+    ["triangle"] = 4,
+    ["moon"] = 5,
+    ["square"] = 6,
+    ["cross"] = 7,
+    ["skull"] = 8
 }
 
 local relatives = {
@@ -104,11 +104,11 @@ end
 local function inArena(self, event, ...)
     if event == "CHAT_MSG_BG_SYSTEM_NEUTRAL" then
         if UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") then
-            arg2 = ...
+            arg1 = ...
             local members = GetNumGroupMembers()
-            if string.find(arg2, "One minute until the Arena battle begins!") or string.find(arg1, "Thirty seconds until the Arena battle begins!") or string.find(arg1, "Fifteen seconds until the Arena battle begins!") then
+            if string.find(arg1, "One minute until the Arena battle begins!") or string.find(arg1, "Thirty seconds until the Arena battle begins!") or string.find(arg1, "Fifteen seconds until the Arena battle begins!") then
                 markPlayers(members)
-            elseif string.find(arg2, "The Arena battle has begun!") then
+            elseif string.find(arg1, "The Arena battle has begun!") then
                 markPets(members)
             end
         end
