@@ -28,49 +28,51 @@ local unused_markers = {
 }
 
 local relatives = {
-    ["star"] = "ROGUE",
-    ["circle"] = "DRUID",
-    ["diamond"] = "WARLOCK",
-    ["diamond"] = "PALADIN",
-    ["triangle"] = "HUNTER",
-    ["moon"] = "MAGE",
-    ["square"] = "SHAMAN",
-    ["cross"] = "WARRIOR",
-    ["skull"] = "PRIEST"
+    ["ROGUE"] = "star",
+    ["DRUID"] = "circle",
+    ["WARLOCK"] = "diamond",
+    ["PALADIN"] = "diamond",
+    ["HUNTER"] = "triangle",
+    ["MAGE"] = "moon",
+    ["SHAMAN"] = "square",
+    ["WARRIOR"] = "cross",
+    ["PRIEST"] = "skull"
 }
 
-local function removeKey(table, key)
-    local element = table[key]
-    table[key] = nil
-    return element
+local function removeValue(table, value)
+    local key = table[value]
+    table[value] = nil
+    return key
 end
 
 
 local function findUsableMark(table, target)
     local marker = ""
-    for i,v in pairs(table) do
+    for k,v in pairs(table) do
         if v ~= nil then
-            marker = i
+            marker = k
             break
         end
     end
     SetRaidTarget(target, table[marker])
-    removeKey(table, marker)
+    removeValue(table, marker)
 end
 
 
 local function setRaidTargetByClass(target, ...)
     local _, englishClass, _ = UnitClass(target);
-    for i,v in pairs(relatives) do
-        if v == englishClass then
-            if unused_markers[i] then
-                SetRaidTarget(target, unused_markers[i])
-                removeKey(unused_markers, i)
+    for k,v in pairs(relatives) do
+        if k == englishClass then
+            if unused_markers[v] then
+                SetRaidTarget(target, unused_markers[v])
+                removeValue(unused_markers, v)
+                break
             else
                 findUsableMark(unused_markers, target)
+                break
             end
         end
-    end 
+    end
 end
 
 local function markTeammatesAndSelf(self, event, ...)
