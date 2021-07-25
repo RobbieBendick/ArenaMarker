@@ -75,29 +75,44 @@ local function setRaidTargetByClass(target, ...)
     end
 end
 
-local function markTeammatesAndSelf(self, event, ...)
-    if event == "CHAT_MSG_BG_SYSTEM_NEUTRAL" then
-        arg1 = ...
-        if string.find(arg1, "One minute until the Arena battle begins!") or string.find(arg1, "Thirty seconds until the Arena battle begins!") or string.find(arg1, "Fifteen seconds until the Arena battle begins!") or string.find(arg1, "The Arena battle has begun!") then
-            local members = GetNumGroupMembers()
-            if members > 1 then
-                if UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") then
-                    ConvertToRaid()
-                    -- mark self
-                    if not GetRaidTargetIndex("player") then
-                        print("[ArenaMarker]: Marking the group.")
-                        setRaidTargetByClass("player")
-                    end
-                    -- mark party members
-                    for i=1, members-1 do
-                        if not GetRaidTargetIndex("party"..i) then
-                            setRaidTargetByClass("party"..i)
-                        end
-                    end
-                end
+local function markPlayers(members)
+    if members > 1 then
+        ConvertToRaid()
+        -- mark self
+        if not GetRaidTargetIndex("player") then
+            print("[ArenaMarker]: Marking the group.")
+            setRaidTargetByClass("player")
+        end
+        -- mark party members
+        for i=1, members-1 do
+            if not GetRaidTargetIndex("party"..i) then
+                setRaidTargetByClass("party"..i)
             end
         end
     end
 end
 
-frame:SetScript("OnEvent", markTeammatesAndSelf)
+local function markPets(members)
+    for i=1, members-1 do
+        if not GetRaidTargetIndex("party"..i.."pet") then
+            findUsableMark(unused_markers, "party"..i.."pet")
+            break
+        end
+    end
+end
+
+local function inArena(self, event, ...)
+    if event == "CHAT_MSG_BG_SYSTEM_NEUTRAL" then
+        if UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") then
+            arg1 = ...
+            local members = GetNumGroupMembers()
+            if string.find(arg1, "One minute until the Arena battle begins!") or string.find(arg1, "Thirty seconds until the Arena battle begins!") or string.find(arg1, "Fifteen seconds until the Arena battle begins!") then
+                markPlayers(members)
+            elseif string.find(arg1, "The Arena battle has begun!") then
+                markPets(members)
+            end
+        end
+    end
+end
+
+frame:SetScript("OnEvent", inArena)
