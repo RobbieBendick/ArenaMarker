@@ -87,23 +87,22 @@ local function setRaidTargetByClass(target, ...)
 end
 
 local function markPlayers(members)
-    if members > 1 then
-        ConvertToRaid()
-        -- mark self
-        if not GetRaidTargetIndex("player") then
-            print("[ArenaMarker]: Marking the group.")
-            setRaidTargetByClass("player")
-        end
-        -- mark party members
-        for i=1, members-1 do
-            if not GetRaidTargetIndex("party"..i) then
-                setRaidTargetByClass("party"..i)
-            end
+    ConvertToRaid()
+    -- mark self
+    if not GetRaidTargetIndex("player") then
+        print("[ArenaMarker]: Marking the group.")
+        setRaidTargetByClass("player")
+    end
+    -- mark party members
+    for i=1, members-1 do
+        if not GetRaidTargetIndex("party"..i) then
+            setRaidTargetByClass("party"..i)
         end
     end
 end
 
 local function markPets(members)
+    ConvertToRaid()
     if not GetRaidTargetIndex(UnitName("player").."-pet") then
         findUsableMark(unused_markers, UnitName("player").."-pet")
     end
@@ -122,6 +121,9 @@ local function inArena(self, event, ...)
         return
     end
     if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then
+        return
+    end
+    if members < 1 then
         return
     end
     if event == "CHAT_MSG_BG_SYSTEM_NEUTRAL" then
