@@ -52,7 +52,7 @@ local relatives = {
     ["PRIEST"] = "skull"
 }
 
-local function removeValue(table, value)
+local function removeMark(table, value)
     local key = table[value]
     table[value] = nil
     return key
@@ -67,7 +67,7 @@ local function findUsableMark(table, target)
         end
     end
     SetRaidTarget(target, table[marker])
-    removeValue(table, marker)
+    removeMark(table, marker)
 end
 
 local function setRaidTargetByClass(target, ...)
@@ -76,7 +76,7 @@ local function setRaidTargetByClass(target, ...)
         if k == englishClass then
             if unused_markers[v] then
                 SetRaidTarget(target, unused_markers[v])
-                removeValue(unused_markers, v)
+                removeMark(unused_markers, v)
                 break
             else
                 findUsableMark(unused_markers, target)
@@ -101,13 +101,17 @@ local function markPlayers(members)
 end
 
 local function markPets(members)
-    if not GetRaidTargetIndex(UnitName("player").."-pet") then
-        findUsableMark(unused_markers, UnitName("player").."-pet")
+    if UnitExists("pet") then
+        if not GetRaidTargetIndex("pet") then
+            findUsableMark(unused_markers, "pet")
+        end
     end
     for i=1, members-1 do
-        if not GetRaidTargetIndex("party"..i.."pet") then
-            findUsableMark(unused_markers, "party"..i.."pet")
-            break
+        if UnitExists("party"..i.."pet") then
+            if not GetRaidTargetIndex("party"..i.."pet") then
+                findUsableMark(unused_markers, "party"..i.."pet")
+                break
+            end
         end
     end
 end
@@ -128,6 +132,7 @@ local function inArena(self, event, ...)
         arg1 = ...
         ConvertToRaid()
         markPlayers(members)
+        -- mark pets when gates open
         for key,value in pairs(translations) do
             if GetLocale() == key then
                 if string.find(arg1, value) then
