@@ -1,7 +1,8 @@
+local _, core = ...; -- Namespace
+
 local frame = CreateFrame("FRAME", "ArenaMarker")
 frame:RegisterEvent("PLAYER_ENTERING_WORLD")
 frame:RegisterEvent("CHAT_MSG_BG_SYSTEM_NEUTRAL")
-
 --[[
     Marker numbers:
         1 = Yellow 4-point Star; Rogue
@@ -110,7 +111,6 @@ local function markPets(members)
         if UnitExists("party"..i.."pet") then
             if not GetRaidTargetIndex("party"..i.."pet") then
                 findUsableMark(unused_markers, "party"..i.."pet")
-                break
             end
         end
     end
@@ -133,10 +133,12 @@ local function inArena(self, event, ...)
         ConvertToRaid()
         markPlayers(members)
         -- mark pets when gates open
-        for key,value in pairs(translations) do
-            if GetLocale() == key then
-                if string.find(arg1, value) then
-                    markPets(members)
+        if core.allowPets then
+            for key,value in pairs(translations) do 
+                if GetLocale() == key then
+                    if string.find(arg1, value) then
+                        markPets(members)
+                    end
                 end
             end
         end
@@ -144,3 +146,11 @@ local function inArena(self, event, ...)
 end
 
 frame:SetScript("OnEvent", inArena)
+
+local function init()
+    SLASH_ARENAMARKER1 = "/am";
+    SlashCmdList.ARENAMARKER = core.Config.Toggle
+end
+local events = CreateFrame("Frame")
+events:RegisterEvent("ADDON_LOADED")
+events:SetScript("OnEvent", init)
