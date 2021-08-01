@@ -161,12 +161,12 @@ local function inArena(self, event, ...)
     end
 end
 
-frame:SetScript("OnEvent", inArena)
+frame:SetScript("OnEvent", inArena);
 
 local function init()
     SLASH_ARENAMARKER1 = "/am";
-    SlashCmdList.ARENAMARKER = core.Config.Toggle
+    SlashCmdList.ARENAMARKER = core.Config.Toggle;
 end
-local events = CreateFrame("Frame")
-events:RegisterEvent("ADDON_LOADED")
-events:SetScript("OnEvent", init)
+local events = CreateFrame("Frame");
+events:RegisterEvent("ADDON_LOADED");
+events:SetScript("OnEvent", init);
