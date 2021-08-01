@@ -3,6 +3,8 @@ local _, core = ...; -- Namespace
 local frame = CreateFrame("FRAME", "ArenaMarker")
 frame:RegisterEvent("PLAYER_ENTERING_WORLD")
 frame:RegisterEvent("CHAT_MSG_BG_SYSTEM_NEUTRAL")
+frame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
+
 --[[
     Marker numbers:
         1 = Yellow 4-point Star; Rogue
@@ -14,21 +16,6 @@ frame:RegisterEvent("CHAT_MSG_BG_SYSTEM_NEUTRAL")
         7 = Red "X" Cross; Warrior
         8 = White Skull; Priest
 --]]
-
-local translations = {
-    ["enUS"] = "The Arena battle has begun!",
-    ["enGB"] = "The Arena battle has begun!",
-    ["frFR"] = "Le combat d'arène commence !",
-    ["deDE"] = "Der Arenakampf hat begonnen!",
-    ["ptBR"] = "A batalha na Arena começou!",
-    ["esES"] = "¡La batalla en arena ha comenzado!",
-    ["esMX"] = "¡La batalla en arena ha comenzado!",
-    ["ruRU"] = "Бой начался!",
-    ["zhCN"] = "竞技场的战斗开始了！",
-    ["zhTW"] = "競技場戰鬥開始了!",
-    ["koKR"] = "투기장 전투가 시작되었습니다!",
-}
-
 
 local unused_markers = {
     ["star"] = 1,
@@ -51,6 +38,20 @@ local relatives = {
     ["SHAMAN"] = "square",
     ["WARRIOR"] = "cross",
     ["PRIEST"] = "skull"
+}
+
+local translations = {
+    ["enUS"] = "The Arena battle has begun!",
+    ["enGB"] = "The Arena battle has begun!",
+    ["frFR"] = "Le combat d'arène commence !",
+    ["deDE"] = "Der Arenakampf hat begonnen!",
+    ["ptBR"] = "A batalha na Arena começou!",
+    ["esES"] = "¡La batalla en arena ha comenzado!",
+    ["esMX"] = "¡La batalla en arena ha comenzado!",
+    ["ruRU"] = "Бой начался!",
+    ["zhCN"] = "竞技场的战斗开始了！",
+    ["zhTW"] = "競技場戰鬥開始了!",
+    ["koKR"] = "투기장 전투가 시작되었습니다!",
 }
 
 local function removeMark(table, value)
@@ -119,6 +120,21 @@ end
 local function inArena(self, event, ...)
     local inInstance, instanceType = IsInInstance()
     local members = GetNumGroupMembers()
+    local isArena, isRegistered = IsActiveBattlefieldArena()
+
+    if event == "ZONE_CHANGED_NEW_AREA" and instanceType == "arena" and not isRegistered then
+       --reset table everytime user enters skirmishes
+        unused_markers = {
+            ["star"] = 1,
+            ["circle"] = 2,
+            ["diamond"] = 3,
+            ["triangle"] = 4,
+            ["moon"] = 5,
+            ["square"] = 6,
+            ["cross"] = 7,
+            ["skull"] = 8
+        }
+    end
     if instanceType ~= "arena" then
         return
     end
