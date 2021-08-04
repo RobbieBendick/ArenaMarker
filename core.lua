@@ -60,6 +60,13 @@ local function removeMark(table, value)
     return key
 end
 
+local function contains(table, x)
+	for _, v in pairs(table) do
+		if v == x then return true end
+	end
+	return false
+end
+
 local function findUsableMark(table, target)
     local marker = ""
     for k,v in pairs(table) do
@@ -91,7 +98,7 @@ end
 local function markPlayers(members)
     -- mark self
     if not GetRaidTargetIndex("player") then
-        print("[ArenaMarker]: Marking the group.")
+        DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99ArenaMarker|r: Marking the group.")
         setRaidTargetByClass("player")
     end
     -- mark party members
@@ -123,7 +130,7 @@ local function inArena(self, event, ...)
     local isArena, isRegistered = IsActiveBattlefieldArena()
 
     if event == "ZONE_CHANGED_NEW_AREA" and instanceType == "arena" and not isRegistered then
-       --reset table everytime user enters skirmishes
+       --reset table everytime user enter skirmishes
         unused_markers = {
             ["star"] = 1,
             ["circle"] = 2,
@@ -145,6 +152,37 @@ local function inArena(self, event, ...)
         return
     end
     if event == "CHAT_MSG_BG_SYSTEM_NEUTRAL" then
+        if core.pets then
+            for i,v in pairs(core.pets) do
+                if not contains(unused_markers, v) then
+                    -- populate table, we placed the marker back.
+                    if v == 1 then
+                        unused_markers["star"] = 1;
+                    end
+                    if v == 2 then
+                        unused_markers["circle"] = 2;
+                    end
+                    if v == 3 then
+                        unused_markers["diamond"] = 3;
+                    end
+                    if v == 4 then
+                        unused_markers["triangle"] = 4;
+                    end
+                    if v == 5 then
+                        unused_markers["moon"] = 5;
+                    end
+                    if v == 6 then
+                        unused_markers["square"] = 6;
+                    end
+                    if v == 7 then
+                        unused_markers["cross"] = 7;
+                    end
+                    if v == 8 then
+                        unused_markers["skull"] = 8;
+                    end
+                end
+            end
+        end
         arg1 = ...
         ConvertToRaid()
         markPlayers(members)
@@ -161,7 +199,7 @@ local function inArena(self, event, ...)
     end
 end
 
-frame:SetScript("OnEvent", inArena);
+frame:SetScript("OnEvent", inArena)
 
 local function init()
     SLASH_ARENAMARKER1 = "/am";
@@ -170,3 +208,11 @@ end
 local events = CreateFrame("Frame");
 events:RegisterEvent("ADDON_LOADED");
 events:SetScript("OnEvent", init);
+
+local function login()
+    DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99ArenaMarker|r: /am for additional options")
+end
+
+enterWorld = CreateFrame("FRAME");
+enterWorld:RegisterEvent("PLAYER_LOGIN");
+enterWorld:SetScript("OnEvent", login);
