@@ -6,8 +6,7 @@ core.Config = {}; -- adds Config table to addon namespace
 local Config = core.Config;
 local UIConfig;
 core.allowPets = true; -- adds allowPets variable to addon namespace
-
-core.pets = {}
+core.pets = {};
 
 
 
@@ -21,7 +20,7 @@ function Config:Toggle()
 end
 
 function Config:UnmarkPets()
-	-- if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
+	if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
 	if GetNumGroupMembers() > 5 then return end
 	if UnitExists("pet") then
 		if GetRaidTargetIndex("pet") then
@@ -29,7 +28,7 @@ function Config:UnmarkPets()
 			SetRaidTarget("pet", 0)
 		end
 	end
-	for i=1,4 do
+	for i=1,GetNumGroupMembers()-1 do
 		if UnitExists("party"..i.."pet") then
 			if GetRaidTargetIndex("party"..i.."pet") then
 				table.insert(core.pets, GetRaidTargetIndex("party"..i.."pet"))
@@ -58,7 +57,9 @@ function Config:CreateMenu()
 	UIConfig.checkBtn1.text:SetText("Mark Pets");
     UIConfig.checkBtn1:SetChecked(true);
 	UIConfig.checkBtn1:SetScript("OnClick", function() core.allowPets = UIConfig.checkBtn1:GetChecked() end);
-
+	----------------------------------
+	-- Unmark Pets Button
+	----------------------------------
 	UIConfig.unmarkPetButton = CreateFrame("Button", nil, UIConfig.checkBtn1, "GameMenuButtonTemplate");
 	UIConfig.unmarkPetButton:SetPoint("CENTER", UIConfig.checkBtn1, "CENTER", 25, -50)
 	UIConfig.unmarkPetButton:SetSize(110,30)

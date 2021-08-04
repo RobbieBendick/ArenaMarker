@@ -54,7 +54,7 @@ local translations = {
     ["koKR"] = "투기장 전투가 시작되었습니다!",
 }
 
-local function removeMark(table, value)
+local function removeValue(table, value)
     local key = table[value]
     table[value] = nil
     return key
@@ -76,7 +76,7 @@ local function findUsableMark(table, target)
         end
     end
     SetRaidTarget(target, table[marker])
-    removeMark(table, marker)
+    removeValue(table, marker)
 end
 
 local function setRaidTargetByClass(target, ...)
@@ -85,7 +85,7 @@ local function setRaidTargetByClass(target, ...)
         if k == englishClass then
             if unused_markers[v] then
                 SetRaidTarget(target, unused_markers[v])
-                removeMark(unused_markers, v)
+                removeValue(unused_markers, v)
                 break
             else
                 findUsableMark(unused_markers, target)
@@ -158,36 +158,44 @@ local function inArena(self, event, ...)
                     -- populate table, we placed the marker back.
                     if v == 1 then
                         unused_markers["star"] = 1;
+                        removeValue(core.pets, i);
                     end
                     if v == 2 then
                         unused_markers["circle"] = 2;
+                        removeValue(core.pets, i);
                     end
                     if v == 3 then
                         unused_markers["diamond"] = 3;
+                        removeValue(core.pets, i);
                     end
                     if v == 4 then
                         unused_markers["triangle"] = 4;
+                        removeValue(core.pets, i);
                     end
                     if v == 5 then
                         unused_markers["moon"] = 5;
+                        removeValue(core.pets, i);
                     end
                     if v == 6 then
                         unused_markers["square"] = 6;
+                        removeValue(core.pets, i);
                     end
                     if v == 7 then
                         unused_markers["cross"] = 7;
+                        removeValue(core.pets, i);
                     end
                     if v == 8 then
                         unused_markers["skull"] = 8;
+                        removeValue(core.pets, i);
                     end
                 end
             end
         end
-        arg1 = ...
         ConvertToRaid()
         markPlayers(members)
         -- mark pets when gates open
         if core.allowPets then
+            arg1 = ...
             for key,value in pairs(translations) do 
                 if GetLocale() == key then
                     if string.find(arg1, value) then
@@ -210,7 +218,7 @@ events:RegisterEvent("ADDON_LOADED");
 events:SetScript("OnEvent", init);
 
 local function login()
-    DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99ArenaMarker|r: /am for additional options")
+    DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99ArenaMarker|r: /am for additional options.")
 end
 
 enterWorld = CreateFrame("FRAME");

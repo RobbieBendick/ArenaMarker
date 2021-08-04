@@ -1,5 +1,5 @@
 ## Interface: 20501
-## Author: Mageiden / Robdog + Xizy
+## Author: Mageiden/Robdog
 ## Title: ArenaMarker
 ## Notes: Gives your group class-based Raid Markers in arena.
 config.lua
