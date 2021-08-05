@@ -115,7 +115,7 @@ function Config:CreateMenu()
 	-- Mark Pets Button
 	----------------------------------
 	UIConfig.markPetsButton = CreateFrame("Button", nil, UIConfig.unmarkPetsButton, "GameMenuButtonTemplate");
-	UIConfig.markPetsButton:SetPoint("CENTER", UIConfig.checkBtn1, "CENTER", 25, -85)
+	UIConfig.markPetsButton:SetPoint("CENTER", UIConfig.unmarkPetsButton, "CENTER", 0, -45)
 	UIConfig.markPetsButton:SetSize(110,30)
 	UIConfig.markPetsButton:SetText("Mark Pets")
 	UIConfig.markPetsButton:SetScript("OnClick", Config.MarkPets);
