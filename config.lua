@@ -61,9 +61,9 @@ function Config:CreateMenu()
 	-- Unmark Pets Button
 	----------------------------------
 	UIConfig.unmarkPetButton = CreateFrame("Button", nil, UIConfig.checkBtn1, "GameMenuButtonTemplate");
-	UIConfig.unmarkPetButton:SetPoint("CENTER", UIConfig.checkBtn1, "CENTER", 25, -50)
-	UIConfig.unmarkPetButton:SetSize(110,30)
-	UIConfig.unmarkPetButton:SetText("Unmark Pets")
+	UIConfig.unmarkPetButton:SetPoint("CENTER", UIConfig.checkBtn1, "CENTER", 25, -50);
+	UIConfig.unmarkPetButton:SetSize(110,30);
+	UIConfig.unmarkPetButton:SetText("Unmark Pets");
 	UIConfig.unmarkPetButton:SetScript("OnClick", Config.UnmarkPets);
 	
 	UIConfig:Hide();

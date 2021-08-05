@@ -17,7 +17,7 @@ frame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
         8 = White Skull; Priest
 --]]
 
-local unused_markers = {
+core.unused_markers = {
     ["star"] = 1,
     ["circle"] = 2,
     ["diamond"] = 3,
@@ -38,20 +38,6 @@ local relatives = {
     ["SHAMAN"] = "square",
     ["WARRIOR"] = "cross",
     ["PRIEST"] = "skull"
-}
-
-local translations = {
-    ["enUS"] = "The Arena battle has begun!",
-    ["enGB"] = "The Arena battle has begun!",
-    ["frFR"] = "Le combat d'arène commence !",
-    ["deDE"] = "Der Arenakampf hat begonnen!",
-    ["ptBR"] = "A batalha na Arena começou!",
-    ["esES"] = "¡La batalla en arena ha comenzado!",
-    ["esMX"] = "¡La batalla en arena ha comenzado!",
-    ["ruRU"] = "Бой начался!",
-    ["zhCN"] = "竞技场的战斗开始了！",
-    ["zhTW"] = "競技場戰鬥開始了!",
-    ["koKR"] = "투기장 전투가 시작되었습니다!",
 }
 
 local function removeValue(table, value)
@@ -83,12 +69,12 @@ local function setRaidTargetByClass(target, ...)
     local _, englishClass, _ = UnitClass(target);
     for k,v in pairs(relatives) do
         if k == englishClass then
-            if unused_markers[v] then
-                SetRaidTarget(target, unused_markers[v])
-                removeValue(unused_markers, v)
+            if core.unused_markers[v] then
+                SetRaidTarget(target, core.unused_markers[v])
+                removeValue(core.unused_markers, v)
                 break
             else
-                findUsableMark(unused_markers, target)
+                findUsableMark(core.unused_markers, target)
                 break
             end
         end
@@ -112,13 +98,13 @@ end
 local function markPets(members)
     if UnitExists("pet") then
         if not GetRaidTargetIndex("pet") then
-            findUsableMark(unused_markers, "pet")
+            findUsableMark(core.unused_markers, "pet")
         end
     end
     for i=1, members-1 do
         if UnitExists("party"..i.."pet") then
             if not GetRaidTargetIndex("party"..i.."pet") then
-                findUsableMark(unused_markers, "party"..i.."pet")
+                findUsableMark(core.unused_markers, "party"..i.."pet")
             end
         end
     end
@@ -131,7 +117,7 @@ local function inArena(self, event, ...)
 
     if event == "ZONE_CHANGED_NEW_AREA" and instanceType == "arena" and not isRegistered then
        --reset table everytime user enter skirmishes
-        unused_markers = {
+        core.unused_markers = {
             ["star"] = 1,
             ["circle"] = 2,
             ["diamond"] = 3,
@@ -154,38 +140,38 @@ local function inArena(self, event, ...)
     if event == "CHAT_MSG_BG_SYSTEM_NEUTRAL" then
         if core.pets then
             for i,v in pairs(core.pets) do
-                if not contains(unused_markers, v) then
-                    -- populate table, we placed the marker back.
+                if not contains(core.unused_markers, v) then
+                    -- re-populate table if user removes pet marks
                     if v == 1 then
-                        unused_markers["star"] = 1;
+                        core.unused_markers["star"] = 1;
                         removeValue(core.pets, i);
                     end
                     if v == 2 then
-                        unused_markers["circle"] = 2;
+                        core.unused_markers["circle"] = 2;
                         removeValue(core.pets, i);
                     end
                     if v == 3 then
-                        unused_markers["diamond"] = 3;
+                        core.unused_markers["diamond"] = 3;
                         removeValue(core.pets, i);
                     end
                     if v == 4 then
-                        unused_markers["triangle"] = 4;
+                        core.unused_markers["triangle"] = 4;
                         removeValue(core.pets, i);
                     end
                     if v == 5 then
-                        unused_markers["moon"] = 5;
+                        core.unused_markers["moon"] = 5;
                         removeValue(core.pets, i);
                     end
                     if v == 6 then
-                        unused_markers["square"] = 6;
+                        core.unused_markers["square"] = 6;
                         removeValue(core.pets, i);
                     end
                     if v == 7 then
-                        unused_markers["cross"] = 7;
+                        core.unused_markers["cross"] = 7;
                         removeValue(core.pets, i);
                     end
                     if v == 8 then
-                        unused_markers["skull"] = 8;
+                        core.unused_markers["skull"] = 8;
                         removeValue(core.pets, i);
                     end
                 end
@@ -196,7 +182,7 @@ local function inArena(self, event, ...)
         -- mark pets when gates open
         if core.allowPets then
             arg1 = ...
-            for key,value in pairs(translations) do 
+            for key,value in pairs(core.translations) do 
                 if GetLocale() == key then
                     if string.find(arg1, value) then
                         markPets(members)
