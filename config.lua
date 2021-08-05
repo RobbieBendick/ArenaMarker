@@ -134,44 +134,43 @@ end
 
 local update = CreateFrame("FRAME")
 local function updateHandler()
-    if core.pets then
-        for i,v in pairs(core.pets) do
-            if not contains(core.unused_markers, v) then
-                -- populate table, we placed the marker back.
-                if v == 1 then
-                    core.unused_markers["star"] = 1;
-                    removeValue(core.pets, i);
-                end
-                if v == 2 then
-                    core.unused_markers["circle"] = 2;
-                    removeValue(core.pets, i);
-                end
-                if v == 3 then
-                    core.unused_markers["diamond"] = 3;
-                    removeValue(core.pets, i);
-                end
-                if v == 4 then
-                    core.unused_markers["triangle"] = 4;
-                    removeValue(core.pets, i);
-                end
-                if v == 5 then
-                    core.unused_markers["moon"] = 5;
-                    removeValue(core.pets, i);
-                end
-                if v == 6 then
-                    core.unused_markers["square"] = 6;
-                    removeValue(core.pets, i);
-                end
-                if v == 7 then
-                    core.unused_markers["cross"] = 7;
-                    removeValue(core.pets, i);
-                end
-                if v == 8 then
-                    core.unused_markers["skull"] = 8;
-                    removeValue(core.pets, i);
-                end
-            end
-        end
+    if not core.pets then return end
+	for i,v in pairs(core.pets) do
+		if not contains(core.unused_markers, v) then
+			-- re-populate table, after 
+			if v == 1 then
+				core.unused_markers["star"] = 1;
+				removeValue(core.pets, i);
+			end
+			if v == 2 then
+				core.unused_markers["circle"] = 2;
+				removeValue(core.pets, i);
+			end
+			if v == 3 then
+				core.unused_markers["diamond"] = 3;
+				removeValue(core.pets, i);
+			end
+			if v == 4 then
+				core.unused_markers["triangle"] = 4;
+				removeValue(core.pets, i);
+			end
+			if v == 5 then
+				core.unused_markers["moon"] = 5;
+				removeValue(core.pets, i);
+			end
+			if v == 6 then
+				core.unused_markers["square"] = 6;
+				removeValue(core.pets, i);
+			end
+			if v == 7 then
+				core.unused_markers["cross"] = 7;
+				removeValue(core.pets, i);
+			end
+			if v == 8 then
+				core.unused_markers["skull"] = 8;
+				removeValue(core.pets, i);
+			end
+		end
     end
 end
 update:SetScript("OnUpdate", updateHandler)
