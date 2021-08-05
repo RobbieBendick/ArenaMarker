@@ -5,7 +5,7 @@ local _, core = ...;
 core.Config = {}; -- adds Config table to addon namespace
 local Config = core.Config;
 local UIConfig;
-core.allowPets = true; -- adds allowPets variable to addon namespace
+core.allowPets = true;
 core.pets = {};
 core.translations = {
     ["enUS"] = "The Arena battle has begun!",
