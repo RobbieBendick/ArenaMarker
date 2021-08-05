@@ -138,45 +138,6 @@ local function inArena(self, event, ...)
         return
     end
     if event == "CHAT_MSG_BG_SYSTEM_NEUTRAL" then
-        if core.pets then
-            for i,v in pairs(core.pets) do
-                if not contains(core.unused_markers, v) then
-                    -- re-populate table if user removes pet marks
-                    if v == 1 then
-                        core.unused_markers["star"] = 1;
-                        removeValue(core.pets, i);
-                    end
-                    if v == 2 then
-                        core.unused_markers["circle"] = 2;
-                        removeValue(core.pets, i);
-                    end
-                    if v == 3 then
-                        core.unused_markers["diamond"] = 3;
-                        removeValue(core.pets, i);
-                    end
-                    if v == 4 then
-                        core.unused_markers["triangle"] = 4;
-                        removeValue(core.pets, i);
-                    end
-                    if v == 5 then
-                        core.unused_markers["moon"] = 5;
-                        removeValue(core.pets, i);
-                    end
-                    if v == 6 then
-                        core.unused_markers["square"] = 6;
-                        removeValue(core.pets, i);
-                    end
-                    if v == 7 then
-                        core.unused_markers["cross"] = 7;
-                        removeValue(core.pets, i);
-                    end
-                    if v == 8 then
-                        core.unused_markers["skull"] = 8;
-                        removeValue(core.pets, i);
-                    end
-                end
-            end
-        end
         ConvertToRaid()
         markPlayers(members)
         -- mark pets when gates open
@@ -192,21 +153,4 @@ local function inArena(self, event, ...)
         end
     end
 end
-
 frame:SetScript("OnEvent", inArena)
-
-local function init()
-    SLASH_ARENAMARKER1 = "/am";
-    SlashCmdList.ARENAMARKER = core.Config.Toggle;
-end
-local events = CreateFrame("Frame");
-events:RegisterEvent("ADDON_LOADED");
-events:SetScript("OnEvent", init);
-
-local function login()
-    DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99ArenaMarker|r: /am for additional options.")
-end
-
-enterWorld = CreateFrame("FRAME");
-enterWorld:RegisterEvent("PLAYER_LOGIN");
-enterWorld:SetScript("OnEvent", login);

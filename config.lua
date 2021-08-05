@@ -5,7 +5,7 @@ local _, core = ...;
 core.Config = {}; -- adds Config table to addon namespace
 local Config = core.Config;
 local UIConfig;
-core.allowPets = true;
+core.allowPets = true; -- adds allowPets variable to addon namespace
 core.pets = {};
 core.translations = {
     ["enUS"] = "The Arena battle has begun!",
@@ -20,6 +20,13 @@ core.translations = {
     ["zhTW"] = "競技場戰鬥開始了!",
     ["koKR"] = "투기장 전투가 시작되었습니다!",
 }
+
+local function contains(table, x)
+	for _, v in pairs(table) do
+		if v == x then return true end
+	end
+	return false
+end
 
 local function removeValue(table, value)
     local key = table[value]
@@ -48,7 +55,7 @@ function Config:Toggle()
 end
 
 function Config:UnmarkPets()
-	if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
+	-- if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
 	if GetNumGroupMembers() > 5 then return end
 	if UnitExists("pet") then
 		if GetRaidTargetIndex("pet") then
@@ -67,7 +74,7 @@ function Config:UnmarkPets()
 end
 
 function Config:MarkPets()
-	if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
+	-- if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
 	if GetNumGroupMembers() > 5 then return end
 	if UnitExists("pet") then
 		if not GetRaidTargetIndex("pet") then
@@ -124,3 +131,63 @@ function Config:CreateMenu()
 	UIConfig:Hide();
 	return UIConfig;
 end
+
+local update = CreateFrame("FRAME")
+local function updateHandler()
+    if core.pets then
+        for i,v in pairs(core.pets) do
+            if not contains(core.unused_markers, v) then
+                -- populate table, we placed the marker back.
+                if v == 1 then
+                    core.unused_markers["star"] = 1;
+                    removeValue(core.pets, i);
+                end
+                if v == 2 then
+                    core.unused_markers["circle"] = 2;
+                    removeValue(core.pets, i);
+                end
+                if v == 3 then
+                    core.unused_markers["diamond"] = 3;
+                    removeValue(core.pets, i);
+                end
+                if v == 4 then
+                    core.unused_markers["triangle"] = 4;
+                    removeValue(core.pets, i);
+                end
+                if v == 5 then
+                    core.unused_markers["moon"] = 5;
+                    removeValue(core.pets, i);
+                end
+                if v == 6 then
+                    core.unused_markers["square"] = 6;
+                    removeValue(core.pets, i);
+                end
+                if v == 7 then
+                    core.unused_markers["cross"] = 7;
+                    removeValue(core.pets, i);
+                end
+                if v == 8 then
+                    core.unused_markers["skull"] = 8;
+                    removeValue(core.pets, i);
+                end
+            end
+        end
+    end
+end
+update:SetScript("OnUpdate", updateHandler)
+
+local function login()
+    DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99ArenaMarker|r: /am for additional options.")
+end
+
+enterWorld = CreateFrame("FRAME");
+enterWorld:RegisterEvent("PLAYER_LOGIN");
+enterWorld:SetScript("OnEvent", login);
+
+local function init()
+    SLASH_ARENAMARKER1 = "/am";
+    SlashCmdList.ARENAMARKER = core.Config.Toggle;
+end
+local events = CreateFrame("Frame");
+events:RegisterEvent("ADDON_LOADED");
+events:SetScript("OnEvent", init);
