@@ -6,7 +6,7 @@ core.Config = {}; -- adds Config table to addon namespace
 local Config = core.Config;
 local UIConfig;
 core.allowPets = true; -- adds allowPets variable to addon namespace
-core.pets = {}
+core.pets = {};
 core.translations = {
     ["enUS"] = "The Arena battle has begun!",
     ["enGB"] = "The Arena battle has begun!",
@@ -48,7 +48,7 @@ function Config:Toggle()
 end
 
 function Config:UnmarkPets()
-	-- if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
+	if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
 	if GetNumGroupMembers() > 5 then return end
 	if UnitExists("pet") then
 		if GetRaidTargetIndex("pet") then
