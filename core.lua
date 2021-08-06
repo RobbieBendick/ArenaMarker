@@ -1,5 +1,6 @@
 local _, core = ...; -- Namespace
-
+core.AM = {};
+AM = core.AM;
 local frame = CreateFrame("FRAME", "ArenaMarker")
 frame:RegisterEvent("PLAYER_ENTERING_WORLD")
 frame:RegisterEvent("CHAT_MSG_BG_SYSTEM_NEUTRAL")
@@ -28,7 +29,7 @@ core.unused_markers = {
     ["skull"] = 8
 }
 
-local relatives = {
+core.relatives = {
     ["ROGUE"] = "star",
     ["DRUID"] = "circle",
     ["WARLOCK"] = "diamond",
@@ -40,20 +41,20 @@ local relatives = {
     ["PRIEST"] = "skull"
 }
 
-local function removeValue(table, value)
+function removeValue(table, value)
     local key = table[value]
     table[value] = nil
     return key
 end
 
-local function contains(table, x)
+function contains(table, x)
 	for _, v in pairs(table) do
 		if v == x then return true end
 	end
 	return false
 end
 
-local function findUsableMark(table, target)
+function findUsableMark(table, target)
     local marker = ""
     for k,v in pairs(table) do
         if v ~= nil then
@@ -65,9 +66,9 @@ local function findUsableMark(table, target)
     removeValue(table, marker)
 end
 
-local function setRaidTargetByClass(target, ...)
+function setRaidTargetByClass(target, ...)
     local _, englishClass, _ = UnitClass(target);
-    for k,v in pairs(relatives) do
+    for k,v in pairs(core.relatives) do
         if k == englishClass then
             if core.unused_markers[v] then
                 SetRaidTarget(target, core.unused_markers[v])
@@ -81,7 +82,8 @@ local function setRaidTargetByClass(target, ...)
     end
 end
 
-local function markPlayers(members)
+function AM:MarkPlayers()
+    local members = GetNumGroupMembers()
     -- mark self
     if not GetRaidTargetIndex("player") then
         DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99ArenaMarker|r: Marking the group.")
@@ -95,7 +97,8 @@ local function markPlayers(members)
     end
 end
 
-local function markPets(members)
+function AM:MarkPets()
+    local members = GetNumGroupMembers()
     if UnitExists("pet") then
         if not GetRaidTargetIndex("pet") then
             findUsableMark(core.unused_markers, "pet")
@@ -139,14 +142,14 @@ local function inArena(self, event, ...)
     end
     if event == "CHAT_MSG_BG_SYSTEM_NEUTRAL" then
         ConvertToRaid()
-        markPlayers(members)
+        AM.MarkPlayers()
         -- mark pets when gates open
         if core.allowPets then
             arg1 = ...
             for key,value in pairs(core.translations) do 
                 if GetLocale() == key then
                     if string.find(arg1, value) then
-                        markPets(members)
+                        AM.MarkPets()
                     end
                 end
             end
