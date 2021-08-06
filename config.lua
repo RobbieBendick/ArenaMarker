@@ -40,7 +40,7 @@ end
 
 function Config:UnmarkPlayers()
     local members = GetNumGroupMembers()
-	-- if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
+	if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
 	if members > 5 then return end
 	    -- unmark self
 		if GetRaidTargetIndex("player") then
@@ -58,36 +58,20 @@ function Config:UnmarkPlayers()
 end
 
 function Config:UnmarkPets()
-	-- if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
-	if GetNumGroupMembers() > 5 then return end
+	local members = GetNumGroupMembers()
+	if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
+	if members > 5 then return end
 	if UnitExists("pet") then
 		if GetRaidTargetIndex("pet") then
 			table.insert(core.removedMarkers, GetRaidTargetIndex("pet"))
 			SetRaidTarget("pet", 0)
 		end
 	end
-	for i=1,GetNumGroupMembers()-1 do
+	for i=1,members-1 do
 		if UnitExists("party"..i.."pet") then
 			if GetRaidTargetIndex("party"..i.."pet") then
 				table.insert(core.removedMarkers, GetRaidTargetIndex("party"..i.."pet"))
 				SetRaidTarget("party"..i.."pet", 0)
-			end
-		end
-	end
-end
-
-function Config:MarkPets()
-	-- if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
-	if GetNumGroupMembers() > 5 then return end
-	if UnitExists("pet") then
-		if not GetRaidTargetIndex("pet") then
-			findUsableMark(core.unused_markers, "pet")
-		end
-	end
-	for i=1,GetNumGroupMembers()-1 do
-		if UnitExists("party"..i.."pet") then
-			if not GetRaidTargetIndex("party"..i.."pet") then
-				findUsableMark(core.unused_markers, "party"..i.."pet")
 			end
 		end
 	end
@@ -138,7 +122,7 @@ function Config:CreateMenu()
 	UIConfig.markPetsButton:SetPoint("CENTER", UIConfig.unmarkPlayersButton, "CENTER", 0, -45)
 	UIConfig.markPetsButton:SetSize(110,30)
 	UIConfig.markPetsButton:SetText("Mark Pets")
-	UIConfig.markPetsButton:SetScript("OnClick", Config.MarkPets);
+	UIConfig.markPetsButton:SetScript("OnClick", AM.MarkPets);
 	----------------------------------
 	-- Unmark Pets Button
 	----------------------------------

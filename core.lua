@@ -84,6 +84,8 @@ end
 
 function AM:MarkPlayers()
     local members = GetNumGroupMembers()
+    -- if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
+	if members > 5 then return end
     -- mark self
     if not GetRaidTargetIndex("player") then
         DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99ArenaMarker|r: Marking the group.")
@@ -99,6 +101,8 @@ end
 
 function AM:MarkPets()
     local members = GetNumGroupMembers()
+    -- if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
+	if members > 5 then return end
     if UnitExists("pet") then
         if not GetRaidTargetIndex("pet") then
             findUsableMark(core.unused_markers, "pet")
