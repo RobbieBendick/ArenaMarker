@@ -138,13 +138,15 @@ end
 
 local update = CreateFrame("FRAME")
 local function removedMarkHandler()
-    if not core.removedMarkers then return end
+	--exit function if removedMarkers doesnt have a valid value
+	local c = 0;
+	for _,k in pairs (core.removedMarkers) do if k ~= nil then c = c + 1 end end if c == 0 then return end
 	for i,v in pairs(core.removedMarkers) do
 		if not contains(core.unused_markers, v) then
 			-- re-populate table if user clicks remove_mark button(s)
 			for j=1,#core.marker_strings do
 				if v == j then
-					core.unused_markers[core.marker_strings[v]] = v;
+					core.unused_markers[core.marker_strings[j]] = j;
 					removeValue(core.removedMarkers, i);
 				end
 			end
