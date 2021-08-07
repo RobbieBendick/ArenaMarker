@@ -18,17 +18,9 @@ frame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
         8 = White Skull; Priest
 --]]
 
-core.unused_markers = {
-    ["star"] = 1,
-    ["circle"] = 2,
-    ["diamond"] = 3,
-    ["triangle"] = 4,
-    ["moon"] = 5,
-    ["square"] = 6,
-    ["cross"] = 7,
-    ["skull"] = 8
-}
-
+--[[
+    HERE IS WHERE YOU WOULD CHANGE THE CLASS MARKER COMBINATIONS
+--]]
 core.relatives = {
     ["ROGUE"] = "star",
     ["DRUID"] = "circle",
@@ -40,6 +32,9 @@ core.relatives = {
     ["WARRIOR"] = "cross",
     ["PRIEST"] = "skull"
 }
+
+
+
 
 function removeValue(table, value)
     local key = table[value]
