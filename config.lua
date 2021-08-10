@@ -97,44 +97,41 @@ function Config:CreateButton(relativeFrame, buttonText, funcName)
 end
 
 function Config:CreateMenu()
+	-- Menu
 	UIConfig = CreateFrame("Frame", "ArenaMarkerConfig", UIParent, "BasicFrameTemplateWithInset");
 	UIConfig:SetSize(180, 280);
 	UIConfig:SetPoint("CENTER", 150, 50);
-	----------------------------------
+
 	-- Options Title
-	----------------------------------
 	UIConfig.title = UIConfig:CreateFontString(nil, "OVERLAY", "GameFontHighlight");
 	UIConfig.title:ClearAllPoints();
     UIConfig.title:SetFontObject("GameFontHighlight");
 	UIConfig.title:SetPoint("LEFT", UIConfig.TitleBg, "LEFT", 5, 0);
 	UIConfig.title:SetText("ArenaMarker Options");
-	----------------------------------
+
 	-- Check Button
-	----------------------------------
-	UIConfig.checkBtn1 = CreateFrame("CheckButton", nil, UIConfig, "UICheckButtonTemplate");
-	UIConfig.checkBtn1:ClearAllPoints();
-	UIConfig.checkBtn1:SetPoint("CENTER", UIConfig.TitleBg, "CENTER", -15, -40);
-	UIConfig.checkBtn1.text:SetText("  Mark Pets\n (when arena\n gates open)");
-    UIConfig.checkBtn1.text:SetFontObject("GameFontHighlight");
-    UIConfig.checkBtn1:SetChecked(true);
-	UIConfig.checkBtn1:SetScript("OnClick", function() core.allowPets = UIConfig.checkBtn1:GetChecked() end);
-	----------------------------------
+	UIConfig.markPetsCheckButton = CreateFrame("CheckButton", nil, UIConfig, "UICheckButtonTemplate");
+	UIConfig.markPetsCheckButton:ClearAllPoints();
+	UIConfig.markPetsCheckButton:SetPoint("CENTER", UIConfig.TitleBg, "CENTER", -15, -40);
+	UIConfig.markPetsCheckButton.text:SetText("  Mark Pets\n (when arena\n gates open)");
+    UIConfig.markPetsCheckButton.text:SetFontObject("GameFontHighlight");
+	UIConfig.markPetsCheckButton:SetScript("OnClick", function() core.allowPets = UIConfig.markPetsCheckButton:GetChecked() end);
+
 	-- Mark Players Button
-	----------------------------------
-	UIConfig.markPlayersButton = self:CreateButton(UIConfig.checkBtn1, "Mark Players", AM.MarkPlayers);
-	UIConfig.markPlayersButton:SetPoint("CENTER", UIConfig.checkBtn1, "CENTER",  28, -45);
-	----------------------------------
+	UIConfig.markPlayersButton = self:CreateButton(UIConfig.markPetsCheckButton, "Mark Players", AM.MarkPlayers);
+	UIConfig.markPlayersButton:SetPoint("CENTER", UIConfig.markPetsCheckButton, "CENTER",  28, -45);
+	
 	-- Unmark Players Button
-	----------------------------------
 	UIConfig.unmarkPlayersButton = self:CreateButton(UIConfig.markPlayersButton, "Unmark Players", Config.UnmarkPlayers);
-	----------------------------------
+
 	-- Mark Pets Button
-	----------------------------------
 	UIConfig.markPetsButton = self:CreateButton(UIConfig.unmarkPlayersButton, "Mark Pets", AM.MarkPets);
-	----------------------------------
+
 	-- Unmark Pets Button
-	----------------------------------
-	UIConfig.unmarkPlayersButton = self:CreateButton(UIConfig.markPetsButton, "Unmark Pets", Config.UnmarkPets);
+	UIConfig.unmarkPetsButton = self:CreateButton(UIConfig.markPetsButton, "Unmark Pets", Config.UnmarkPets);
+
+	-- Escape key functionality
+	tinsert(UISpecialFrames, "ArenaMarkerConfig")
 
 	UIConfig:Hide();
 	return UIConfig;
@@ -160,7 +157,7 @@ end
 update:SetScript("OnUpdate", removedMarkHandler)
 
 local function login()
-    DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99ArenaMarker|r: /am for additional options.")
+    DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99ArenaMarker|r: /am for additional options.");
 end
 
 enterWorld = CreateFrame("FRAME");

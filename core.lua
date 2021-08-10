@@ -18,9 +18,7 @@ frame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
         8 = White Skull; Priest
 --]]
 
---[[
-    HERE IS WHERE YOU WOULD CHANGE THE CLASS MARKER COMBINATIONS
---]]
+-- HERE IS WHERE YOU WOULD CHANGE THE CLASS MARKER COMBINATIONS
 core.relatives = {
     ["ROGUE"] = "star",
     ["DRUID"] = "circle",
@@ -112,47 +110,61 @@ function AM:MarkPets()
     end
 end
 
-local function inArena(self, event, ...)
-    local inInstance, instanceType = IsInInstance()
+function AM:CheckExistingMarksOnPlayers()
     local members = GetNumGroupMembers()
-    local isArena, isRegistered = IsActiveBattlefieldArena()
-
-    if event == "ZONE_CHANGED_NEW_AREA" and instanceType == "arena" and not isRegistered then
-       --reset table everytime user enter skirmishes
-        core.unused_markers = {
-            ["star"] = 1,
-            ["circle"] = 2,
-            ["diamond"] = 3,
-            ["triangle"] = 4,
-            ["moon"] = 5,
-            ["square"] = 6,
-            ["cross"] = 7,
-            ["skull"] = 8
-        }
+    -- reset table
+    core.unused_markers = {
+        ["star"] = 1,
+        ["circle"] = 2,
+        ["diamond"] = 3,
+        ["triangle"] = 4,
+        ["moon"] = 5,
+        ["square"] = 6,
+        ["cross"] = 7,
+        ["skull"] = 8
+    }
+    --update which marks are currently being used on players(not pets)
+    if GetRaidTargetIndex("player") then
+        local marker = core.marker_strings[GetRaidTargetIndex("player")]
+        if core.unused_markers[marker] then
+            core.unused_markers[marker] = nil;
+        end
     end
-    if instanceType ~= "arena" then
-        return
-    end
-    if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then
-        return
-    end
-    if members <= 1 then
-        return
-    end
-    if event == "CHAT_MSG_BG_SYSTEM_NEUTRAL" then
-        ConvertToRaid()
-        AM.MarkPlayers()
-        -- mark pets when gates open
-        if core.allowPets then
-            arg1 = ...
-            for key,value in pairs(core.translations) do 
-                if GetLocale() == key then
-                    if string.find(arg1, value) then
-                        AM.MarkPets()
-                    end
+    for i=1,members-1 do
+        if UnitExists("party"..i) then
+            if GetRaidTargetIndex("party"..i) then
+                local marker = core.marker_strings[GetRaidTargetIndex("party"..i)]
+                if core.unused_markers[marker] then
+                    core.unused_markers[marker] = nil;
                 end
             end
         end
+    end
+end
+
+function AM:MarkPetsWhenGatesOpen()
+    if core.allowPets then
+        for key,value in pairs(core.translations) do 
+            if GetLocale() == key then
+                if string.find(arg1, value) then
+                    AM.MarkPets()
+                end
+            end
+        end
+    end
+end 
+
+local function inArena(self, event, ...)
+    local inInstance, instanceType = IsInInstance()
+    local members = GetNumGroupMembers()
+    if instanceType ~= "arena" then return end
+    if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
+    if members <= 1 then return end
+    if event == "CHAT_MSG_BG_SYSTEM_NEUTRAL" then
+        arg1 = ...
+        AM.CheckExistingMarksOnPlayers()
+        AM.MarkPlayers()
+        AM.MarkPetsWhenGatesOpen()
     end
 end
 frame:SetScript("OnEvent", inArena)
