@@ -156,7 +156,7 @@ local function removedMarkHandler()
 end
 update:SetScript("OnUpdate", removedMarkHandler)
 
-local function login(event, arg1)
+local function login(event)
 	if event == "ADDON_LOADED" then
 		if ArenaMarkerBool == nil then
 			ArenaMarkerBool = true;
