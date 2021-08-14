@@ -2,5 +2,7 @@
 ## Author: Mageiden/Robdog
 ## Title: ArenaMarker
 ## Notes: Gives your group class-based Raid Markers in arena.
+## DefaultState: enabled
+## SavedVariables: ArenaMarkerBool
 config.lua
 core.lua

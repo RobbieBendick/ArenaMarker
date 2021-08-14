@@ -5,7 +5,6 @@ local _, core = ...;
 core.Config = {};
 local Config = core.Config;
 local UIConfig;
-core.allowPets = true;
 core.removedMarkers = {};
 core.translations = {
     ["enUS"] = "The Arena battle has begun!",
@@ -114,8 +113,9 @@ function Config:CreateMenu()
 	UIConfig.markPetsCheckButton:ClearAllPoints();
 	UIConfig.markPetsCheckButton:SetPoint("CENTER", UIConfig.TitleBg, "CENTER", -15, -40);
 	UIConfig.markPetsCheckButton.text:SetText("  Mark Pets\n (when arena\n gates open)");
+	UIConfig.markPetsCheckButton:SetChecked(ArenaMarkerBool);
     UIConfig.markPetsCheckButton.text:SetFontObject("GameFontHighlight");
-	UIConfig.markPetsCheckButton:SetScript("OnClick", function() core.allowPets = UIConfig.markPetsCheckButton:GetChecked() end);
+	UIConfig.markPetsCheckButton:SetScript("OnClick", function() ArenaMarkerBool = UIConfig.markPetsCheckButton:GetChecked() end);
 
 	-- Mark Players Button
 	UIConfig.markPlayersButton = self:CreateButton(UIConfig.markPetsCheckButton, "Mark Players", AM.MarkPlayers);
@@ -156,8 +156,13 @@ local function removedMarkHandler()
 end
 update:SetScript("OnUpdate", removedMarkHandler)
 
-local function login()
-    DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99ArenaMarker|r: /am for additional options.");
+local function login(event, arg1)
+	if event == "ADDON_LOADED" then
+		if ArenaMarkerBool == nil then
+			ArenaMarkerBool = true;
+		end
+	end
+	DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99ArenaMarker|r: /am for additional options.");
 end
 
 enterWorld = CreateFrame("FRAME");

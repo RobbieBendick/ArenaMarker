@@ -131,19 +131,17 @@ function AM:CheckExistingMarksOnPlayers()
         end
     end
     for i=1,members-1 do
-        if UnitExists("party"..i) then
-            if GetRaidTargetIndex("party"..i) then
-                local marker = core.marker_strings[GetRaidTargetIndex("party"..i)]
-                if core.unused_markers[marker] then
-                    core.unused_markers[marker] = nil;
-                end
+        if GetRaidTargetIndex("party"..i) then
+            local marker = core.marker_strings[GetRaidTargetIndex("party"..i)]
+            if core.unused_markers[marker] then
+                core.unused_markers[marker] = nil;
             end
         end
     end
 end
 
 function AM:MarkPetsWhenGatesOpen()
-    if core.allowPets then
+    if ArenaMarkerBool then
         for key,value in pairs(core.translations) do 
             if GetLocale() == key then
                 if string.find(arg1, value) then
