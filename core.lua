@@ -1,6 +1,7 @@
 local _, core = ...; -- Namespace
 core.AM = {};
 AM = core.AM;
+members = GetNumGroupMembers;
 local frame = CreateFrame("FRAME", "ArenaMarker")
 frame:RegisterEvent("PLAYER_ENTERING_WORLD")
 frame:RegisterEvent("CHAT_MSG_BG_SYSTEM_NEUTRAL")
@@ -76,16 +77,15 @@ function setRaidTargetByClass(target, ...)
 end
 
 function AM:MarkPlayers()
-    local members = GetNumGroupMembers()
     -- if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
-	if members > 5 then return end
+	if members() > 5 then return end
     -- mark self
     if not GetRaidTargetIndex("player") then
         DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99ArenaMarker|r: Marking the group.")
         setRaidTargetByClass("player")
     end
     -- mark party members
-    for i=1, members-1 do
+    for i=1, members()-1 do
         if not GetRaidTargetIndex("party"..i) then
             setRaidTargetByClass("party"..i)
         end
@@ -93,15 +93,14 @@ function AM:MarkPlayers()
 end
 
 function AM:MarkPets()
-    local members = GetNumGroupMembers()
     -- if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
-	if members > 5 then return end
+	if members() > 5 then return end
     if UnitExists("pet") then
         if not GetRaidTargetIndex("pet") then
             findUsableMark(core.unused_markers, "pet")
         end
     end
-    for i=1, members-1 do
+    for i=1, members()-1 do
         if UnitExists("party"..i.."pet") then
             if not GetRaidTargetIndex("party"..i.."pet") then
                 findUsableMark(core.unused_markers, "party"..i.."pet")
@@ -111,7 +110,6 @@ function AM:MarkPets()
 end
 
 function AM:CheckExistingMarksOnPlayers()
-    local members = GetNumGroupMembers()
     -- reset table
     core.unused_markers = {
         ["star"] = 1,
@@ -130,7 +128,7 @@ function AM:CheckExistingMarksOnPlayers()
             core.unused_markers[marker] = nil;
         end
     end
-    for i=1,members-1 do
+    for i=1,members()-1 do
         if GetRaidTargetIndex("party"..i) then
             local marker = core.marker_strings[GetRaidTargetIndex("party"..i)]
             if core.unused_markers[marker] then
@@ -154,10 +152,9 @@ end
 
 local function inArena(self, event, ...)
     local inInstance, instanceType = IsInInstance()
-    local members = GetNumGroupMembers()
     if instanceType ~= "arena" then return end
     if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
-    if members <= 1 then return end
+    if members() <= 1 then return end
     if event == "CHAT_MSG_BG_SYSTEM_NEUTRAL" then
         arg1 = ...
         AM.CheckExistingMarksOnPlayers()

@@ -5,6 +5,7 @@ local _, core = ...;
 core.Config = {};
 local Config = core.Config;
 local UIConfig;
+members = GetNumGroupMembers;
 core.removedMarkers = {};
 core.translations = {
     ["enUS"] = "The Arena battle has begun!",
@@ -48,9 +49,8 @@ function Config:Toggle()
 end
 
 function Config:UnmarkPlayers()
-    local members = GetNumGroupMembers()
 	-- if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
-	if members > 5 then return end
+	if members() > 5 then return end
 	-- unmark self
 	if GetRaidTargetIndex("player") then
 		DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99ArenaMarker|r: Unmarking the group.")
@@ -58,7 +58,7 @@ function Config:UnmarkPlayers()
 		SetRaidTarget("player", 0)
 	end
 	-- unmark party members
-	for i=1, members-1 do
+	for i=1, members()-1 do
 		if GetRaidTargetIndex("party"..i) then
 			table.insert(core.removedMarkers, GetRaidTargetIndex("party"..i))
 			SetRaidTarget("party"..i, 0)
@@ -67,16 +67,15 @@ function Config:UnmarkPlayers()
 end
 
 function Config:UnmarkPets()
-	local members = GetNumGroupMembers()
 	-- if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
-	if members > 5 then return end
+	if members() > 5 then return end
 	if UnitExists("pet") then
 		if GetRaidTargetIndex("pet") then
 			table.insert(core.removedMarkers, GetRaidTargetIndex("pet"))
 			SetRaidTarget("pet", 0)
 		end
 	end
-	for i=1,members-1 do
+	for i=1,members()-1 do
 		if UnitExists("party"..i.."pet") then
 			if GetRaidTargetIndex("party"..i.."pet") then
 				table.insert(core.removedMarkers, GetRaidTargetIndex("party"..i.."pet"))
@@ -141,7 +140,7 @@ local update = CreateFrame("FRAME")
 local function removedMarkHandler()
 	--exit function if removedMarkers doesnt have a valid value
 	local c = 0;
-	for _,k in pairs (core.removedMarkers) do if k ~= nil then c = c + 1 end end if c == 0 then return end
+	for _,k in pairs(core.removedMarkers) do if k ~= nil then c = c + 1 end end if c == 0 then return end
 	for i,v in pairs(core.removedMarkers) do
 		if not contains(core.unused_markers, v) then
 			-- re-populate table if user clicks remove_mark button(s)
