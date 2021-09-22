@@ -5,7 +5,6 @@ members = GetNumGroupMembers;
 local frame = CreateFrame("FRAME", "ArenaMarker")
 frame:RegisterEvent("PLAYER_ENTERING_WORLD")
 frame:RegisterEvent("CHAT_MSG_BG_SYSTEM_NEUTRAL")
-frame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 
 --[[
     Marker numbers:
@@ -139,7 +138,7 @@ function AM:CheckExistingMarksOnPlayers()
 end
 
 function AM:MarkPetsWhenGatesOpen()
-    if ArenaMarkerBool then
+    if ArenaMarkerDB.allowPets then
         for key,value in pairs(core.translations) do 
             if GetLocale() == key then
                 if string.find(arg1, value) then

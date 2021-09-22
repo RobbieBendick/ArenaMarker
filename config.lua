@@ -112,9 +112,9 @@ function Config:CreateMenu()
 	UIConfig.markPetsCheckButton:ClearAllPoints();
 	UIConfig.markPetsCheckButton:SetPoint("CENTER", UIConfig.TitleBg, "CENTER", -15, -40);
 	UIConfig.markPetsCheckButton.text:SetText("  Mark Pets\n (when arena\n gates open)");
-	UIConfig.markPetsCheckButton:SetChecked(ArenaMarkerBool);
+	UIConfig.markPetsCheckButton:SetChecked(ArenaMarkerDB.allowPets);
     UIConfig.markPetsCheckButton.text:SetFontObject("GameFontHighlight");
-	UIConfig.markPetsCheckButton:SetScript("OnClick", function() ArenaMarkerBool = UIConfig.markPetsCheckButton:GetChecked() end);
+	UIConfig.markPetsCheckButton:SetScript("OnClick", function() ArenaMarkerDB.allowPets = UIConfig.markPetsCheckButton:GetChecked() end);
 
 	-- Mark Players Button
 	UIConfig.markPlayersButton = self:CreateButton(UIConfig.markPetsCheckButton, "Mark Players", AM.MarkPlayers);
@@ -157,8 +157,9 @@ update:SetScript("OnUpdate", removedMarkHandler)
 
 local function login(event)
 	if event == "ADDON_LOADED" then
-		if ArenaMarkerBool == nil then
-			ArenaMarkerBool = true;
+		if not ArenaMarkerDB then
+			ArenaMarkerDB = {};
+			ArenaMarkerDB["allowPets"] = true;
 		end
 	end
 	DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99ArenaMarker|r: /am for additional options.");

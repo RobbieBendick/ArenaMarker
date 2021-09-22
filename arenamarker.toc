@@ -3,6 +3,6 @@
 ## Title: ArenaMarker
 ## Notes: Gives your group class-based Raid Markers in arena.
 ## DefaultState: enabled
-## SavedVariables: ArenaMarkerBool
+## SavedVariables: ArenaMarkerDB
 config.lua
 core.lua
