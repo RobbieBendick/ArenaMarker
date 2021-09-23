@@ -46,6 +46,7 @@ core.marker_strings = {
 function Config:Toggle()
 	local menu = UIConfig or Config:CreateMenu();
 	menu:SetShown(not menu:IsShown());
+	ArenaMarkerDropDown:SetShown(menu:IsShown())
 end
 
 function Config:UnmarkPlayers()
@@ -97,8 +98,13 @@ end
 function Config:CreateMenu()
 	-- Menu
 	UIConfig = CreateFrame("Frame", "ArenaMarkerConfig", UIParent, "BasicFrameTemplateWithInset");
-	UIConfig:SetSize(180, 280);
+	UIConfig:SetSize(180, 325);
 	UIConfig:SetPoint("CENTER", 150, 50);
+
+	UIConfig.CloseButton:SetScript("OnClick", function ()
+		ArenaMarkerConfig:Hide()
+		ArenaMarkerDropDown:Hide()
+	end)
 
 	-- Options Title
 	UIConfig.title = UIConfig:CreateFontString(nil, "OVERLAY", "GameFontHighlight");
@@ -129,12 +135,46 @@ function Config:CreateMenu()
 	-- Unmark Pets Button
 	UIConfig.unmarkPetsButton = self:CreateButton(UIConfig.markPetsButton, "Unmark Pets", Config.UnmarkPets);
 
-	-- Escape key functionality
-	tinsert(UISpecialFrames, "ArenaMarkerConfig")
+	local function ArenaMarker_Pet_DropDown_OnClick(self, arg1, arg2, checked)
+		setDropdownText(self.value)
+		setDropdownCheck(self:GetID())
+		ArenaMarkerDB.petDropDownID = self:GetID()
+	end
+	   function ArenaMarkerDropDownMenu(frame, level, menuList)
+		local info = UIDropDownMenu_CreateInfo()
+		info.func = ArenaMarker_Pet_DropDown_OnClick
+		local function AddMark(marker, boolean)
+			info.text, info.checked = marker, boolean
+			return UIDropDownMenu_AddButton(info)
+		end
+		for i=1,#core.marker_strings do
+			AddMark(core.marker_strings[i], false)
+		end
+	end
+	UIConfig.dropDownTitle = UIConfig:CreateFontString(nil, "OVERLAY", "GameFontHighlight");
+	UIConfig.dropDownTitle:SetText("Prioritized Pet Mark")
+	UIConfig.dropDownTitle:SetPoint("CENTER", UIConfig.dropDown, 153, -56)
+	UIConfig.dropDown = CreateFrame("Frame", "ArenaMarkerDropDown", UIParent, "UIDropDownMenuTemplate")
+	UIConfig.dropDown:SetPoint("CENTER", UIConfig.dropDownTitle, 0, -27)
+
+	function setDropdownText(arg1)
+		return UIDropDownMenu_SetText(UIConfig.dropDown, arg1)
+	end
+
+	function setDropdownCheck(arg1)
+		return UIDropDownMenu_SetSelectedID(UIConfig.dropDown, arg1)
+	end
+	UIDropDownMenu_SetWidth(UIConfig.dropDown, 93)
+	UIDropDownMenu_Initialize(UIConfig.dropDown, ArenaMarkerDropDownMenu)
+	UIDropDownMenu_SetSelectedID(UIConfig.dropDown, ArenaMarkerDB.petDropDownID)
 
 	UIConfig:Hide();
 	return UIConfig;
 end
+
+-- Escape key functionality
+tinsert(UISpecialFrames, "ArenaMarkerConfig")
+tinsert(UISpecialFrames, "ArenaMarkerDropDown")
 
 local update = CreateFrame("FRAME")
 local function removedMarkHandler()
@@ -160,6 +200,7 @@ local function login(event)
 		if not ArenaMarkerDB then
 			ArenaMarkerDB = {};
 			ArenaMarkerDB["allowPets"] = true;
+			ArenaMarkerDB["petDropDownID"] = -1;
 		end
 	end
 	DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99ArenaMarker|r: /am for additional options.");
