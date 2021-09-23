@@ -5,6 +5,7 @@ members = GetNumGroupMembers;
 local frame = CreateFrame("FRAME", "ArenaMarker")
 frame:RegisterEvent("PLAYER_ENTERING_WORLD")
 frame:RegisterEvent("CHAT_MSG_BG_SYSTEM_NEUTRAL")
+frame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 
 --[[
     Marker numbers:
@@ -97,21 +98,21 @@ function AM:MarkPets()
     if UnitExists("pet") then
         if not GetRaidTargetIndex("pet") then
             --check if prio marks are aviailable
-            if core.unused_markers[core.marker_strings[ArenaMarkerDB.dropDownID]] then
-                SetRaidTarget("pet", ArenaMarkerDB.dropDownID)
-                removeValue(unused_markers, core.marker_strings[ArenaMarkerDB.dropDownID])
+            if core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownID]] then
+                SetRaidTarget("pet", ArenaMarkerDB.petDropDownID)
+                removeValue(unused_markers, core.marker_strings[ArenaMarkerDB.petDropDownID])
             else
                 findUsableMark(core.unused_markers, "pet")
             end
         end
     end
     for i=1, members()-1 do
-        if UnitExists("party"..i.."pet") then
-            if not GetRaidTargetIndex("party"..i.."pet") then
-                --check if prio marks are aviailable
-                if core.unused_markers[core.marker_strings[ArenaMarkerDB.dropDownID]] then
-                    SetRaidTarget("party"..i.."pet", ArenaMarkerDB.dropDownID)
-                    removeValue(unused_markers, core.marker_strings[ArenaMarkerDB.dropDownID])
+         --check if prio marks are aviailable
+         if UnitExists("party"..i.."pet") then
+            if not GetRaidTargetIndex("pet") then
+                if core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownID]] then
+                    SetRaidTarget("party"..i.."pet", ArenaMarkerDB.petDropDownID)
+                    removeValue(unused_markers, core.marker_strings[ArenaMarkerDB.petDropDownID])
                 else
                     findUsableMark(core.unused_markers, "party"..i.."pet")
                 end

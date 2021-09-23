@@ -138,7 +138,11 @@ function Config:CreateMenu()
 	local function ArenaMarker_Pet_DropDown_OnClick(self, arg1, arg2, checked)
 		setDropdownText(self.value)
 		setDropdownCheck(self:GetID())
-		ArenaMarkerDB.petDropDownID = self:GetID()
+		if self:GetID() == 9 then
+			ArenaMarkerDB.petDropDownID = -1;
+		else
+			ArenaMarkerDB.petDropDownID = self:GetID()
+		end
 	end
 	   function ArenaMarkerDropDownMenu(frame, level, menuList)
 		local info = UIDropDownMenu_CreateInfo()
@@ -150,6 +154,7 @@ function Config:CreateMenu()
 		for i=1,#core.marker_strings do
 			AddMark(core.marker_strings[i], false)
 		end
+		AddMark("none", false)
 	end
 	UIConfig.dropDownTitle = UIConfig:CreateFontString(nil, "OVERLAY", "GameFontHighlight");
 	UIConfig.dropDownTitle:SetText("Prioritized Pet Mark")
