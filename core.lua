@@ -99,19 +99,23 @@ function AM:MarkPets()
             --check if prio marks are aviailable
             if core.unused_markers[core.marker_strings[ArenaMarkerDB.dropDownID]] then
                 SetRaidTarget("pet", ArenaMarkerDB.dropDownID)
-                removeValue(unused_markers, ArenaMarkerDB.dropDownID)
+                removeValue(unused_markers, core.marker_strings[ArenaMarkerDB.dropDownID])
             else
                 findUsableMark(core.unused_markers, "pet")
             end
         end
     end
     for i=1, members()-1 do
-         --check if prio marks are aviailable
-         if core.unused_markers[core.marker_strings[ArenaMarkerDB.dropDownID]] then
-            SetRaidTarget("party"..i.."pet", ArenaMarkerDB.dropDownID)
-            removeValue(unused_markers, ArenaMarkerDB.dropDownID)
-        else
-            findUsableMark(core.unused_markers, "party"..i.."pet")
+        if UnitExists("party"..i.."pet") then
+            if not GetRaidTargetIndex("party"..i.."pet") then
+                --check if prio marks are aviailable
+                if core.unused_markers[core.marker_strings[ArenaMarkerDB.dropDownID]] then
+                    SetRaidTarget("party"..i.."pet", ArenaMarkerDB.dropDownID)
+                    removeValue(unused_markers, core.marker_strings[ArenaMarkerDB.dropDownID])
+                else
+                    findUsableMark(core.unused_markers, "party"..i.."pet")
+                end
+            end
         end
     end
 end
