@@ -109,7 +109,7 @@ function AM:MarkPets()
     for i=1, members()-1 do
          --check if prio marks are aviailable
          if UnitExists("party"..i.."pet") then
-            if not GetRaidTargetIndex("pet") then
+            if not GetRaidTargetIndex("party"..i.."pet") then
                 if core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownID]] then
                     SetRaidTarget("party"..i.."pet", ArenaMarkerDB.petDropDownID)
                     removeValue(unused_markers, core.marker_strings[ArenaMarkerDB.petDropDownID])
