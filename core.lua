@@ -107,9 +107,9 @@ function AM:MarkPets()
         end
     end
     for i=1, members()-1 do
-         --check if prio marks are aviailable
          if UnitExists("party"..i.."pet") then
             if not GetRaidTargetIndex("party"..i.."pet") then
+                --check if prio marks are aviailable
                 if core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownID]] then
                     SetRaidTarget("party"..i.."pet", ArenaMarkerDB.petDropDownID)
                     removeValue(unused_markers, core.marker_strings[ArenaMarkerDB.petDropDownID])
@@ -151,16 +151,15 @@ function AM:CheckExistingMarksOnPlayers()
 end
 
 function AM:MarkPetsWhenGatesOpen()
-    if ArenaMarkerDB.allowPets then
-        for key,value in pairs(core.translations) do 
-            if GetLocale() == key then
-                if string.find(arg1, value) then
-                    AM.MarkPets()
-                end
+    if not ArenaMarkerDB.allowPets then return end
+    for key,value in pairs(core.translations) do 
+        if GetLocale() == key then
+            if string.find(arg1, value) then
+                AM.MarkPets()
             end
         end
     end
-end 
+end
 
 local function inArena(self, event, ...)
     local inInstance, instanceType = IsInInstance()

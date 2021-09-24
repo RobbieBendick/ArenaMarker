@@ -201,12 +201,10 @@ end
 update:SetScript("OnUpdate", removedMarkHandler)
 
 local function login(event)
-	if event == "ADDON_LOADED" then
-		if not ArenaMarkerDB then
-			ArenaMarkerDB = {};
-			ArenaMarkerDB["allowPets"] = true;
-			ArenaMarkerDB["petDropDownID"] = -1;
-		end
+	if not ArenaMarkerDB then
+		ArenaMarkerDB = {};
+		ArenaMarkerDB["allowPets"] = true;
+		ArenaMarkerDB["petDropDownID"] = -1;
 	end
 	DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99ArenaMarker|r: /am for additional options.");
 end
