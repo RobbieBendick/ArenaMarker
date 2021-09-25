@@ -136,22 +136,28 @@ function Config:CreateMenu()
 	UIConfig.unmarkPetsButton = self:CreateButton(UIConfig.markPetsButton, "Unmark Pets", Config.UnmarkPets);
 
 	local function ArenaMarker_Pet_DropDown_OnClick(self, arg1, arg2, checked)
+		local j = -1;
+		for i=#core.marker_strings + 1, 1, -1 do
+			if self:GetID() == i then
+				ArenaMarkerDB.petDropDownID = j;
+			end
+			if j == -1 then
+				j = j + 2;
+			else
+				j = j + 1;
+			end
+		end
 		setDropdownText(self.value)
 		setDropdownCheck(self:GetID())
-		if self:GetID() == 9 then
-			ArenaMarkerDB.petDropDownID = -1;
-		else
-			ArenaMarkerDB.petDropDownID = self:GetID()
-		end
 	end
-	   function ArenaMarkerDropDownMenu(frame, level, menuList)
+	function ArenaMarkerDropDownMenu(frame, level, menuList)
 		local info = UIDropDownMenu_CreateInfo()
 		info.func = ArenaMarker_Pet_DropDown_OnClick
 		local function AddMark(marker, boolean)
 			info.text, info.checked = marker, boolean
 			return UIDropDownMenu_AddButton(info)
 		end
-		for i=1,#core.marker_strings do
+		for i=#core.marker_strings,1,-1 do
 			AddMark(core.marker_strings[i], false)
 		end
 		AddMark("none", false)
