@@ -118,8 +118,8 @@ function Config:CreateMenu()
 	UIConfig.markPetsCheckButton:ClearAllPoints();
 	UIConfig.markPetsCheckButton:SetPoint("CENTER", UIConfig.TitleBg, "CENTER", -15, -40);
 	UIConfig.markPetsCheckButton.text:SetText("  Mark Pets\n (when arena\n gates open)");
-	UIConfig.markPetsCheckButton:SetChecked(ArenaMarkerDB.allowPets);
     UIConfig.markPetsCheckButton.text:SetFontObject("GameFontHighlight");
+	UIConfig.markPetsCheckButton:SetChecked(ArenaMarkerDB.allowPets);
 	UIConfig.markPetsCheckButton:SetScript("OnClick", function() ArenaMarkerDB.allowPets = UIConfig.markPetsCheckButton:GetChecked() end);
 
 	-- Mark Players Button
