@@ -135,6 +135,7 @@ function Config:CreateMenu()
 	-- Unmark Pets Button
 	UIConfig.unmarkPetsButton = self:CreateButton(UIConfig.markPetsButton, "Unmark Pets", Config.UnmarkPets);
 
+	-- Priority Pet Mark Dropdown
 	local function ArenaMarker_Pet_DropDown_OnClick(self, arg1, arg2, checked)
 		local j = -1;
 		for i=#core.marker_strings + 1, 1, -1 do
