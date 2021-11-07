@@ -5,7 +5,6 @@ members = GetNumGroupMembers;
 local frame = CreateFrame("FRAME", "ArenaMarker")
 frame:RegisterEvent("PLAYER_ENTERING_WORLD")
 frame:RegisterEvent("CHAT_MSG_BG_SYSTEM_NEUTRAL")
-frame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 
 --[[
     Marker numbers:
@@ -120,6 +119,34 @@ function AM:MarkPets()
         end
     end
 end
+
+local petCastEvent = CreateFrame("FRAME")
+petCastEvent:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
+
+function AM:PetCastEventHandler(self, caster, arg2, spellID)
+    -- if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
+    if not ArenaMarkerDB.markSummonedPets then return end
+    for _,v in pairs(core.summons) do
+        if spellID == v then
+            -- delay until pet is fully active
+            C_Timer.NewTimer(0.5, function()
+            -- check if pet already has a mark
+            if not GetRaidTargetIndex(caster.."pet") then
+                -- check prio mark
+                if core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownID]] then
+                    SetRaidTarget(caster.."pet", ArenaMarkerDB.petDropDownID)
+                    removeValue(unused_markers, core.marker_strings[ArenaMarkerDB.petDropDownID])
+                else
+                    findUsableMark(core.unused_markers, caster.."pet")
+                end
+            end
+            end)
+        end
+    end
+end
+
+petCastEvent:SetScript("OnEvent", AM.PetCastEventHandler)
+
 
 function AM:CheckExistingMarksOnPlayers()
     -- reset table
