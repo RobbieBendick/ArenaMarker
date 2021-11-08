@@ -42,8 +42,8 @@ core.marker_strings = {
 }
 
 core.summons = {
-	31687,
-	883,
+	31687, -- Water Elemental
+	883, -- Call Pet
 }
 --------------------------------------
 -- Config functions
@@ -123,8 +123,8 @@ function Config:CreateMenu()
 	UIConfig.markPetsCheckButton:ClearAllPoints();
 	UIConfig.markPetsCheckButton:SetPoint("CENTER", UIConfig.TitleBg, "CENTER", -45, -40);
 	UIConfig.markPetsCheckButton.text:SetText("        Mark Pets\n      (when arena\n     gates open)");
-	UIConfig.markPetsCheckButton:SetChecked(ArenaMarkerDB.allowPets);
     UIConfig.markPetsCheckButton.text:SetFontObject("GameFontHighlight");
+	UIConfig.markPetsCheckButton:SetChecked(ArenaMarkerDB.allowPets);
 	UIConfig.markPetsCheckButton:SetScript("OnClick", function() ArenaMarkerDB.allowPets = UIConfig.markPetsCheckButton:GetChecked() end);
 
 	-- Pet-Summon Check Button
@@ -132,8 +132,8 @@ function Config:CreateMenu()
 	UIConfig.markPetsOnSummonCheckButton:ClearAllPoints();
 	UIConfig.markPetsOnSummonCheckButton:SetPoint("CENTER", UIConfig.markPetsCheckButton, "CENTER", 0, -45);
 	UIConfig.markPetsOnSummonCheckButton.text:SetText("  Mark Pets\n when summoned \n (|cff00E5EEMAGE|r/|cff71C671HUNTER|r)");
-	UIConfig.markPetsOnSummonCheckButton:SetChecked(ArenaMarkerDB.markSummonedPets);
 	UIConfig.markPetsOnSummonCheckButton.text:SetFontObject("GameFontHighlight");
+	UIConfig.markPetsOnSummonCheckButton:SetChecked(ArenaMarkerDB.markSummonedPets);
 	UIConfig.markPetsOnSummonCheckButton:SetScript("OnClick", function() ArenaMarkerDB.markSummonedPets = UIConfig.markPetsOnSummonCheckButton:GetChecked() end);
 
 	-- Mark Players Button
