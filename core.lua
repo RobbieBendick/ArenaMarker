@@ -124,10 +124,12 @@ local petCastEvent = CreateFrame("FRAME")
 petCastEvent:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 
 function AM:PetCastEventHandler(self, caster, arg2, spellID)
-    -- if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
+    local inInstance, instanceType = IsInInstance()
+    if instanceType ~= "arena" then return end
+    if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
     if not ArenaMarkerDB.markSummonedPets then return end
     for _,v in pairs(core.summons) do
-        if spellID == v then
+        if spellID == v and UnitInParty(caster) then
             -- delay until pet is fully active
             C_Timer.NewTimer(0.5, function()
             -- check if pet already has a mark
