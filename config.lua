@@ -42,9 +42,10 @@ core.marker_strings = {
 }
 
 core.summons = {
-	31687, -- Water Elemental
-	883, -- Call Pet
+	31687,
+	883,
 }
+
 --------------------------------------
 -- Config functions
 --------------------------------------
@@ -54,12 +55,16 @@ function Config:Toggle()
 	ArenaMarkerDropDown:SetShown(menu:IsShown())
 end
 
+function Config:ChatFrame(t)
+	DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99ArenaMarker|r: "..t)
+end
+
 function Config:UnmarkPlayers()
 	-- if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
 	if members() > 5 then return end
 	-- unmark self
 	if GetRaidTargetIndex("player") then
-		DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99ArenaMarker|r: Unmarking the group.")
+		Config:ChatFrame("Unmarking the group.")
 		table.insert(core.removedMarkers, GetRaidTargetIndex("player"))
 		SetRaidTarget("player", 0)
 	end
@@ -116,15 +121,15 @@ function Config:CreateMenu()
 	UIConfig.title:ClearAllPoints();
     UIConfig.title:SetFontObject("GameFontHighlight");
 	UIConfig.title:SetPoint("LEFT", UIConfig.TitleBg, "LEFT", 5, 0);
-	UIConfig.title:SetText("ArenaMarker Options");
+	UIConfig.title:SetText("|cff33ff99ArenaMarker|r Options");
 
 	-- Check Button
 	UIConfig.markPetsCheckButton = CreateFrame("CheckButton", nil, UIConfig, "UICheckButtonTemplate");
 	UIConfig.markPetsCheckButton:ClearAllPoints();
 	UIConfig.markPetsCheckButton:SetPoint("CENTER", UIConfig.TitleBg, "CENTER", -45, -40);
 	UIConfig.markPetsCheckButton.text:SetText("        Mark Pets\n      (when arena\n     gates open)");
-    UIConfig.markPetsCheckButton.text:SetFontObject("GameFontHighlight");
 	UIConfig.markPetsCheckButton:SetChecked(ArenaMarkerDB.allowPets);
+    UIConfig.markPetsCheckButton.text:SetFontObject("GameFontHighlight");
 	UIConfig.markPetsCheckButton:SetScript("OnClick", function() ArenaMarkerDB.allowPets = UIConfig.markPetsCheckButton:GetChecked() end);
 
 	-- Pet-Summon Check Button
@@ -132,8 +137,8 @@ function Config:CreateMenu()
 	UIConfig.markPetsOnSummonCheckButton:ClearAllPoints();
 	UIConfig.markPetsOnSummonCheckButton:SetPoint("CENTER", UIConfig.markPetsCheckButton, "CENTER", 0, -45);
 	UIConfig.markPetsOnSummonCheckButton.text:SetText("  Mark Pets\n when summoned \n (|cff00E5EEMAGE|r/|cff71C671HUNTER|r)");
-	UIConfig.markPetsOnSummonCheckButton.text:SetFontObject("GameFontHighlight");
 	UIConfig.markPetsOnSummonCheckButton:SetChecked(ArenaMarkerDB.markSummonedPets);
+	UIConfig.markPetsOnSummonCheckButton.text:SetFontObject("GameFontHighlight");
 	UIConfig.markPetsOnSummonCheckButton:SetScript("OnClick", function() ArenaMarkerDB.markSummonedPets = UIConfig.markPetsOnSummonCheckButton:GetChecked() end);
 
 	-- Mark Players Button
@@ -153,7 +158,9 @@ function Config:CreateMenu()
 		local j = -1;
 		for i=#core.marker_strings + 1, 1, -1 do
 			if self:GetID() == i then
-				ArenaMarkerDB.petDropDownID = j;
+				ArenaMarkerDB.petDropDownMarkerID = j;
+				ArenaMarkerDB.petDropDownClickID = self:GetID();
+				break;
 			end
 			if j == -1 then
 				j = j + 2;
@@ -191,7 +198,7 @@ function Config:CreateMenu()
 	end
 	UIDropDownMenu_SetWidth(UIConfig.dropDown, 93)
 	UIDropDownMenu_Initialize(UIConfig.dropDown, ArenaMarkerDropDownMenu)
-	UIDropDownMenu_SetSelectedID(UIConfig.dropDown, ArenaMarkerDB.petDropDownID)
+	UIDropDownMenu_SetSelectedID(UIConfig.dropDown, ArenaMarkerDB.petDropDownClickID)
 
 	UIConfig:Hide();
 	return UIConfig;
@@ -225,9 +232,10 @@ local function login(event)
 		ArenaMarkerDB = {};
 		ArenaMarkerDB["allowPets"] = true;
 		ArenaMarkerDB["markSummonedPets"] = false;
-		ArenaMarkerDB["petDropDownID"] = -1;
+		ArenaMarkerDB["petDropDownMarkerID"] = -1;
+		ArenaMarkerDB["petDropDownClickID"] = -1;
 	end
-	DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99ArenaMarker|r: /am for additional options.");
+	Config:ChatFrame("/am for additional options.");
 end
 
 enterWorld = CreateFrame("FRAME");
