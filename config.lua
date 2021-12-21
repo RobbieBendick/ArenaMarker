@@ -42,8 +42,8 @@ core.marker_strings = {
 }
 
 core.summons = {
-	31687,
-	883,
+	31687, -- Water Elemental
+	883, -- Call Pet
 }
 
 --------------------------------------
