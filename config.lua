@@ -132,7 +132,10 @@ function Config:CreateMenu()
 			self.isMoving = false;
 		end
 	end)
-
+	UIConfig.CloseButton:SetScript("OnClick", function ()
+		ArenaMarkerConfig:Hide()
+		ArenaMarkerDropDown:Hide()
+	end)
 	-- Options Title
 	UIConfig.title = UIConfig:CreateFontString(nil, "OVERLAY", "GameFontHighlight");
 	UIConfig.title:ClearAllPoints();
