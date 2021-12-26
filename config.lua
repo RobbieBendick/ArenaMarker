@@ -201,18 +201,14 @@ function Config:CreateMenu()
 		AddMark("none", false)
 	end
 	UIConfig.dropDownTitle = UIConfig:CreateFontString(nil, "OVERLAY", "GameFontHighlight");
-	UIConfig.dropDownTitle:SetText("Prioritized Pet Mark")
-	UIConfig.dropDownTitle:SetPoint("CENTER", UIConfig.unmarkPetsButton, 0, -32)
-	UIConfig.dropDown = CreateFrame("Frame", "ArenaMarkerDropDown", UIParent, "UIDropDownMenuTemplate")
-	UIConfig.dropDown:SetPoint("CENTER", UIConfig.dropDownTitle, 0, -23)
+	UIConfig.dropDownTitle:SetText("Prioritized Pet Mark");
+	UIConfig.dropDownTitle:SetPoint("CENTER", UIConfig.unmarkPetsButton, 0, -32);
+	UIConfig.dropDown = CreateFrame("Frame", "ArenaMarkerDropDown", UIParent, "UIDropDownMenuTemplate");
+	UIConfig.dropDown:SetPoint("CENTER", UIConfig.dropDownTitle, 0, -23);
 
-	function setDropdownText(arg1)
-		return UIDropDownMenu_SetText(UIConfig.dropDown, arg1)
-	end
+	function setDropdownText(v) return UIDropDownMenu_SetText(UIConfig.dropDown, v) end
+	function setDropdownCheck(v) return UIDropDownMenu_SetSelectedID(UIConfig.dropDown, v) end
 
-	function setDropdownCheck(arg1)
-		return UIDropDownMenu_SetSelectedID(UIConfig.dropDown, arg1)
-	end
 	UIDropDownMenu_SetWidth(UIConfig.dropDown, 93)
 	UIDropDownMenu_Initialize(UIConfig.dropDown, ArenaMarkerDropDownMenu)
 	UIDropDownMenu_SetSelectedID(UIConfig.dropDown, ArenaMarkerDB.petDropDownClickID)
