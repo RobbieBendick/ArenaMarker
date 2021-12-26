@@ -1,5 +1,5 @@
 local _, core = ...; -- Namespace
-local Config = core.Config 
+local Config = core.Config;
 core.AM = {};
 AM = core.AM;
 members = GetNumGroupMembers;

@@ -111,9 +111,26 @@ function Config:CreateMenu()
 	UIConfig:SetSize(180, 355);
 	UIConfig:SetPoint("CENTER", 150, 50);
 
-	UIConfig.CloseButton:SetScript("OnClick", function ()
-		ArenaMarkerConfig:Hide()
-		ArenaMarkerDropDown:Hide()
+	-- Make Menu Movable
+	UIConfig:SetMovable(true);
+	UIConfig:EnableMouse(true);
+	UIConfig:SetScript("OnMouseDown", function(self, button)
+		if button == "LeftButton" and not self.isMoving then
+			self:StartMoving();
+			self.isMoving = true;
+		end
+	end)
+	UIConfig:SetScript("OnMouseUp", function(self, button)
+		if button == "LeftButton" and self.isMoving then
+			self:StopMovingOrSizing();
+			self.isMoving = false;
+		end
+	end)
+	UIConfig:SetScript("OnHide", function(self)
+		if self.isMoving then
+			self:StopMovingOrSizing();
+			self.isMoving = false;
+		end
 	end)
 
 	-- Options Title
@@ -128,17 +145,17 @@ function Config:CreateMenu()
 	UIConfig.markPetsCheckButton:ClearAllPoints();
 	UIConfig.markPetsCheckButton:SetPoint("CENTER", UIConfig.TitleBg, "CENTER", -45, -40);
 	UIConfig.markPetsCheckButton.text:SetText("        Mark Pets\n      (when arena\n     gates open)");
-	UIConfig.markPetsCheckButton:SetChecked(ArenaMarkerDB.allowPets);
     UIConfig.markPetsCheckButton.text:SetFontObject("GameFontHighlight");
+	UIConfig.markPetsCheckButton:SetChecked(ArenaMarkerDB.allowPets);
 	UIConfig.markPetsCheckButton:SetScript("OnClick", function() ArenaMarkerDB.allowPets = UIConfig.markPetsCheckButton:GetChecked() end);
 
 	-- Pet-Summon Check Button
 	UIConfig.markPetsOnSummonCheckButton = CreateFrame("CheckButton", nil, UIConfig, "UICheckButtonTemplate");
 	UIConfig.markPetsOnSummonCheckButton:ClearAllPoints();
 	UIConfig.markPetsOnSummonCheckButton:SetPoint("CENTER", UIConfig.markPetsCheckButton, "CENTER", 0, -45);
-	UIConfig.markPetsOnSummonCheckButton.text:SetText("  Mark Pets\n when summoned \n (|cff00E5EEMAGE|r/|cff71C671HUNTER|r)");
-	UIConfig.markPetsOnSummonCheckButton:SetChecked(ArenaMarkerDB.markSummonedPets);
+	UIConfig.markPetsOnSummonCheckButton.text:SetText("  Mark Pets\n when summoned \n (|cff69CCF0MAGE|r/|cffABD473HUNTER|r)");
 	UIConfig.markPetsOnSummonCheckButton.text:SetFontObject("GameFontHighlight");
+	UIConfig.markPetsOnSummonCheckButton:SetChecked(ArenaMarkerDB.markSummonedPets);
 	UIConfig.markPetsOnSummonCheckButton:SetScript("OnClick", function() ArenaMarkerDB.markSummonedPets = UIConfig.markPetsOnSummonCheckButton:GetChecked() end);
 
 	-- Mark Players Button
