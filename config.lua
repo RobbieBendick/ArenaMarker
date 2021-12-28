@@ -46,8 +46,6 @@ core.summons = {
 	883, -- Call Pet
 }
 
-core.texturePath = [[Interface\AddOns\ArenaMarker\icons\UI-RaidTargetingIcon_]];
-
 --------------------------------------
 -- Config functions
 --------------------------------------
@@ -199,7 +197,8 @@ function Config:CreateMenu()
 		local function AddMark(marker, boolean, j)
 			info.text, info.checked = marker, boolean
 			if j ~= nil then
-				info.icon = core.texturePath..j;
+				local texturePath = [[Interface\AddOns\ArenaMarker\icons\UI-RaidTargetingIcon_]];
+				info.icon = texturePath..j;
 			else
 				info.icon = nil;
 			end
@@ -268,8 +267,8 @@ enterWorld:SetScript("OnEvent", Config.Player_Login);
 
 function Config:Addon_Loaded()
     SLASH_ARENAMARKER1 = "/am";
-    SlashCmdList.ARENAMARKER = core.Config.Toggle;
+    SlashCmdList.ARENAMARKER = Config.Toggle;
 end
 local addonLoadedEvent = CreateFrame("Frame");
 addonLoadedEvent:RegisterEvent("ADDON_LOADED");
-addonLoadedEvent:SetScript("OnEvent", core.Config.Addon_Loaded);
+addonLoadedEvent:SetScript("OnEvent", Config.Addon_Loaded);
