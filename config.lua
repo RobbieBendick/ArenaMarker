@@ -259,7 +259,7 @@ function Config:Player_Login()
 		ArenaMarkerDB["petDropDownMarkerID"] = -1;
 		ArenaMarkerDB["petDropDownClickID"] = -1;
 	end
-	Config:ChatFrame("/am for additional options.");
+	DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99ArenaMarker|r by |cff69CCF0Mageiden|r. Type |cff33ff99/am|r for additional options.");
 end
 local enterWorld = CreateFrame("Frame");
 enterWorld:RegisterEvent("PLAYER_LOGIN");
