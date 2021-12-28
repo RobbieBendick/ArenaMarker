@@ -46,6 +46,8 @@ core.summons = {
 	883, -- Call Pet
 }
 
+core.texturePath = [[Interface\AddOns\ArenaMarker\icons\UI-RaidTargetingIcon_]];
+
 --------------------------------------
 -- Config functions
 --------------------------------------
@@ -133,8 +135,8 @@ function Config:CreateMenu()
 		end
 	end)
 	UIConfig.CloseButton:SetScript("OnClick", function ()
-		ArenaMarkerConfig:Hide()
-		ArenaMarkerDropDown:Hide()
+		ArenaMarkerConfig:Hide();
+		ArenaMarkerDropDown:Hide();
 	end)
 	-- Options Title
 	UIConfig.title = UIConfig:CreateFontString(nil, "OVERLAY", "GameFontHighlight");
@@ -191,17 +193,24 @@ function Config:CreateMenu()
 		setDropdownText(self.value)
 		setDropdownCheck(self:GetID())
 	end
-	   function ArenaMarkerDropDownMenu(frame, level, menuList)
+	function ArenaMarkerDropDownMenu(frame, level, menuList)
 		local info = UIDropDownMenu_CreateInfo()
 		info.func = ArenaMarker_Pet_DropDown_OnClick
-		local function AddMark(marker, boolean)
+		local function AddMark(marker, boolean, j)
 			info.text, info.checked = marker, boolean
+			if j ~= nil then
+				info.icon = core.texturePath..j;
+			else
+				info.icon = nil;
+			end
 			return UIDropDownMenu_AddButton(info)
 		end
+		local j = 8;
 		for i=#core.marker_strings,1,-1 do
-			AddMark(core.marker_strings[i], false)
+			AddMark(core.marker_strings[i], false, j)
+			j = j - 1;
 		end
-		AddMark("none", false)
+		AddMark("none", false, nil)
 	end
 	UIConfig.dropDownTitle = UIConfig:CreateFontString(nil, "OVERLAY", "GameFontHighlight");
 	UIConfig.dropDownTitle:SetText("Prioritized Pet Mark");
@@ -243,7 +252,7 @@ local function removedMarkHandler()
 end
 update:SetScript("OnUpdate", removedMarkHandler)
 
-local function login(event)
+function Config:Player_Login()
 	if not ArenaMarkerDB then
 		ArenaMarkerDB = {};
 		ArenaMarkerDB["allowPets"] = true;
@@ -253,15 +262,14 @@ local function login(event)
 	end
 	Config:ChatFrame("/am for additional options.");
 end
-
-enterWorld = CreateFrame("FRAME");
+local enterWorld = CreateFrame("Frame");
 enterWorld:RegisterEvent("PLAYER_LOGIN");
-enterWorld:SetScript("OnEvent", login);
+enterWorld:SetScript("OnEvent", Config.Player_Login);
 
-local function init()
+function Config:Addon_Loaded()
     SLASH_ARENAMARKER1 = "/am";
     SlashCmdList.ARENAMARKER = core.Config.Toggle;
 end
-local events = CreateFrame("Frame");
-events:RegisterEvent("ADDON_LOADED");
-events:SetScript("OnEvent", init);
+local addonLoadedEvent = CreateFrame("Frame");
+addonLoadedEvent:RegisterEvent("ADDON_LOADED");
+addonLoadedEvent:SetScript("OnEvent", core.Config.Addon_Loaded);

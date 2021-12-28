@@ -4,8 +4,6 @@ core.AM = {};
 AM = core.AM;
 members = GetNumGroupMembers;
 local frame = CreateFrame("FRAME", "ArenaMarker")
-frame:RegisterEvent("PLAYER_ENTERING_WORLD")
-frame:RegisterEvent("CHAT_MSG_BG_SYSTEM_NEUTRAL")
 
 --[[
     Marker numbers:
@@ -191,7 +189,7 @@ function AM:MarkPetsWhenGatesOpen()
     end
 end
 
-local function inArena(self, event, ...)
+function inArena(self, event, ...)
     local inInstance, instanceType = IsInInstance()
     if instanceType ~= "arena" then return end
     if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
@@ -203,4 +201,5 @@ local function inArena(self, event, ...)
         AM.MarkPetsWhenGatesOpen()
     end
 end
+frame:RegisterEvent("CHAT_MSG_BG_SYSTEM_NEUTRAL")
 frame:SetScript("OnEvent", inArena)
