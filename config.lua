@@ -194,20 +194,18 @@ function Config:CreateMenu()
 	function ArenaMarkerDropDownMenu(frame, level, menuList)
 		local info = UIDropDownMenu_CreateInfo()
 		info.func = ArenaMarker_Pet_DropDown_OnClick
-		local function AddMark(marker, boolean, j)
+		local function AddMark(marker, boolean, i)
 			info.text, info.checked = marker, boolean
-			if j ~= nil then
+			if i ~= nil then
 				local texturePath = [[Interface\AddOns\ArenaMarker\icons\UI-RaidTargetingIcon_]];
-				info.icon = texturePath..j;
+				info.icon = texturePath..i;
 			else
 				info.icon = nil;
 			end
 			return UIDropDownMenu_AddButton(info)
 		end
-		local j = 8;
 		for i=#core.marker_strings,1,-1 do
-			AddMark(core.marker_strings[i], false, j)
-			j = j - 1;
+			AddMark(core.marker_strings[i], false, i)
 		end
 		AddMark("none", false, nil)
 	end

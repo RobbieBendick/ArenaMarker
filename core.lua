@@ -145,9 +145,7 @@ function AM:PetCastEventHandler(self, caster, arg2, spellID)
         end
     end
 end
-
 petCastEvent:SetScript("OnEvent", AM.PetCastEventHandler)
-
 
 function AM:CheckExistingMarksOnPlayers()
     -- reset table
