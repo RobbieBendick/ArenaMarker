@@ -214,7 +214,7 @@ function Config:CreateMenu()
 	end
 	function setDropdownText(v) return UIDropDownMenu_SetText(UIConfig.dropDown, v) end
 	function setDropdownCheck(v) return UIDropDownMenu_SetSelectedID(UIConfig.dropDown, v) end
-	function setDropdownIcon(j) if j == -1 then UIConfig.dropDownIcon:SetTexture(nil) return end return UIConfig.dropDownIcon:SetTexture(core.texture_path..j) end
+	function setDropdownIcon(j) if j == -1 then return UIConfig.dropDownIcon:SetTexture(nil) end return UIConfig.dropDownIcon:SetTexture(core.texture_path..j) end
 
 	UIConfig.dropDownTitle = UIConfig:CreateFontString(nil, "OVERLAY", "GameFontHighlight");
 	UIConfig.dropDownTitle:SetText("Prioritized Pet Mark");
@@ -223,12 +223,11 @@ function Config:CreateMenu()
 	UIConfig.dropDown:SetPoint("CENTER", UIConfig.dropDownTitle, 0, -23);
 	UIConfig.dropDownIcon = UIConfig:CreateTexture("ArenaMarkerIcon", "MEDIUM", nil, 2);
 	UIConfig.dropDownIcon:SetPoint("LEFT", UIConfig.dropDown, 25, 2);
-	UIConfig.dropDownIcon:SetWidth(16);
-	UIConfig.dropDownIcon:SetHeight(16);
+	UIConfig.dropDownIcon:SetSize(16,16);
 
-	UIDropDownMenu_SetWidth(UIConfig.dropDown, 93)
-	UIDropDownMenu_Initialize(UIConfig.dropDown, ArenaMarkerDropDownMenu)
-	UIDropDownMenu_SetSelectedID(UIConfig.dropDown, ArenaMarkerDB.petDropDownClickID)
+	UIDropDownMenu_SetWidth(UIConfig.dropDown, 93);
+	UIDropDownMenu_Initialize(UIConfig.dropDown, ArenaMarkerDropDownMenu);
+	UIDropDownMenu_SetSelectedID(UIConfig.dropDown, ArenaMarkerDB.petDropDownClickID);
 	setDropdownIcon(ArenaMarkerDB.petDropDownMarkerID);
 
 	UIConfig:Hide();
@@ -239,7 +238,7 @@ end
 tinsert(UISpecialFrames, "ArenaMarkerConfig");
 tinsert(UISpecialFrames, "ArenaMarkerDropDown");
 
-local update = CreateFrame("FRAME")
+local update = CreateFrame("Frame")
 local function removedMarkHandler()
 	--exit function if removedMarkers doesnt have a valid value
 	local c = 0;
