@@ -46,6 +46,8 @@ core.summons = {
 	883, -- Call Pet
 }
 
+core.texture_path = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_";
+
 --------------------------------------
 -- Config functions
 --------------------------------------
@@ -189,8 +191,9 @@ function Config:CreateMenu()
 				j = j + 1;
 			end
 		end
-		setDropdownText(self.value)
-		setDropdownCheck(self:GetID())
+		setDropdownText(self.value);
+		setDropdownCheck(self:GetID());
+		setDropdownIcon(j);
 	end
 	function ArenaMarkerDropDownMenu(frame, level, menuList)
 		local info = UIDropDownMenu_CreateInfo()
@@ -198,38 +201,43 @@ function Config:CreateMenu()
 		local function AddMark(marker, boolean, i)
 			info.text, info.checked = marker, boolean
 			if i ~= nil then
-				local texturePath = [[Interface\TargetingFrame\UI-RaidTargetingIcon_]];
-				info.icon = texturePath..i;
+				info.icon = core.texture_path..i;
 			else
 				info.icon = nil;
 			end
-			return UIDropDownMenu_AddButton(info)
+			return UIDropDownMenu_AddButton(info);
 		end
 		for i=#core.marker_strings,1,-1 do
-			AddMark(core.marker_strings[i], false, i)
+			AddMark(core.marker_strings[i], false, i);
 		end
-		AddMark("none", false, nil)
+		AddMark("none", false, nil);
 	end
+	function setDropdownText(v) return UIDropDownMenu_SetText(UIConfig.dropDown, v) end
+	function setDropdownCheck(v) return UIDropDownMenu_SetSelectedID(UIConfig.dropDown, v) end
+	function setDropdownIcon(j) if j == -1 then UIConfig.dropDownIcon:SetTexture(nil) return end return UIConfig.dropDownIcon:SetTexture(core.texture_path..j) end
+
 	UIConfig.dropDownTitle = UIConfig:CreateFontString(nil, "OVERLAY", "GameFontHighlight");
 	UIConfig.dropDownTitle:SetText("Prioritized Pet Mark");
 	UIConfig.dropDownTitle:SetPoint("CENTER", UIConfig.unmarkPetsButton, 0, -32);
 	UIConfig.dropDown = CreateFrame("Frame", "ArenaMarkerDropDown", UIParent, "UIDropDownMenuTemplate");
 	UIConfig.dropDown:SetPoint("CENTER", UIConfig.dropDownTitle, 0, -23);
-
-	function setDropdownText(v) return UIDropDownMenu_SetText(UIConfig.dropDown, v) end
-	function setDropdownCheck(v) return UIDropDownMenu_SetSelectedID(UIConfig.dropDown, v) end
+	UIConfig.dropDownIcon = UIConfig:CreateTexture("ArenaMarkerIcon", "MEDIUM", nil, 2);
+	UIConfig.dropDownIcon:SetPoint("LEFT", UIConfig.dropDown, 25, 2);
+	UIConfig.dropDownIcon:SetWidth(16);
+	UIConfig.dropDownIcon:SetHeight(16);
 
 	UIDropDownMenu_SetWidth(UIConfig.dropDown, 93)
 	UIDropDownMenu_Initialize(UIConfig.dropDown, ArenaMarkerDropDownMenu)
 	UIDropDownMenu_SetSelectedID(UIConfig.dropDown, ArenaMarkerDB.petDropDownClickID)
+	setDropdownIcon(ArenaMarkerDB.petDropDownMarkerID);
 
 	UIConfig:Hide();
 	return UIConfig;
 end
 
 -- Escape key functionality
-tinsert(UISpecialFrames, "ArenaMarkerConfig")
-tinsert(UISpecialFrames, "ArenaMarkerDropDown")
+tinsert(UISpecialFrames, "ArenaMarkerConfig");
+tinsert(UISpecialFrames, "ArenaMarkerDropDown");
 
 local update = CreateFrame("FRAME")
 local function removedMarkHandler()
