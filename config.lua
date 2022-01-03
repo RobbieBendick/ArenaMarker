@@ -143,7 +143,7 @@ function Config:CreateMenu()
 	UIConfig.title:SetPoint("LEFT", UIConfig.TitleBg, "LEFT", 5, 0);
 	UIConfig.title:SetText("|cff33ff99ArenaMarker|r Options");
 
-	-- Check Button
+	-- Mark Pets Check Button
 	UIConfig.markPetsCheckButton = CreateFrame("CheckButton", nil, UIConfig, "UICheckButtonTemplate");
 	UIConfig.markPetsCheckButton:ClearAllPoints();
 	UIConfig.markPetsCheckButton:SetPoint("CENTER", UIConfig.TitleBg, "CENTER", -45, -40);
@@ -174,6 +174,7 @@ function Config:CreateMenu()
 	-- Unmark Pets Button
 	UIConfig.unmarkPetsButton = self:CreateButton(UIConfig.markPetsButton, "Unmark Pets", Config.UnmarkPets);
 
+	-- Pet-Priority Dropdown
 	local function ArenaMarker_Pet_DropDown_OnClick(self, arg1, arg2, checked)
 		local j = -1;
 		for i=#core.marker_strings + 1, 1, -1 do
@@ -197,7 +198,7 @@ function Config:CreateMenu()
 		local function AddMark(marker, boolean, i)
 			info.text, info.checked = marker, boolean
 			if i ~= nil then
-				local texturePath = [[Interface\AddOns\ArenaMarker\icons\UI-RaidTargetingIcon_]];
+				local texturePath = [[Interface\TargetingFrame\UI-RaidTargetingIcon_]];
 				info.icon = texturePath..i;
 			else
 				info.icon = nil;
