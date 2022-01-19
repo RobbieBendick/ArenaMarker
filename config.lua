@@ -70,7 +70,7 @@ function Config:UnmarkPlayers()
 	if members() > 5 then return end
 	-- unmark self
 	if GetRaidTargetIndex("player") then
-		Config:ChatFrame("Unmarking the group.")
+		self:ChatFrame("Unmarking the group.")
 		table.insert(core.removedMarkers, GetRaidTargetIndex("player"))
 		SetRaidTarget("player", 0)
 	end
@@ -135,8 +135,14 @@ end
 function Config:CreateMenu()
 	-- Menu
 	UIConfig = CreateFrame("Frame", "ArenaMarkerConfig", UIParent, "BasicFrameTemplateWithInset");
-	UIConfig:SetSize(180, 355);
+	UIConfig:SetSize(180, 365);
 	UIConfig:SetPoint("CENTER", 150, 50);
+
+	if ArenaMarkerDB.petDropDownTwoMarkerID ~= -1 or ArenaMarkerDB.petDropDownThreeMarkerID ~= -1 then
+		UIConfig:SetSize(180, 420);
+	else 
+		UIConfig:SetSize(180, 365);
+	end
 
 	-- Make Menu Movable
 	UIConfig:SetMovable(true);
@@ -254,7 +260,7 @@ function Config:CreateMenu()
 	UIConfig.dropDown:SetPoint("CENTER", UIConfig.dropDownTitle, 0, -23);
 	UIConfig.dropDownIcon = self:CreateDropdownIcon(UIConfig.dropDown, "ArenaMarkerIcon");
 
-	--Second Prio Pet
+	--Second Prio Pet Dropdown
 	local function ArenaMarker_Pet_DropDown_Two_OnClick(self, arg1, arg2, checked)
 		local j = -1;
 		for i=#core.marker_strings + 1, 1, -1 do
@@ -311,7 +317,7 @@ function Config:CreateMenu()
 	UIConfig.dropDownTwo:SetPoint("CENTER", UIConfig.dropDownTitleTwo, 0, -23);
 	UIConfig.dropDownIconTwo = self:CreateDropdownIcon(UIConfig.dropDownTwo, "ArenaMarkerIconTwo");
 
-	--Third Prio Pet
+	--Third Prio Pet Dropdown
 	local function ArenaMarker_Pet_DropDown_Three_OnClick(self, arg1, arg2, checked)
 		local j = -1;
 		for i=#core.marker_strings + 1, 1, -1 do
