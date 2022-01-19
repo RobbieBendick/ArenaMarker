@@ -45,6 +45,7 @@ core.summons = {
 	883, -- Call Pet
 }
 core.texture_path = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_";
+MENU_WIDTH, MENU_HEIGHT, LARGE_MENU_HEIGHT = 180, 355, 410;
 --------------------------------------
 -- Config functions
 --------------------------------------
@@ -57,7 +58,7 @@ function Config:Toggle()
 	if ArenaMarkerDB.petDropDownThreeMarkerID == -1 and ArenaMarkerDB.petDropDownTwoMarkerID == -1 then
 		UIConfig.dropDownTitleThree:Hide();
 		ArenaMarkerDropDownThree:Hide();
-		UIConfig:SetSize(180, 365);
+		UIConfig:SetSize(MENU_WIDTH, MENU_HEIGHT);
 	end
 end
 
@@ -135,13 +136,13 @@ end
 function Config:CreateMenu()
 	-- Menu
 	UIConfig = CreateFrame("Frame", "ArenaMarkerConfig", UIParent, "BasicFrameTemplateWithInset");
-	UIConfig:SetSize(180, 365);
+	UIConfig:SetSize(MENU_WIDTH, MENU_HEIGHT);
 	UIConfig:SetPoint("CENTER", 150, 50);
 
 	if ArenaMarkerDB.petDropDownTwoMarkerID ~= -1 or ArenaMarkerDB.petDropDownThreeMarkerID ~= -1 then
-		UIConfig:SetSize(180, 420);
+		UIConfig:SetSize(MENU_WIDTH, LARGE_MENU_HEIGHT);
 	else 
-		UIConfig:SetSize(180, 365);
+		UIConfig:SetSize(MENU_WIDTH, MENU_HEIGHT);
 	end
 
 	-- Make Menu Movable
@@ -270,11 +271,11 @@ function Config:CreateMenu()
 				if i == 9 and ArenaMarkerDB.petDropDownThreeMarkerID == -1 then
 					UIConfig.dropDownTitleThree:Hide();
 					UIConfig.dropDownThree:Hide();
-					UIConfig:SetSize(180, 370);
+					UIConfig:SetSize(MENU_WIDTH, MENU_HEIGHT);
 				else
 					UIConfig.dropDownTitleThree:Show();
 					UIConfig.dropDownThree:Show();
-					UIConfig:SetSize(180, 420);
+					UIConfig:SetSize(MENU_WIDTH, LARGE_MENU_HEIGHT);
 				end
 				break;
 			end
@@ -325,13 +326,13 @@ function Config:CreateMenu()
 				ArenaMarkerDB.petDropDownThreeMarkerID = j;
 				ArenaMarkerDB.petDropDownThreeClickID = self:GetID();
 				if i == 9 and ArenaMarkerDB.petDropDownTwoMarkerID == -1 then
-					UIConfig.dropDownTitleThree:Hide()
-					UIConfig.dropDownThree:Hide()
-					UIConfig:SetSize(180, 370);
+					UIConfig.dropDownTitleThree:Hide();
+					UIConfig.dropDownThree:Hide();
+					UIConfig:SetSize(MENU_WIDTH, MENU_HEIGHT);
 				else
-					UIConfig.dropDownTitleThree:Show()
-					UIConfig.dropDownThree:Show()
-					UIConfig:SetSize(180, 420);
+					UIConfig.dropDownTitleThree:Show();
+					UIConfig.dropDownThree:Show();
+					UIConfig:SetSize(MENU_WIDTH, LARGE_MENU_HEIGHT);
 				end
 				break;
 			end
