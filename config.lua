@@ -51,7 +51,14 @@ core.texture_path = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_";
 function Config:Toggle()
 	local menu = UIConfig or Config:CreateMenu();
 	menu:SetShown(not menu:IsShown());
-	ArenaMarkerDropDown:SetShown(menu:IsShown())
+	ArenaMarkerDropDown:SetShown(menu:IsShown());
+	ArenaMarkerDropDownTwo:SetShown(menu:IsShown());
+	ArenaMarkerDropDownThree:SetShown(menu:IsShown());
+	if ArenaMarkerDB.petDropDownThreeMarkerID == -1 and ArenaMarkerDB.petDropDownTwoMarkerID == -1 then
+		UIConfig.dropDownTitleThree:Hide();
+		ArenaMarkerDropDownThree:Hide();
+		UIConfig:SetSize(180, 365);
+	end
 end
 
 function Config:ChatFrame(t)
@@ -371,6 +378,8 @@ end
 -- Escape key functionality
 tinsert(UISpecialFrames, "ArenaMarkerConfig");
 tinsert(UISpecialFrames, "ArenaMarkerDropDown");
+tinsert(UISpecialFrames, "ArenaMarkerDropDownTwo");
+tinsert(UISpecialFrames, "ArenaMarkerDropDownThree");
 
 local update = CreateFrame("Frame")
 local function removedMarkHandler()
