@@ -405,7 +405,7 @@ local function removedMarkHandler()
 		end
     end
 end
-update:SetScript("OnUpdate", removedMarkHandler)
+update:SetScript("OnUpdate", removedMarkHandler);
 
 function Config:Player_Login()
 	if not ArenaMarkerDB then

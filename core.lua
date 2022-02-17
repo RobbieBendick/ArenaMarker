@@ -181,9 +181,9 @@ end
 
 function AM:MarkPetsWhenGatesOpen()
     if not ArenaMarkerDB.allowPets then return end
-    for key,value in pairs(core.translations) do 
-        if GetLocale() == key then
-            if string.find(arg1, value) then
+    for k,v in pairs(core.translations) do 
+        if GetLocale() == k then
+            if string.find(a1, v) then
                 AM.MarkPets()
             end
         end
@@ -196,7 +196,7 @@ function inArena(self, event, ...)
     if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
     if members() <= 1 then return end
     if event == "CHAT_MSG_BG_SYSTEM_NEUTRAL" then
-        arg1 = ...
+        a1 = ...
         AM.CheckExistingMarksOnPlayers()
         AM.MarkPlayers()
         AM.MarkPetsWhenGatesOpen()
