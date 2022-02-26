@@ -6,11 +6,11 @@ core.Config = {};
 local Config = core.Config;
 local UIConfig;
 members = GetNumGroupMembers;
-core.removedMarkers = {};
+core.removed_markers = {};
 core.translations = {
     ["enUS"] = "The Arena battle has begun!",
     ["enGB"] = "The Arena battle has begun!",
-    ["frFR"] = "Le combat d'arène commence !",
+    ["frFR"] = "Le combat d'arène commence !",
     ["deDE"] = "Der Arenakampf hat begonnen!",
     ["ptBR"] = "A batalha na Arena começou!",
     ["esES"] = "¡La batalla en arena ha comenzado!",
@@ -45,7 +45,7 @@ core.summons = {
 	883, -- Call Pet
 }
 core.texture_path = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_";
-MENU_WIDTH, MENU_HEIGHT, LARGE_MENU_HEIGHT = 180, 355, 410;
+MENU_WIDTH, MENU_HEIGHT, LARGE_MENU_HEIGHT = 180, 410, 470;
 --------------------------------------
 -- Config functions
 --------------------------------------
@@ -71,14 +71,14 @@ function Config:UnmarkPlayers()
 	if members() > 5 then return end
 	-- unmark self
 	if GetRaidTargetIndex("player") then
-		self:ChatFrame("Unmarking the group.")
-		table.insert(core.removedMarkers, GetRaidTargetIndex("player"))
+		Config:ChatFrame("Unmarking the group.")
+		table.insert(core.removed_markers, GetRaidTargetIndex("player"))
 		SetRaidTarget("player", 0)
 	end
 	-- unmark party members
 	for i=1, members()-1 do
 		if GetRaidTargetIndex("party"..i) then
-			table.insert(core.removedMarkers, GetRaidTargetIndex("party"..i))
+			table.insert(core.removed_markers, GetRaidTargetIndex("party"..i))
 			SetRaidTarget("party"..i, 0)
 		end
 	end
@@ -89,14 +89,14 @@ function Config:UnmarkPets()
 	if members() > 5 then return end
 	if UnitExists("pet") then
 		if GetRaidTargetIndex("pet") then
-			table.insert(core.removedMarkers, GetRaidTargetIndex("pet"))
+			table.insert(core.removed_markers, GetRaidTargetIndex("pet"))
 			SetRaidTarget("pet", 0)
 		end
 	end
 	for i=1,members()-1 do
 		if UnitExists("party"..i.."pet") then
 			if GetRaidTargetIndex("party"..i.."pet") then
-				table.insert(core.removedMarkers, GetRaidTargetIndex("party"..i.."pet"))
+				table.insert(core.removed_markers, GetRaidTargetIndex("party"..i.."pet"))
 				SetRaidTarget("party"..i.."pet", 0)
 			end
 		end
@@ -389,23 +389,23 @@ tinsert(UISpecialFrames, "ArenaMarkerDropDownTwo");
 tinsert(UISpecialFrames, "ArenaMarkerDropDownThree");
 
 local update = CreateFrame("Frame")
-local function removedMarkHandler()
-	--exit function if removedMarkers doesnt have a valid value
+local function Removed_Mark_Handler()
+	--exit function if removed_markers doesnt have a valid value
 	local c = 0;
-	for _,k in pairs(core.removedMarkers) do if k ~= nil then c = c + 1 end end if c == 0 then return end
-	for i,v in pairs(core.removedMarkers) do
+	for _,k in pairs(core.removed_markers) do if k ~= nil then c = c + 1 end end if c == 0 then return end
+	for i,v in pairs(core.removed_markers) do
 		if not contains(core.unused_markers, v) then
 			-- re-populate table if user clicks remove_mark button(s)
 			for j=1,#core.marker_strings do
 				if v == j then
 					core.unused_markers[core.marker_strings[j]] = j;
-					removeValue(core.removedMarkers, i);
+					removeValue(core.removed_markers, i);
 				end
 			end
 		end
     end
 end
-update:SetScript("OnUpdate", removedMarkHandler);
+update:SetScript("OnUpdate", Removed_Mark_Handler);
 
 function Config:Player_Login()
 	if not ArenaMarkerDB then
