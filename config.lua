@@ -43,22 +43,36 @@ core.marker_strings = {
 core.summons = {
 	31687, -- Water Elemental
 	883, -- Call Pet
+	34433, -- Shadowfiend
 }
 core.texture_path = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_";
 MENU_WIDTH, MENU_HEIGHT, LARGE_MENU_HEIGHT = 180, 410, 470;
 --------------------------------------
 -- Config functions
 --------------------------------------
+function Config:SmallMenu()
+	UIConfig.dropDownTitleThree:Hide();
+	ArenaMarkerDropDownThree:Hide();
+	UIConfig:SetSize(MENU_WIDTH, MENU_HEIGHT);
+end
+
+function Config:LargeMenu()
+	UIConfig.dropDownTitleThree:Show();
+	ArenaMarkerDropDownThree:Show();
+	UIConfig:SetSize(MENU_WIDTH, LARGE_MENU_HEIGHT);
+end
+
 function Config:Toggle()
 	local menu = UIConfig or Config:CreateMenu();
 	menu:SetShown(not menu:IsShown());
 	ArenaMarkerDropDown:SetShown(menu:IsShown());
 	ArenaMarkerDropDownTwo:SetShown(menu:IsShown());
 	ArenaMarkerDropDownThree:SetShown(menu:IsShown());
-	if ArenaMarkerDB.petDropDownThreeMarkerID == -1 and ArenaMarkerDB.petDropDownTwoMarkerID == -1 then
-		UIConfig.dropDownTitleThree:Hide();
-		ArenaMarkerDropDownThree:Hide();
-		UIConfig:SetSize(MENU_WIDTH, MENU_HEIGHT);
+	if ArenaMarkerDB.petDropDownThreeMarkerID == -1 and ArenaMarkerDB.petDropDownTwoMarkerID == -1 and menu:IsShown() then
+		Config.SmallMenu();
+	end
+	if not ( ArenaMarkerDB.petDropDownThreeMarkerID == -1 and ArenaMarkerDB.petDropDownTwoMarkerID == -1 ) and menu:IsShown() then
+		Config.LargeMenu();
 	end
 end
 
@@ -139,12 +153,6 @@ function Config:CreateMenu()
 	UIConfig:SetSize(MENU_WIDTH, MENU_HEIGHT);
 	UIConfig:SetPoint("CENTER", 150, 50);
 
-	if ArenaMarkerDB.petDropDownTwoMarkerID ~= -1 or ArenaMarkerDB.petDropDownThreeMarkerID ~= -1 then
-		UIConfig:SetSize(MENU_WIDTH, LARGE_MENU_HEIGHT);
-	else 
-		UIConfig:SetSize(MENU_WIDTH, MENU_HEIGHT);
-	end
-
 	-- Make Menu Movable
 	UIConfig:SetMovable(true);
 	UIConfig:EnableMouse(true);
@@ -166,10 +174,7 @@ function Config:CreateMenu()
 			self.isMoving = false;
 		end
 	end)
-	UIConfig.CloseButton:SetScript("OnClick", function ()
-		ArenaMarkerConfig:Hide();
-		ArenaMarkerDropDown:Hide();
-	end)
+	UIConfig.CloseButton:SetScript("OnClick", Config.Toggle);
 	-- Options Title
 	UIConfig.title = UIConfig:CreateFontString(nil, "OVERLAY", "GameFontHighlight");
 	UIConfig.title:ClearAllPoints();
@@ -269,13 +274,9 @@ function Config:CreateMenu()
 				ArenaMarkerDB.petDropDownTwoMarkerID = j;
 				ArenaMarkerDB.petDropDownTwoClickID = self:GetID();
 				if i == 9 and ArenaMarkerDB.petDropDownThreeMarkerID == -1 then
-					UIConfig.dropDownTitleThree:Hide();
-					UIConfig.dropDownThree:Hide();
-					UIConfig:SetSize(MENU_WIDTH, MENU_HEIGHT);
+					Config.SmallMenu();
 				else
-					UIConfig.dropDownTitleThree:Show();
-					UIConfig.dropDownThree:Show();
-					UIConfig:SetSize(MENU_WIDTH, LARGE_MENU_HEIGHT);
+					Config.LargeMenu();
 				end
 				break;
 			end
@@ -326,13 +327,9 @@ function Config:CreateMenu()
 				ArenaMarkerDB.petDropDownThreeMarkerID = j;
 				ArenaMarkerDB.petDropDownThreeClickID = self:GetID();
 				if i == 9 and ArenaMarkerDB.petDropDownTwoMarkerID == -1 then
-					UIConfig.dropDownTitleThree:Hide();
-					UIConfig.dropDownThree:Hide();
-					UIConfig:SetSize(MENU_WIDTH, MENU_HEIGHT);
+					Config.SmallMenu();
 				else
-					UIConfig.dropDownTitleThree:Show();
-					UIConfig.dropDownThree:Show();
-					UIConfig:SetSize(MENU_WIDTH, LARGE_MENU_HEIGHT);
+					Config.LargeMenu();
 				end
 				break;
 			end
@@ -390,7 +387,7 @@ tinsert(UISpecialFrames, "ArenaMarkerDropDownThree");
 
 local update = CreateFrame("Frame")
 local function Removed_Mark_Handler()
-	--exit function if removed_markers doesnt have a valid value
+	-- exit function if removed_markers doesnt have a valid value
 	local c = 0;
 	for _,k in pairs(core.removed_markers) do if k ~= nil then c = c + 1 end end if c == 0 then return end
 	for i,v in pairs(core.removed_markers) do

@@ -98,7 +98,7 @@ function AM:MarkPets()
             --check if prio marks are aviailable
             if core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownMarkerID]] then
                 SetRaidTarget("pet", ArenaMarkerDB.petDropDownMarkerID)
-                removeValue(unused_markers, core.marker_strings[ArenaMarkerDB.petDropDownMarkerID])
+                removeValue(core.unused_markers, core.marker_strings[ArenaMarkerDB.petDropDownMarkerID])
             else
                 findUsableMark(core.unused_markers, "pet")
             end
@@ -110,10 +110,10 @@ function AM:MarkPets()
                 --check if prio marks are aviailable
                 if core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownTwoMarkerID]] then
                     SetRaidTarget("party"..i.."pet", ArenaMarkerDB.petDropDownTwoMarkerID)
-                    removeValue(unused_markers, core.marker_strings[ArenaMarkerDB.petDropDownTwoMarkerID])
+                    removeValue(core.unused_markers, core.marker_strings[ArenaMarkerDB.petDropDownTwoMarkerID])
                 elseif core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownThreeMarkerID]] then
                     SetRaidTarget("party"..i.."pet", ArenaMarkerDB.petDropDownThreeMarkerID)
-                    removeValue(unused_markers, core.marker_strings[ArenaMarkerDB.petDropDownThreeMarkerID])
+                    removeValue(core.unused_markers, core.marker_strings[ArenaMarkerDB.petDropDownThreeMarkerID])
                 else
                     findUsableMark(core.unused_markers, "party"..i.."pet")
                 end
@@ -137,9 +137,15 @@ function AM:PetCastEventHandler(self, caster, arg2, spellID)
             -- check if pet already has a mark
             if not GetRaidTargetIndex(caster.."pet") then
                 -- check prio mark
-                if core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownMarkerID]] then
+                if core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownMarkerID]] and caster == "player" then
                     SetRaidTarget(caster.."pet", ArenaMarkerDB.petDropDownMarkerID)
-                    removeValue(unused_markers, core.marker_strings[ArenaMarkerDB.petDropDownMarkerID])
+                    removeValue(core.unused_markers, core.marker_strings[ArenaMarkerDB.petDropDownMarkerID])
+                elseif core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownTwoMarkerID]] then
+                    SetRaidTarget(caster.."pet", ArenaMarkerDB.petDropDownTwoMarkerID)
+                    removeValue(core.unused_markers, core.marker_strings[ArenaMarkerDB.petDropDownTwoMarkerID])
+                elseif core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownThreeMarkerID]] then
+                    SetRaidTarget(caster.."pet", ArenaMarkerDB.petDropDownThreeMarkerID)
+                    removeValue(core.unused_markers, core.marker_strings[ArenaMarkerDB.petDropDownThreeMarkerID])
                 else
                     findUsableMark(core.unused_markers, caster.."pet")
                 end
