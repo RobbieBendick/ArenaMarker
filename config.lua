@@ -125,7 +125,6 @@ end
 
 function Config:CreateCheckButton(relativeFrame, buttonText, DB_var)
 	local checkbtn = CreateFrame("CheckButton", nil, UIConfig, "UICheckButtonTemplate");
-	checkbtn:ClearAllPoints();
 	checkbtn:SetPoint("CENTER", relativeFrame, "CENTER", 0, -45);
 	checkbtn.text:SetText(buttonText);
 	checkbtn.text:SetFontObject("GameFontHighlight");
@@ -153,7 +152,7 @@ function Config:InitDropdown(dropdown, menu, clickID, markerID, frame)
 	UIDropDownMenu_SetWidth(dropdown, 93);
 	UIDropDownMenu_Initialize(dropdown, menu);
 	UIDropDownMenu_SetSelectedID(dropdown, clickID);
-	setDropdownIcon(markerID, frame)
+	setDropdownIcon(frame, markerID)
 end
 
 function Config:CreateMenu()
@@ -195,11 +194,11 @@ function Config:CreateMenu()
 	UIConfig.title:SetText("|cff33ff99ArenaMarker|r Options");
 
 	-- Mark Pets Check Button
-	UIConfig.markPetsCheckButton = Config.CreateCheckButton(self, UIConfig.TitleBg, "        Mark Pets\n      (when arena\n     gates open)", ArenaMarkerDB.allowPets)
+	UIConfig.markPetsCheckButton = self:CreateCheckButton(UIConfig.TitleBg, "        Mark Pets\n      (when arena\n     gates open)", ArenaMarkerDB.allowPets)
 	UIConfig.markPetsCheckButton:SetPoint("CENTER", UIConfig.TitleBg, "CENTER", -45, -40);
 
 	-- Pet-Summon Check Button
-	UIConfig.markPetsOnSummonCheckButton = Config.CreateCheckButton(self, UIConfig.markPetsCheckButton, "  Mark Pets\n when summoned \n (in arena)", ArenaMarkerDB.markSummonedPets);
+	UIConfig.markPetsOnSummonCheckButton = self:CreateCheckButton(UIConfig.markPetsCheckButton, "  Mark Pets\n when summoned \n (in arena)", ArenaMarkerDB.markSummonedPets);
 
 	-- Mark Players Button
 	UIConfig.markPlayersButton = self:CreateButton(UIConfig.markPetsOnSummonCheckButton, "Mark Players", AM.MarkPlayers);
@@ -231,7 +230,7 @@ function Config:CreateMenu()
 		end
 		setDropdownText(UIConfig.dropDown, self.value);
 		setDropdownCheck(UIConfig.dropDown, self:GetID());
-		setDropdownIcon(j, UIConfig.dropDownIcon);
+		setDropdownIcon(UIConfig.dropDownIcon, j);
 	end
 
 	function ArenaMarkerDropDownMenu(frame, level, menuList)
@@ -263,7 +262,7 @@ function Config:CreateMenu()
 
 	function setDropdownCheck(dropdown, v) return UIDropDownMenu_SetSelectedID(dropdown, v) end
 
-	function setDropdownIcon(j, frame) if j == -1 then return frame:SetTexture(nil) end return frame:SetTexture(core.texture_path .. j) end
+	function setDropdownIcon(frame, j) if j == -1 then return frame:SetTexture(nil) end return frame:SetTexture(core.texture_path .. j) end
 
 	UIConfig.dropDownTitle = self:CreateDropdownTitle(UIConfig.unmarkPetsButton, "Self-Pet Mark");
 	UIConfig.dropDown = CreateFrame("Frame", "ArenaMarkerDropDown", UIConfig, "UIDropDownMenuTemplate");
@@ -292,7 +291,7 @@ function Config:CreateMenu()
 		end
 		setDropdownText(UIConfig.dropDownTwo, self.value);
 		setDropdownCheck(UIConfig.dropDownTwo, self:GetID());
-		setDropdownIcon(j, UIConfig.dropDownIconTwo);
+		setDropdownIcon(UIConfig.dropDownIconTwo, j);
 	end
 
 	function ArenaMarkerDropDownMenuTwo(frame, level, menuList)
@@ -347,7 +346,7 @@ function Config:CreateMenu()
 		end
 		setDropdownText(UIConfig.dropDownThree, self.value);
 		setDropdownCheck(UIConfig.dropDownThree, self:GetID());
-		setDropdownIcon(j, UIConfig.dropDownIconThree);
+		setDropdownIcon(UIConfig.dropDownIconThree, j);
 	end
 
 	function ArenaMarkerDropDownMenuThree(frame, level, menuList)
