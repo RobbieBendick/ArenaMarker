@@ -120,7 +120,7 @@ function Config:CreateButton(relativeFrame, buttonText, funcName)
 	btn:SetSize(110, 30);
 	btn:SetText(buttonText);
 	btn:SetScript("OnClick", funcName);
-	return btn
+	return btn;
 end
 
 function Config:CreateCheckButton(relativeFrame, buttonText, DB_var)
@@ -130,7 +130,7 @@ function Config:CreateCheckButton(relativeFrame, buttonText, DB_var)
 	checkbtn.text:SetFontObject("GameFontHighlight");
 	checkbtn:SetChecked(DB_var);
 	checkbtn:SetScript("OnClick", function() DB_var = checkbtn:GetChecked() end);
-	return checkbtn
+	return checkbtn;
 end
 
 function Config:CreateDropdownTitle(relativeFrame, dropText)
@@ -194,7 +194,7 @@ function Config:CreateMenu()
 	UIConfig.title:SetText("|cff33ff99ArenaMarker|r Options");
 
 	-- Mark Pets Check Button
-	UIConfig.markPetsCheckButton = self:CreateCheckButton(UIConfig.TitleBg, "        Mark Pets\n      (when arena\n     gates open)", ArenaMarkerDB.allowPets)
+	UIConfig.markPetsCheckButton = self:CreateCheckButton(UIConfig.TitleBg, "        Mark Pets\n      (when arena\n     gates open)", ArenaMarkerDB.allowPets);
 	UIConfig.markPetsCheckButton:SetPoint("CENTER", UIConfig.TitleBg, "CENTER", -45, -40);
 
 	-- Pet-Summon Check Button
