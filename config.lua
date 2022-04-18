@@ -135,16 +135,17 @@ end
 
 function Config:CreateDropdownIcon(relativeFrame, textureName)
 	local dropIcon = UIConfig:CreateTexture(textureName, "MEDIUM", nil, 2);
+	dropIcon:SetParent(relativeFrame);
 	dropIcon:SetPoint("LEFT", relativeFrame, 25, 2);
 	dropIcon:SetSize(16, 16);
 	return dropIcon;
 end
 
-function Config:InitDropdown(dropdown, menu, clickID, markerID, funcName)
+function Config:InitDropdown(dropdown, menu, clickID, markerID, frame)
 	UIDropDownMenu_SetWidth(dropdown, 93);
 	UIDropDownMenu_Initialize(dropdown, menu);
 	UIDropDownMenu_SetSelectedID(dropdown, clickID);
-	funcName(markerID);
+	setDropdownIcon(markerID, frame)
 end
 
 function Config:CreateMenu()
@@ -224,7 +225,7 @@ function Config:CreateMenu()
 				ArenaMarkerDB.petDropDownMarkerID = j;
 				ArenaMarkerDB.petDropDownClickID = self:GetID();
 				break
-				; end
+			end
 			if j == -1 then
 				j = j + 2;
 			else
@@ -233,7 +234,7 @@ function Config:CreateMenu()
 		end
 		setDropdownText(UIConfig.dropDown, self.value);
 		setDropdownCheck(UIConfig.dropDown, self:GetID());
-		setDropdownIcon(j);
+		setDropdownIcon(j, UIConfig.dropDownIcon);
 	end
 
 	function ArenaMarkerDropDownMenu(frame, level, menuList)
@@ -265,14 +266,10 @@ function Config:CreateMenu()
 
 	function setDropdownCheck(dropdown, v) return UIDropDownMenu_SetSelectedID(dropdown, v) end
 
-	function setDropdownIcon(j) if j == -1 then return UIConfig.dropDownIcon:SetTexture(nil) end return UIConfig.dropDownIcon:SetTexture(core.texture_path .. j) end
-
-	function setDropdownIconTwo(j) if j == -1 then return UIConfig.dropDownIconTwo:SetTexture(nil) end return UIConfig.dropDownIconTwo:SetTexture(core.texture_path .. j) end
-
-	function setDropdownIconThree(j) if j == -1 then return UIConfig.dropDownIconThree:SetTexture(nil) end return UIConfig.dropDownIconThree:SetTexture(core.texture_path .. j) end
+	function setDropdownIcon(j, frame) if j == -1 then return frame:SetTexture(nil) end return frame:SetTexture(core.texture_path .. j) end
 
 	UIConfig.dropDownTitle = self:CreateDropdownTitle(UIConfig.unmarkPetsButton, "Self-Pet Mark");
-	UIConfig.dropDown = CreateFrame("Frame", "ArenaMarkerDropDown", UIParent, "UIDropDownMenuTemplate");
+	UIConfig.dropDown = CreateFrame("Frame", "ArenaMarkerDropDown", UIConfig, "UIDropDownMenuTemplate");
 	UIConfig.dropDown:SetPoint("CENTER", UIConfig.dropDownTitle, 0, -23);
 	UIConfig.dropDownIcon = self:CreateDropdownIcon(UIConfig.dropDown, "ArenaMarkerIcon");
 
@@ -289,7 +286,7 @@ function Config:CreateMenu()
 					Config.LargeMenu();
 				end
 				break
-				; end
+			end
 			if j == -1 then
 				j = j + 2;
 			else
@@ -298,7 +295,7 @@ function Config:CreateMenu()
 		end
 		setDropdownText(UIConfig.dropDownTwo, self.value);
 		setDropdownCheck(UIConfig.dropDownTwo, self:GetID());
-		setDropdownIconTwo(j);
+		setDropdownIcon(j, UIConfig.dropDownIconTwo);
 	end
 
 	function ArenaMarkerDropDownMenuTwo(frame, level, menuList)
@@ -327,7 +324,7 @@ function Config:CreateMenu()
 	end
 
 	UIConfig.dropDownTitleTwo = self:CreateDropdownTitle(UIConfig.dropDown, "Party-Pet Mark");
-	UIConfig.dropDownTwo = CreateFrame("Frame", "ArenaMarkerDropDownTwo", UIParent, "UIDropDownMenuTemplate");
+	UIConfig.dropDownTwo = CreateFrame("Frame", "ArenaMarkerDropDownTwo", UIConfig, "UIDropDownMenuTemplate");
 	UIConfig.dropDownTwo:SetPoint("CENTER", UIConfig.dropDownTitleTwo, 0, -23);
 	UIConfig.dropDownIconTwo = self:CreateDropdownIcon(UIConfig.dropDownTwo, "ArenaMarkerIconTwo");
 
@@ -344,7 +341,7 @@ function Config:CreateMenu()
 					Config.LargeMenu();
 				end
 				break
-				; end
+			end
 			if j == -1 then
 				j = j + 2;
 			else
@@ -353,7 +350,7 @@ function Config:CreateMenu()
 		end
 		setDropdownText(UIConfig.dropDownThree, self.value);
 		setDropdownCheck(UIConfig.dropDownThree, self:GetID());
-		setDropdownIconThree(j);
+		setDropdownIcon(j, UIConfig.dropDownIconThree);
 	end
 
 	function ArenaMarkerDropDownMenuThree(frame, level, menuList)
@@ -382,23 +379,17 @@ function Config:CreateMenu()
 	end
 
 	UIConfig.dropDownTitleThree = self:CreateDropdownTitle(UIConfig.dropDownTwo, "Extra Party-Pet Mark");
-	UIConfig.dropDownThree = CreateFrame("Frame", "ArenaMarkerDropDownThree", UIParent, "UIDropDownMenuTemplate");
+	UIConfig.dropDownThree = CreateFrame("Frame", "ArenaMarkerDropDownThree", UIConfig, "UIDropDownMenuTemplate");
 	UIConfig.dropDownThree:SetPoint("CENTER", UIConfig.dropDownTitleThree, 0, -23);
 	UIConfig.dropDownIconThree = self:CreateDropdownIcon(UIConfig.dropDownThree, "ArenaMarkerIconThree");
 
-	self:InitDropdown(UIConfig.dropDown, ArenaMarkerDropDownMenu, ArenaMarkerDB.petDropDownClickID, ArenaMarkerDB.petDropDownMarkerID, setDropdownIcon);
-	self:InitDropdown(UIConfig.dropDownTwo, ArenaMarkerDropDownMenuTwo, ArenaMarkerDB.petDropDownTwoClickID, ArenaMarkerDB.petDropDownTwoMarkerID, setDropdownIconTwo);
-	self:InitDropdown(UIConfig.dropDownThree, ArenaMarkerDropDownMenuThree, ArenaMarkerDB.petDropDownThreeClickID, ArenaMarkerDB.petDropDownThreeMarkerID, setDropdownIconThree);
+	self:InitDropdown(UIConfig.dropDown, ArenaMarkerDropDownMenu, ArenaMarkerDB.petDropDownClickID, ArenaMarkerDB.petDropDownMarkerID, UIConfig.dropDownIcon);
+	self:InitDropdown(UIConfig.dropDownTwo, ArenaMarkerDropDownMenuTwo, ArenaMarkerDB.petDropDownTwoClickID, ArenaMarkerDB.petDropDownTwoMarkerID, UIConfig.dropDownIconTwo);
+	self:InitDropdown(UIConfig.dropDownThree, ArenaMarkerDropDownMenuThree, ArenaMarkerDB.petDropDownThreeClickID, ArenaMarkerDB.petDropDownThreeMarkerID, UIConfig.dropDownIconThree);
 
 	UIConfig:Hide();
 	return UIConfig;
 end
-
--- Escape key functionality
-tinsert(UISpecialFrames, "ArenaMarkerConfig");
-tinsert(UISpecialFrames, "ArenaMarkerDropDown");
-tinsert(UISpecialFrames, "ArenaMarkerDropDownTwo");
-tinsert(UISpecialFrames, "ArenaMarkerDropDownThree");
 
 local update = CreateFrame("Frame")
 local function Removed_Mark_Handler()
@@ -420,6 +411,9 @@ local function Removed_Mark_Handler()
 end
 
 update:SetScript("OnUpdate", Removed_Mark_Handler);
+
+-- Escape key functionality
+tinsert(UISpecialFrames, "ArenaMarkerConfig");
 
 function Config:Player_Login()
 	if not ArenaMarkerDB then
