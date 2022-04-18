@@ -124,7 +124,7 @@ function Config:CreateButton(relativeFrame, buttonText, funcName)
 end
 
 function Config:CreateCheckButton(relativeFrame, buttonText, DB_var)
-	local checkbtn = CreateFrame("CheckButton", frameName, UIConfig, "UICheckButtonTemplate");
+	local checkbtn = CreateFrame("CheckButton", nil, UIConfig, "UICheckButtonTemplate");
 	checkbtn:ClearAllPoints();
 	checkbtn:SetPoint("CENTER", relativeFrame, "CENTER", 0, -45);
 	checkbtn.text:SetText(buttonText);
