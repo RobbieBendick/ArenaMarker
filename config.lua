@@ -65,9 +65,6 @@ end
 function Config:Toggle()
 	local menu = UIConfig or Config:CreateMenu();
 	menu:SetShown(not menu:IsShown());
-	ArenaMarkerDropDown:SetShown(menu:IsShown());
-	ArenaMarkerDropDownTwo:SetShown(menu:IsShown());
-	ArenaMarkerDropDownThree:SetShown(menu:IsShown());
 	if ArenaMarkerDB.petDropDownThreeMarkerID == -1 and ArenaMarkerDB.petDropDownTwoMarkerID == -1 and menu:IsShown() then
 		Config.SmallMenu();
 	end
