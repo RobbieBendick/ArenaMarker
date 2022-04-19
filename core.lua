@@ -130,65 +130,62 @@ function AM:PetCastEventHandler(self, caster, arg2, spellID)
     if instanceType ~= "arena" then return end
     if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
     if not ArenaMarkerDB.markSummonedPets then return end
-    if caster == "raid1" then return end
+    local felDomSpell = 333889
     for _, v in pairs(core.summons) do
         if spellID == v and UnitInParty(caster) then
-            C_Timer.After(0.5, function()
-                local function setMark(markerID)
-                    SetRaidTarget(caster .. "pet", markerID)
-                    removeValue(core.unused_markers, core.marker_strings[markerID])
-                end
+            -- delay until pet is fully active
+            C_Timer.NewTimer(0.5, function()
+                -- check if pet already has a mark
+                if not GetRaidTargetIndex(caster .. "pet") then
+                    local function setMark(markerID)
+                        SetRaidTarget(caster .. "pet", markerID)
+                        removeValue(core.unused_markers, core.marker_strings[markerID])
+                    end
 
-                -- if pet exists, handle the marking prio
-                if core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownMarkerID]] and caster == "player" then
-                    setMark(ArenaMarkerDB.petDropDownMarkerID)
-                elseif core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownTwoMarkerID]] then
-                    setMark(ArenaMarkerDB.petDropDownTwoMarkerID)
-                elseif core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownThreeMarkerID]] then
-                    setMark(ArenaMarkerDB.petDropDownThreeMarkerID)
-                else
-                    findUsableMark(core.unused_markers, caster .. "pet")
+                    -- check prio mark
+                    if core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownMarkerID]] then
+                        setMark(ArenaMarkerDB.petDropDownMarkerID)
+                    elseif core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownTwoMarkerID]] then
+                        setMark(ArenaMarkerDB.petDropDownTwoMarkerID)
+                    elseif core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownThreeMarkerID]] then
+                        setMark(ArenaMarkerDB.petDropDownThreeMarkerID)
+                    else
+                        findUsableMark(core.unused_markers, caster .. "pet")
+                    end
                 end
             end)
-            break
         end
+    end
+    -- Fel Domination Mark
+    if spellID == felDomSpell then
+        counter = C_Timer.NewTicker(1, function()
+            if not AuraUtil.FindAuraByName("Fel Domination", caster) then
+                C_Timer.After(0.5, function()
+                    if UnitExists(caster .. "pet") then
+                        local function setMark(markerID)
+                            SetRaidTarget(caster .. "pet", markerID)
+                            removeValue(core.unused_markers, core.marker_strings[markerID])
+                        end
+
+                        -- if pet exists, handle the marking prio
+                        if core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownMarkerID]] and caster == "player" then
+                            setMark(ArenaMarkerDB.petDropDownMarkerID)
+                        elseif core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownTwoMarkerID]] then
+                            setMark(ArenaMarkerDB.petDropDownTwoMarkerID)
+                        elseif core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownThreeMarkerID]] then
+                            setMark(ArenaMarkerDB.petDropDownThreeMarkerID)
+                        else
+                            findUsableMark(core.unused_markers, caster .. "pet")
+                        end
+                    end
+                end)
+                counter:Cancel();
+            end
+        end, 15)
     end
 end
 
 petCastEvent:SetScript("OnEvent", AM.PetCastEventHandler)
-
-local felDom = CreateFrame("Frame")
-local function felDomHandler(self, caster, arg2, spellID)
-    local felDomSpell = 18708
-    if caster == "raid1" then return end
-    if spellID == felDomSpell then
-        while UnitBuff(caster, felDomSpell) do
-            -- while buff exists do nothing and wait until buff is over
-        end
-        -- wait a sec and check if pet exists
-        C_Timer.After(0.5, function()
-            if UnitExists(caster .. "pet") then
-                local function setMark(markerID)
-                    SetRaidTarget(caster .. "pet", markerID)
-                    removeValue(core.unused_markers, core.marker_strings[markerID])
-                end
-
-                -- if pet exists, handle the marking prio
-                if core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownMarkerID]] and caster == "player" then
-                    setMark(ArenaMarkerDB.petDropDownMarkerID)
-                elseif core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownTwoMarkerID]] then
-                    setMark(ArenaMarkerDB.petDropDownTwoMarkerID)
-                elseif core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownThreeMarkerID]] then
-                    setMark(ArenaMarkerDB.petDropDownThreeMarkerID)
-                else
-                    findUsableMark(core.unused_markers, caster .. "pet")
-                end
-            end
-        end)
-    end
-end
-
-felDom:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", felDomHandler)
 
 function AM:CheckExistingMarksOnPlayers()
     -- reset table

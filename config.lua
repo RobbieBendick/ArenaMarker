@@ -152,7 +152,7 @@ function Config:InitDropdown(dropdown, menu, clickID, markerID, frame)
 	UIDropDownMenu_SetWidth(dropdown, 93);
 	UIDropDownMenu_Initialize(dropdown, menu);
 	UIDropDownMenu_SetSelectedID(dropdown, clickID);
-	setDropdownIcon(frame, markerID)
+	setDropdownIcon(frame, markerID);
 end
 
 function Config:CreateMenu()
@@ -237,7 +237,7 @@ function Config:CreateMenu()
 		local info = UIDropDownMenu_CreateInfo()
 		info.func = ArenaMarker_Pet_DropDown_OnClick
 		local function AddMark(marker, boolean, i)
-			info.text, info.checked = marker, boolean
+			info.text, info.checked = marker, boolean;
 			if i ~= nil then
 				if i == ArenaMarkerDB.petDropDownThreeMarkerID or i == ArenaMarkerDB.petDropDownTwoMarkerID then
 					info.disabled = true;
@@ -298,7 +298,7 @@ function Config:CreateMenu()
 		local info = UIDropDownMenu_CreateInfo()
 		info.func = ArenaMarker_Pet_DropDown_Two_OnClick
 		local function AddMark(marker, boolean, i)
-			info.text, info.checked = marker, boolean
+			info.text, info.checked = marker, boolean;
 			if i ~= nil then
 				if i == ArenaMarkerDB.petDropDownThreeMarkerID or i == ArenaMarkerDB.petDropDownMarkerID then
 					info.disabled = true;
@@ -353,7 +353,7 @@ function Config:CreateMenu()
 		local info = UIDropDownMenu_CreateInfo()
 		info.func = ArenaMarker_Pet_DropDown_Three_OnClick
 		local function AddMark(marker, boolean, i)
-			info.text, info.checked = marker, boolean
+			info.text, info.checked = marker, boolean;
 			if i ~= nil then
 				if i == ArenaMarkerDB.petDropDownTwoMarkerID or i == ArenaMarkerDB.petDropDownMarkerID then
 					info.disabled = true;
