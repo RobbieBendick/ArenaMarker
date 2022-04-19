@@ -130,7 +130,7 @@ function AM:PetCastEventHandler(self, caster, arg2, spellID)
     if instanceType ~= "arena" then return end
     if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
     if not ArenaMarkerDB.markSummonedPets then return end
-    local felDomSpell = 333889
+    local felDomSpell = 18708;
     for _, v in pairs(core.summons) do
         if spellID == v and UnitInParty(caster) then
             -- delay until pet is fully active
