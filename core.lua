@@ -160,10 +160,10 @@ function AM:PetCastEventHandler(self, caster, arg2, spellID)
         end
     end
     -- Fel Domination Mark
-    local felDomSpell = 120
+    local felDomSpell = 18708
     if spellID == felDomSpell and UnitInParty(caster) then
         counter = C_Timer.NewTicker(1, function()
-            if not AuraUtil.FindAuraByName("Arcane Intellect", caster) then
+            if not AuraUtil.FindAuraByName("Fel Domination", caster) then
                 C_Timer.After(0.5, function() AM.MarkPetWithPriority(self, caster) end)
                 counter:Cancel();
             end
