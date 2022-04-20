@@ -123,23 +123,23 @@ function AM:MarkPets()
 end
 
 function AM:MarkPetWithPriority(unit)
-    if not unit or not UnitExists(unit) then return end
-    if GetRaidTargetIndex(unit) then return end
+    if not unit or not UnitExists(unit .. "pet") then return end
+    if GetRaidTargetIndex(unit .. "pet") then return end
     local function setMark(markerID)
-        SetRaidTarget(unit, markerID)
+        SetRaidTarget(unit .. "pet", markerID)
         removeValue(core.unused_markers, core.marker_strings[markerID])
     end
 
     local ans;
     -- if pet exists, handle the marking prio
-    if core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownMarkerID]] and caster == "player" then
+    if core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownMarkerID]] and unit == "player" then
         ans = setMark(ArenaMarkerDB.petDropDownMarkerID)
     elseif core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownTwoMarkerID]] then
         ans = setMark(ArenaMarkerDB.petDropDownTwoMarkerID)
     elseif core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownThreeMarkerID]] then
         ans = setMark(ArenaMarkerDB.petDropDownThreeMarkerID)
     else
-        ans = findUsableMark(core.unused_markers, unit)
+        ans = findUsableMark(core.unused_markers, unit .. "pet")
     end
     return ans;
 end
@@ -152,18 +152,19 @@ function AM:PetCastEventHandler(self, caster, arg2, spellID)
     if instanceType ~= "arena" then return end
     if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
     if not ArenaMarkerDB.markSummonedPets then return end
+    if caster == "raid1" then return end
     for _, v in pairs(core.summons) do
         if spellID == v and UnitInParty(caster) then
             -- delay until pet is fully active
-            C_Timer.NewTimer(0.5, function() AM.MarkPetWithPriority(self, caster .. "pet") end)
+            C_Timer.NewTimer(0.5, function() AM.MarkPetWithPriority(self, caster) end)
         end
     end
     -- Fel Domination Mark
-    local felDomSpell = 18708
-    if spellID == felDomSpell then
+    local felDomSpell = 120
+    if spellID == felDomSpell and UnitInParty(caster) then
         counter = C_Timer.NewTicker(1, function()
-            if not AuraUtil.FindAuraByName("Fel Domination", caster) then
-                C_Timer.After(0.5, function() AM.MarkPetWithPriority(self, caster .. "pet") end)
+            if not AuraUtil.FindAuraByName("Arcane Intellect", caster) then
+                C_Timer.After(0.5, function() AM.MarkPetWithPriority(self, caster) end)
                 counter:Cancel();
             end
         end, 15)
