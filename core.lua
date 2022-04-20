@@ -122,6 +122,28 @@ function AM:MarkPets()
     end
 end
 
+function AM:MarkPetWithPriority(unit)
+    if not unit or not UnitExists(unit) then return end
+    if GetRaidTargetIndex(unit) then return end
+    local function setMark(markerID)
+        SetRaidTarget(unit, markerID)
+        removeValue(core.unused_markers, core.marker_strings[markerID])
+    end
+
+    local ans;
+    -- if pet exists, handle the marking prio
+    if core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownMarkerID]] and caster == "player" then
+        ans = setMark(ArenaMarkerDB.petDropDownMarkerID)
+    elseif core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownTwoMarkerID]] then
+        ans = setMark(ArenaMarkerDB.petDropDownTwoMarkerID)
+    elseif core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownThreeMarkerID]] then
+        ans = setMark(ArenaMarkerDB.petDropDownThreeMarkerID)
+    else
+        ans = findUsableMark(core.unused_markers, unit)
+    end
+    return ans;
+end
+
 local petCastEvent = CreateFrame("FRAME")
 petCastEvent:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 
@@ -130,56 +152,18 @@ function AM:PetCastEventHandler(self, caster, arg2, spellID)
     if instanceType ~= "arena" then return end
     if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
     if not ArenaMarkerDB.markSummonedPets then return end
-    if caster == "raid1" then return end
-    local felDomSpell = 18708;
     for _, v in pairs(core.summons) do
         if spellID == v and UnitInParty(caster) then
             -- delay until pet is fully active
-            C_Timer.NewTimer(0.5, function()
-                -- check if pet already has a mark
-                if not GetRaidTargetIndex(caster .. "pet") then
-                    local function setMark(markerID)
-                        SetRaidTarget(caster .. "pet", markerID)
-                        removeValue(core.unused_markers, core.marker_strings[markerID])
-                    end
-
-                    -- check prio mark
-                    if core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownMarkerID]] then
-                        setMark(ArenaMarkerDB.petDropDownMarkerID)
-                    elseif core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownTwoMarkerID]] then
-                        setMark(ArenaMarkerDB.petDropDownTwoMarkerID)
-                    elseif core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownThreeMarkerID]] then
-                        setMark(ArenaMarkerDB.petDropDownThreeMarkerID)
-                    else
-                        findUsableMark(core.unused_markers, caster .. "pet")
-                    end
-                end
-            end)
+            C_Timer.NewTimer(0.5, function() AM.MarkPetWithPriority(self, caster .. "pet") end)
         end
     end
     -- Fel Domination Mark
+    local felDomSpell = 18708
     if spellID == felDomSpell then
         counter = C_Timer.NewTicker(1, function()
             if not AuraUtil.FindAuraByName("Fel Domination", caster) then
-                C_Timer.After(0.5, function()
-                    if UnitExists(caster .. "pet") then
-                        local function setMark(markerID)
-                            SetRaidTarget(caster .. "pet", markerID)
-                            removeValue(core.unused_markers, core.marker_strings[markerID])
-                        end
-
-                        -- if pet exists, handle the marking prio
-                        if core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownMarkerID]] and caster == "player" then
-                            setMark(ArenaMarkerDB.petDropDownMarkerID)
-                        elseif core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownTwoMarkerID]] then
-                            setMark(ArenaMarkerDB.petDropDownTwoMarkerID)
-                        elseif core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownThreeMarkerID]] then
-                            setMark(ArenaMarkerDB.petDropDownThreeMarkerID)
-                        else
-                            findUsableMark(core.unused_markers, caster .. "pet")
-                        end
-                    end
-                end)
+                C_Timer.After(0.5, function() AM.MarkPetWithPriority(self, caster .. "pet") end)
                 counter:Cancel();
             end
         end, 15)
