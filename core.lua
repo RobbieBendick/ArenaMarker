@@ -90,38 +90,6 @@ function AM:MarkPlayers()
     end
 end
 
-function AM:MarkPets()
-    -- if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
-    if members() > 5 then return end
-    if UnitExists("pet") then
-        if not GetRaidTargetIndex("pet") then
-            --check if prio marks are aviailable
-            if core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownMarkerID]] then
-                SetRaidTarget("pet", ArenaMarkerDB.petDropDownMarkerID)
-                removeValue(core.unused_markers, core.marker_strings[ArenaMarkerDB.petDropDownMarkerID])
-            else
-                findUsableMark(core.unused_markers, "pet")
-            end
-        end
-    end
-    for i = 1, members() - 1 do
-        if UnitExists("party" .. i .. "pet") then
-            if not GetRaidTargetIndex("party" .. i .. "pet") then
-                --check if prio marks are aviailable
-                if core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownTwoMarkerID]] then
-                    SetRaidTarget("party" .. i .. "pet", ArenaMarkerDB.petDropDownTwoMarkerID)
-                    removeValue(core.unused_markers, core.marker_strings[ArenaMarkerDB.petDropDownTwoMarkerID])
-                elseif core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownThreeMarkerID]] then
-                    SetRaidTarget("party" .. i .. "pet", ArenaMarkerDB.petDropDownThreeMarkerID)
-                    removeValue(core.unused_markers, core.marker_strings[ArenaMarkerDB.petDropDownThreeMarkerID])
-                else
-                    findUsableMark(core.unused_markers, "party" .. i .. "pet")
-                end
-            end
-        end
-    end
-end
-
 function AM:MarkPetWithPriority(unit)
     if not unit or not UnitExists(unit .. "pet") then return end
     if GetRaidTargetIndex(unit .. "pet") then return end
@@ -131,7 +99,6 @@ function AM:MarkPetWithPriority(unit)
     end
 
     local ans;
-    -- if pet exists, handle the marking prio
     if core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownMarkerID]] and unit == "player" then
         ans = setMark(ArenaMarkerDB.petDropDownMarkerID)
     elseif core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownTwoMarkerID]] then
@@ -142,6 +109,18 @@ function AM:MarkPetWithPriority(unit)
         ans = findUsableMark(core.unused_markers, unit .. "pet")
     end
     return ans;
+end
+
+function AM:MarkPets()
+    -- if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
+    if members() > 5 then return end
+
+    -- Mark Player's pet
+    AM.MarkPetWithPriority(self, "player")
+    -- Mark Party's Pets
+    for i = 1, members() - 1 do
+        AM.MarkPetWithPriority(self, "party" .. i)
+    end
 end
 
 local petCastEvent = CreateFrame("FRAME")
@@ -162,6 +141,7 @@ function AM:PetCastEventHandler(self, caster, arg2, spellID)
     -- Fel Domination Mark
     local felDomSpell = 18708
     if spellID == felDomSpell and UnitInParty(caster) then
+        -- wait for the spell to be gone
         counter = C_Timer.NewTicker(1, function()
             if not AuraUtil.FindAuraByName("Fel Domination", caster) then
                 C_Timer.After(0.5, function() AM.MarkPetWithPriority(self, caster) end)

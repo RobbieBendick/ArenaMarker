@@ -415,7 +415,7 @@ function Config:Player_Login()
 	if not ArenaMarkerDB then
 		ArenaMarkerDB = {};
 		ArenaMarkerDB["allowPets"] = true;
-		ArenaMarkerDB["markSummonedPets"] = false;
+		ArenaMarkerDB["markSummonedPets"] = true;
 		ArenaMarkerDB["petDropDownMarkerID"] = -1;
 		ArenaMarkerDB["petDropDownClickID"] = -1;
 		ArenaMarkerDB["petDropDownTwoMarkerID"] = -1;
