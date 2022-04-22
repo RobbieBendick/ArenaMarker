@@ -40,15 +40,26 @@ core.marker_strings = {
 	"cross",
 	"skull"
 }
+-- 0 = dont mark in arena starting zone
+-- 1 = open up marking after gates open
 core.summons = {
-	31687, -- Water Elemental
-	883, -- Call Pet
-	34433, -- Shadowfiend
+	[883] = 1, -- Call Pet
+	[34433] = 1, -- Shadowfiend
+	[697] = 0, -- Voidwalker
+	[691] = 0, -- Felhunter
+	[31687] = 1, -- Water Elemental
 }
-eventHandlerTable = {
+
+core.afterGateSummons = {
+	697, -- Voidwalker
+	691, -- Felhunter
+}
+
+core.eventHandlerTable = {
 	["PLAYER_LOGIN"] = function(self) Config.Player_Login(self) end,
-	["CHAT_MSG_BG_SYSTEM_NEUTRAL"] = function(self, ...) AM.InArena(self, ...) end,
+	["CHAT_MSG_BG_SYSTEM_NEUTRAL"] = function(self, ...) AM.Main(self, ...) end,
 	["UNIT_SPELLCAST_SUCCEEDED"] = function(self, ...) AM.PetCastEventHandler(self, ...) end,
+	["ZONE_CHANGED_NEW_AREA"] = function(self) AM.IsOutOfArena(self) end,
 }
 core.texture_path = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_";
 MENU_WIDTH, MENU_HEIGHT, LARGE_MENU_HEIGHT = 180, 410, 470;
@@ -391,27 +402,6 @@ function Config:CreateMenu()
 	UIConfig:Hide();
 	return UIConfig;
 end
-
-local update = CreateFrame("Frame")
-local function Removed_Mark_Handler()
-	-- exit function if removed_markers doesnt have a valid value
-	local c = 0;
-	for _, k in pairs(core.removed_markers) do if k ~= nil then c = c + 1 end end
-	if c == 0 then return end
-	for i, v in pairs(core.removed_markers) do
-		if not contains(core.unused_markers, v) then
-			-- re-populate table if user clicks remove_mark button(s)
-			for j = 1, #core.marker_strings do
-				if v == j then
-					core.unused_markers[core.marker_strings[j]] = j;
-					removeValue(core.removed_markers, i);
-				end
-			end
-		end
-	end
-end
-
-update:SetScript("OnUpdate", Removed_Mark_Handler);
 
 -- Escape key functionality
 tinsert(UISpecialFrames, "ArenaMarkerConfig");
