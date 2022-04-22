@@ -114,7 +114,6 @@ end
 function AM:MarkPets()
     -- if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
     if members() > 5 then return end
-
     -- Mark Player's pet
     AM.MarkPetWithPriority(self, "player")
     -- Mark Party's Pets
@@ -126,11 +125,12 @@ end
 local petCastEvent = CreateFrame("FRAME")
 petCastEvent:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 
-function AM:PetCastEventHandler(self, caster, arg2, spellID)
+function AM:PetCastEventHandler(self, ...)
     local inInstance, instanceType = IsInInstance()
     if instanceType ~= "arena" then return end
     if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
     if not ArenaMarkerDB.markSummonedPets then return end
+    local caster, _, spellID = ...;
     if caster == "raid1" then return end
     for _, v in pairs(core.summons) do
         if spellID == v and UnitInParty(caster) then
@@ -141,7 +141,6 @@ function AM:PetCastEventHandler(self, caster, arg2, spellID)
     -- Fel Domination Mark
     local felDomSpell = 18708
     if spellID == felDomSpell and UnitInParty(caster) then
-        -- wait for the spell to be gone
         counter = C_Timer.NewTicker(1, function()
             if not AuraUtil.FindAuraByName("Fel Domination", caster) then
                 C_Timer.After(0.5, function() AM.MarkPetWithPriority(self, caster) end)
@@ -150,8 +149,6 @@ function AM:PetCastEventHandler(self, caster, arg2, spellID)
         end, 15)
     end
 end
-
-petCastEvent:SetScript("OnEvent", AM.PetCastEventHandler)
 
 function AM:CheckExistingMarksOnPlayers()
     -- reset table
@@ -182,29 +179,44 @@ function AM:CheckExistingMarksOnPlayers()
     end
 end
 
-function AM:MarkPetsWhenGatesOpen()
+function AM:MarkPetsWhenGatesOpen(txt)
     if not ArenaMarkerDB.allowPets then return end
     for k, v in pairs(core.translations) do
         if GetLocale() == k then
-            if string.find(a1, v) then
+            if string.find(txt, v) then
                 AM.MarkPets()
             end
         end
     end
 end
 
-function inArena(self, event, ...)
+function AM:InArena(self, ...)
     local inInstance, instanceType = IsInInstance()
     if instanceType ~= "arena" then return end
-    if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
+    -- if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
     if members() <= 1 then return end
-    if event == "CHAT_MSG_BG_SYSTEM_NEUTRAL" then
-        a1 = ...
-        AM.CheckExistingMarksOnPlayers()
-        AM.MarkPlayers()
-        AM.MarkPetsWhenGatesOpen()
-    end
+    local txt = ...;
+    AM.CheckExistingMarksOnPlayers()
+    AM.MarkPlayers()
+    AM.MarkPetsWhenGatesOpen(self, txt)
 end
 
-frame:RegisterEvent("CHAT_MSG_BG_SYSTEM_NEUTRAL")
-frame:SetScript("OnEvent", inArena)
+local addonLoadedFrame = CreateFrame("Frame");
+addonLoadedFrame:RegisterEvent("ADDON_LOADED");
+local eventFrame = CreateFrame("Frame");
+function Config:Addon_Loaded()
+    -- Register all necessary events
+    for event, func in pairs(eventHandlerTable) do
+        eventFrame:RegisterEvent(event);
+    end
+    SLASH_ARENAMARKER1 = "/am";
+    SlashCmdList.ARENAMARKER = Config.Toggle;
+end
+
+-- Event Handler
+function Config:EventHandler(event, ...)
+    return eventHandlerTable[event](self, event, ...);
+end
+
+addonLoadedFrame:SetScript("OnEvent", Config.Addon_Loaded);
+eventFrame:SetScript("OnEvent", Config.EventHandler);

@@ -45,6 +45,11 @@ core.summons = {
 	883, -- Call Pet
 	34433, -- Shadowfiend
 }
+eventHandlerTable = {
+	["PLAYER_LOGIN"] = function(self) Config.Player_Login(self) end,
+	["CHAT_MSG_BG_SYSTEM_NEUTRAL"] = function(self, ...) AM.InArena(self, ...) end,
+	["UNIT_SPELLCAST_SUCCEEDED"] = function(self, ...) AM.PetCastEventHandler(self, ...) end,
+}
 core.texture_path = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_";
 MENU_WIDTH, MENU_HEIGHT, LARGE_MENU_HEIGHT = 180, 410, 470;
 --------------------------------------
@@ -120,7 +125,7 @@ function Config:CreateButton(relativeFrame, buttonText, funcName)
 	btn:SetSize(110, 30);
 	btn:SetText(buttonText);
 	btn:SetScript("OnClick", funcName);
-	return btn;
+	return btn
 end
 
 function Config:CreateCheckButton(relativeFrame, buttonText, DB_var)
@@ -130,7 +135,7 @@ function Config:CreateCheckButton(relativeFrame, buttonText, DB_var)
 	checkbtn.text:SetFontObject("GameFontHighlight");
 	checkbtn:SetChecked(DB_var);
 	checkbtn:SetScript("OnClick", function() DB_var = checkbtn:GetChecked() end);
-	return checkbtn;
+	return checkbtn
 end
 
 function Config:CreateDropdownTitle(relativeFrame, dropText)
@@ -152,7 +157,7 @@ function Config:InitDropdown(dropdown, menu, clickID, markerID, frame)
 	UIDropDownMenu_SetWidth(dropdown, 93);
 	UIDropDownMenu_Initialize(dropdown, menu);
 	UIDropDownMenu_SetSelectedID(dropdown, clickID);
-	setDropdownIcon(frame, markerID);
+	setDropdownIcon(frame, markerID)
 end
 
 function Config:CreateMenu()
@@ -194,7 +199,7 @@ function Config:CreateMenu()
 	UIConfig.title:SetText("|cff33ff99ArenaMarker|r Options");
 
 	-- Mark Pets Check Button
-	UIConfig.markPetsCheckButton = self:CreateCheckButton(UIConfig.TitleBg, "        Mark Pets\n      (when arena\n     gates open)", ArenaMarkerDB.allowPets);
+	UIConfig.markPetsCheckButton = self:CreateCheckButton(UIConfig.TitleBg, "        Mark Pets\n      (when arena\n     gates open)", ArenaMarkerDB.allowPets)
 	UIConfig.markPetsCheckButton:SetPoint("CENTER", UIConfig.TitleBg, "CENTER", -45, -40);
 
 	-- Pet-Summon Check Button
@@ -237,7 +242,7 @@ function Config:CreateMenu()
 		local info = UIDropDownMenu_CreateInfo()
 		info.func = ArenaMarker_Pet_DropDown_OnClick
 		local function AddMark(marker, boolean, i)
-			info.text, info.checked = marker, boolean;
+			info.text, info.checked = marker, boolean
 			if i ~= nil then
 				if i == ArenaMarkerDB.petDropDownThreeMarkerID or i == ArenaMarkerDB.petDropDownTwoMarkerID then
 					info.disabled = true;
@@ -298,7 +303,7 @@ function Config:CreateMenu()
 		local info = UIDropDownMenu_CreateInfo()
 		info.func = ArenaMarker_Pet_DropDown_Two_OnClick
 		local function AddMark(marker, boolean, i)
-			info.text, info.checked = marker, boolean;
+			info.text, info.checked = marker, boolean
 			if i ~= nil then
 				if i == ArenaMarkerDB.petDropDownThreeMarkerID or i == ArenaMarkerDB.petDropDownMarkerID then
 					info.disabled = true;
@@ -353,7 +358,7 @@ function Config:CreateMenu()
 		local info = UIDropDownMenu_CreateInfo()
 		info.func = ArenaMarker_Pet_DropDown_Three_OnClick
 		local function AddMark(marker, boolean, i)
-			info.text, info.checked = marker, boolean;
+			info.text, info.checked = marker, boolean
 			if i ~= nil then
 				if i == ArenaMarkerDB.petDropDownTwoMarkerID or i == ArenaMarkerDB.petDropDownMarkerID then
 					info.disabled = true;
@@ -425,16 +430,3 @@ function Config:Player_Login()
 	end
 	DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99ArenaMarker|r by |cff69CCF0Mageiden|r. Type |cff33ff99/am|r for additional options.");
 end
-
-local enterWorld = CreateFrame("Frame");
-enterWorld:RegisterEvent("PLAYER_LOGIN");
-enterWorld:SetScript("OnEvent", Config.Player_Login);
-
-function Config:Addon_Loaded()
-	SLASH_ARENAMARKER1 = "/am";
-	SlashCmdList.ARENAMARKER = Config.Toggle;
-end
-
-local addonLoadedEvent = CreateFrame("Frame");
-addonLoadedEvent:RegisterEvent("ADDON_LOADED");
-addonLoadedEvent:SetScript("OnEvent", Config.Addon_Loaded);
