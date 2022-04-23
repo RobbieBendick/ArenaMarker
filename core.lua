@@ -58,7 +58,8 @@ function findUsableMark(table, target)
     removeValue(table, marker);
 end
 
-function setRaidTargetByClass(target, ...)
+function AM:SetRaidTargetByClass(target, ...)
+    if not target or GetUnitRaidTargetIndex(target) then return end
     local _, englishClass, _ = UnitClass(target);
     for k, v in pairs(core.relatives) do
         if k == englishClass then
@@ -77,16 +78,14 @@ end
 function AM:MarkPlayers()
     -- if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
     if members() > 5 then return end
-    -- mark self
     if not GetRaidTargetIndex("player") then
         Config:ChatFrame("Marking the group.");
-        setRaidTargetByClass("player");
     end
+    -- mark self
+    AM.SetRaidTargetByClass(self, "player");
     -- mark party members
     for i = 1, members() - 1 do
-        if not GetRaidTargetIndex("party" .. i) then
-            setRaidTargetByClass("party" .. i);
-        end
+        AM.SetRaidTargetByClass(self, "party" .. i);
     end
 end
 
@@ -114,9 +113,9 @@ end
 function AM:MarkPets()
     -- if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
     if members() > 5 then return end
-    -- Mark Player's Pet
+    -- mark player's pet
     AM.MarkPetWithPriority(self, "player");
-    -- Mark Party's Pets
+    -- mark party's pets
     for i = 1, members() - 1 do
         AM.MarkPetWithPriority(self, "party" .. i);
     end
@@ -151,7 +150,7 @@ function AM:CheckExistingMarksOnPlayers()
         ["cross"] = 7,
         ["skull"] = 8
     }
-    --update which marks are currently being used on players(not pets)
+    -- update which marks are currently being used on players(not pets)
     if GetRaidTargetIndex("player") then
         local marker = core.marker_strings[GetRaidTargetIndex("player")];
         if core.unused_markers[marker] then

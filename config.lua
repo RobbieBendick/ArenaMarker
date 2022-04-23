@@ -41,7 +41,7 @@ core.marker_strings = {
 	"skull"
 }
 -- 0 = dont mark in arena starting zone
--- 1 = open up marking after gates open
+-- 1 = mark all the time
 core.summons = {
 	[883] = 1, -- Call Pet
 	[34433] = 1, -- Shadowfiend
