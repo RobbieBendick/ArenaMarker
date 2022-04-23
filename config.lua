@@ -131,7 +131,7 @@ function Config:CreateButton(relativeFrame, buttonText, funcName)
 	btn:SetSize(110, 30);
 	btn:SetText(buttonText);
 	btn:SetScript("OnClick", funcName);
-	return btn
+	return btn;
 end
 
 function Config:CreateCheckButton(relativeFrame, buttonText, DB_var)
@@ -141,7 +141,7 @@ function Config:CreateCheckButton(relativeFrame, buttonText, DB_var)
 	checkbtn.text:SetFontObject("GameFontHighlight");
 	checkbtn:SetChecked(DB_var);
 	checkbtn:SetScript("OnClick", function() DB_var = checkbtn:GetChecked() end);
-	return checkbtn
+	return checkbtn;
 end
 
 function Config:CreateDropdownTitle(relativeFrame, dropText)
@@ -163,7 +163,7 @@ function Config:InitDropdown(dropdown, menu, clickID, markerID, frame)
 	UIDropDownMenu_SetWidth(dropdown, 93);
 	UIDropDownMenu_Initialize(dropdown, menu);
 	UIDropDownMenu_SetSelectedID(dropdown, clickID);
-	setDropdownIcon(frame, markerID)
+	setDropdownIcon(frame, markerID);
 end
 
 function Config:CreateMenu()
