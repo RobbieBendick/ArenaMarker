@@ -59,7 +59,7 @@ function findUsableMark(table, target)
 end
 
 function AM:SetRaidTargetByClass(target, ...)
-    if not target or GetUnitRaidTargetIndex(target) then return end
+    if not target or GetRaidTargetIndex(target) then return end
     local _, englishClass, _ = UnitClass(target);
     for k, v in pairs(core.relatives) do
         if k == englishClass then
@@ -192,9 +192,10 @@ function AM:SetSummonsToOne(self)
     core.summons = {
         [883] = 1, -- Call Pet
         [34433] = 1, -- Shadowfiend
-        [697] = 1, -- Voidwalker
-        [691] = 1, -- Felhunter
         [31687] = 1, -- Water Elemental
+        [688] = 1, -- Imp
+        [691] = 1, -- Felhunter
+        [697] = 1, -- Voidwalker
     }
 end
 
@@ -202,9 +203,10 @@ function AM:SetSummonsToZero(self)
     core.summons = {
         [883] = 1, -- Call Pet
         [34433] = 1, -- Shadowfiend
-        [697] = 0, -- Voidwalker
-        [691] = 0, -- Felhunter
         [31687] = 1, -- Water Elemental
+        [688] = 0, -- Imp
+        [691] = 0, -- Felhunter
+        [697] = 0, -- Voidwalker
     }
 end
 

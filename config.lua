@@ -41,20 +41,15 @@ core.marker_strings = {
 	"skull"
 }
 -- 0 = dont mark in arena starting zone
--- 1 = mark all the time
+-- 1 = mark when summoned in arena
 core.summons = {
 	[883] = 1, -- Call Pet
 	[34433] = 1, -- Shadowfiend
-	[697] = 0, -- Voidwalker
-	[691] = 0, -- Felhunter
 	[31687] = 1, -- Water Elemental
+	[688] = 0, -- Imp
+	[691] = 0, -- Felhunter
+	[697] = 0, -- Voidwalker
 }
-
-core.afterGateSummons = {
-	697, -- Voidwalker
-	691, -- Felhunter
-}
-
 core.eventHandlerTable = {
 	["PLAYER_LOGIN"] = function(self) Config.Player_Login(self) end,
 	["CHAT_MSG_BG_SYSTEM_NEUTRAL"] = function(self, ...) AM.Main(self, ...) end,
@@ -253,7 +248,7 @@ function Config:CreateMenu()
 		local info = UIDropDownMenu_CreateInfo()
 		info.func = ArenaMarker_Pet_DropDown_OnClick
 		local function AddMark(marker, boolean, i)
-			info.text, info.checked = marker, boolean
+			info.text, info.checked = marker, boolean;
 			if i ~= nil then
 				if i == ArenaMarkerDB.petDropDownThreeMarkerID or i == ArenaMarkerDB.petDropDownTwoMarkerID then
 					info.disabled = true;
@@ -314,7 +309,7 @@ function Config:CreateMenu()
 		local info = UIDropDownMenu_CreateInfo()
 		info.func = ArenaMarker_Pet_DropDown_Two_OnClick
 		local function AddMark(marker, boolean, i)
-			info.text, info.checked = marker, boolean
+			info.text, info.checked = marker, boolean;
 			if i ~= nil then
 				if i == ArenaMarkerDB.petDropDownThreeMarkerID or i == ArenaMarkerDB.petDropDownMarkerID then
 					info.disabled = true;
@@ -369,7 +364,7 @@ function Config:CreateMenu()
 		local info = UIDropDownMenu_CreateInfo()
 		info.func = ArenaMarker_Pet_DropDown_Three_OnClick
 		local function AddMark(marker, boolean, i)
-			info.text, info.checked = marker, boolean
+			info.text, info.checked = marker, boolean;
 			if i ~= nil then
 				if i == ArenaMarkerDB.petDropDownTwoMarkerID or i == ArenaMarkerDB.petDropDownMarkerID then
 					info.disabled = true;
