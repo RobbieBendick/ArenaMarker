@@ -51,10 +51,10 @@ core.summons = {
 	[697] = 0, -- Voidwalker
 }
 core.eventHandlerTable = {
-	["PLAYER_LOGIN"] = function(self) Config.Player_Login(self) end,
-	["CHAT_MSG_BG_SYSTEM_NEUTRAL"] = function(self, ...) AM.Main(self, ...) end,
-	["UNIT_SPELLCAST_SUCCEEDED"] = function(self, ...) AM.PetCastEventHandler(self, ...) end,
-	["ZONE_CHANGED_NEW_AREA"] = function(self) AM.IsOutOfArena(self) end,
+	["PLAYER_LOGIN"] = function(self) Config:Player_Login(self) end,
+	["CHAT_MSG_BG_SYSTEM_NEUTRAL"] = function(self, ...) AM:Main(self, ...) end,
+	["UNIT_SPELLCAST_SUCCEEDED"] = function(self, ...) AM:PetCastEventHandler(self, ...) end,
+	["ZONE_CHANGED_NEW_AREA"] = function(self) AM:IsOutOfArena(self) end,
 }
 core.texture_path = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_";
 MENU_WIDTH, MENU_HEIGHT, LARGE_MENU_HEIGHT = 180, 410, 470;
@@ -77,10 +77,10 @@ function Config:Toggle()
 	local menu = UIConfig or Config:CreateMenu();
 	menu:SetShown(not menu:IsShown());
 	if ArenaMarkerDB.petDropDownThreeMarkerID == -1 and ArenaMarkerDB.petDropDownTwoMarkerID == -1 and menu:IsShown() then
-		Config.SmallMenu();
+		Config:SmallMenu();
 	end
 	if not (ArenaMarkerDB.petDropDownThreeMarkerID == -1 and ArenaMarkerDB.petDropDownTwoMarkerID == -1) and menu:IsShown() then
-		Config.LargeMenu();
+		Config:LargeMenu();
 	end
 end
 
@@ -290,9 +290,9 @@ function Config:CreateMenu()
 				ArenaMarkerDB.petDropDownTwoMarkerID = j;
 				ArenaMarkerDB.petDropDownTwoClickID = self:GetID();
 				if i == 9 and ArenaMarkerDB.petDropDownThreeMarkerID == -1 then
-					Config.SmallMenu();
+					Config:SmallMenu();
 				else
-					Config.LargeMenu();
+					Config:LargeMenu();
 				end
 				break
 			end
@@ -345,9 +345,9 @@ function Config:CreateMenu()
 				ArenaMarkerDB.petDropDownThreeMarkerID = j;
 				ArenaMarkerDB.petDropDownThreeClickID = self:GetID();
 				if i == 9 and ArenaMarkerDB.petDropDownTwoMarkerID == -1 then
-					Config.SmallMenu();
+					Config:SmallMenu();
 				else
-					Config.LargeMenu();
+					Config:LargeMenu();
 				end
 				break
 			end

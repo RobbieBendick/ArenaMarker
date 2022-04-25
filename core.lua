@@ -82,10 +82,10 @@ function AM:MarkPlayers()
         Config:ChatFrame("Marking the group.");
     end
     -- mark self
-    AM.SetRaidTargetByClass(self, "player");
+    AM:SetRaidTargetByClass("player");
     -- mark party members
     for i = 1, members() - 1 do
-        AM.SetRaidTargetByClass(self, "party" .. i);
+        AM:SetRaidTargetByClass("party" .. i);
     end
 end
 
@@ -114,10 +114,10 @@ function AM:MarkPets()
     -- if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
     if members() > 5 then return end
     -- mark player's pet
-    AM.MarkPetWithPriority(self, "player");
+    AM:MarkPetWithPriority("player");
     -- mark party's pets
     for i = 1, members() - 1 do
-        AM.MarkPetWithPriority(self, "party" .. i);
+        AM:MarkPetWithPriority("party" .. i);
     end
 end
 
@@ -133,7 +133,7 @@ function AM:PetCastEventHandler(caster, ...)
     local _, spellID = ...;
     for key, val in pairs(core.summons) do
         if spellID == key and val > 0 then
-            C_Timer.After(0.5, function() AM.MarkPetWithPriority(self, caster) end);
+            C_Timer.After(0.5, function() AM:MarkPetWithPriority(caster) end);
         end
     end
 end
@@ -188,7 +188,7 @@ end
 
 update:SetScript("OnUpdate", AM.Removed_Mark_Handler);
 
-function AM:SetSummonsToOne(self)
+function AM:SetSummonsToOne()
     core.summons = {
         [883] = 1, -- Call Pet
         [34433] = 1, -- Shadowfiend
@@ -196,10 +196,9 @@ function AM:SetSummonsToOne(self)
         [688] = 1, -- Imp
         [691] = 1, -- Felhunter
         [697] = 1, -- Voidwalker
-    }
 end
 
-function AM:SetSummonsToZero(self)
+function AM:SetSummonsToZero()
     core.summons = {
         [883] = 1, -- Call Pet
         [34433] = 1, -- Shadowfiend
@@ -210,13 +209,13 @@ function AM:SetSummonsToZero(self)
     }
 end
 
-function AM:MarkPetsWhenGatesOpen(self, txt, ...)
+function AM:MarkPetsWhenGatesOpen(txt)
     if not ArenaMarkerDB.allowPets then return end
     for k, v in pairs(core.translations) do
         if GetLocale() == k then
             if string.find(txt, v) then
-                AM.MarkPets();
-                AM.SetSummonsToOne();
+                AM:MarkPets();
+                AM:SetSummonsToOne();
             end
         end
     end
@@ -225,7 +224,7 @@ end
 function AM:IsOutOfArena()
     local inInstance, instanceType = IsInInstance()
     if instanceType ~= "arena" then
-        AM.SetSummonsToZero();
+        AM:SetSummonsToZero();
     end
 end
 
@@ -234,9 +233,9 @@ function AM:Main(txt, ...)
     if instanceType ~= "arena" then return end
     if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
     if members() <= 1 then return end
-    AM.CheckExistingMarksOnPlayers();
-    AM.MarkPlayers();
-    AM.MarkPetsWhenGatesOpen(self, nil, txt, ...);
+    AM:CheckExistingMarksOnPlayers();
+    AM:MarkPlayers();
+    AM:MarkPetsWhenGatesOpen(txt);
 end
 
 local addonLoadedFrame = CreateFrame("Frame");
