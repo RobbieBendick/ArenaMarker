@@ -188,26 +188,26 @@ end
 
 update:SetScript("OnUpdate", AM.Removed_Mark_Handler);
 
-function AM:SetSummonsToOne()
-    core.summons = {
-        [883] = 1, -- Call Pet
-        [34433] = 1, -- Shadowfiend
-        [31687] = 1, -- Water Elemental
-        [697] = 1, -- Voidwalker
-        [688] = 1, -- Imp
-        [691] = 1, -- Felhunter
-    }
+function AM:SetSummonsToOneAfterGates(txt)
+    for k, v in pairs(core.translations) do
+        if GetLocale() == k then
+            if string.find(txt, v) then
+                for i, _ in pairs(core.summons) do
+                    core.summons[i] = 1;
+                end
+            end
+        end
+    end
 end
 
 function AM:SetSummonsToZero()
-    core.summons = {
-        [883] = 1, -- Call Pet
-        [34433] = 1, -- Shadowfiend
-        [31687] = 1, -- Water Elemental
-        [688] = 0, -- Imp
-        [691] = 0, -- Felhunter
-        [697] = 0, -- Voidwalker
-    }
+    for i, v in pairs(core.summons) do
+        for j = 1, #core.summonAfterGates do
+            if i == core.summonAfterGates[j] then
+                core.summons[i] = 0;
+            end
+        end
+    end
 end
 
 function AM:MarkPetsWhenGatesOpen(txt)
@@ -216,7 +216,6 @@ function AM:MarkPetsWhenGatesOpen(txt)
         if GetLocale() == k then
             if string.find(txt, v) then
                 AM:MarkPets();
-                AM:SetSummonsToOne();
             end
         end
     end
@@ -237,6 +236,7 @@ function AM:Main(self, txt, ...)
     AM:CheckExistingMarksOnPlayers();
     AM:MarkPlayers();
     AM:MarkPetsWhenGatesOpen(txt);
+    AM:SetSummonsToOneAfterGates(txt);
 end
 
 local addonLoadedFrame = CreateFrame("Frame");

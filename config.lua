@@ -49,6 +49,13 @@ core.summons = {
 	[688] = 0, -- Imp
 	[691] = 0, -- Felhunter
 	[697] = 0, -- Voidwalker
+	[712] = 0, -- Succubus
+}
+core.summonAfterGates = {
+	688, -- Imp
+	697, -- Voidwalker
+	691, -- Felhunter
+	712, -- Succubus
 }
 core.eventHandlerTable = {
 	["PLAYER_LOGIN"] = function(self) Config:Player_Login(self) end,
