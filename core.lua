@@ -140,7 +140,7 @@ end
 
 function AM:CheckExistingMarksOnPlayers()
     -- reset table
-    for i = 1, #core.unused_markers do
+    for i = 1, #core.marker_strings do
         core.unused_markers[core.marker_strings[i]] = i;
     end
     -- update which marks are currently being used on players(not pets)
