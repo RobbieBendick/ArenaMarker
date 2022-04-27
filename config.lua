@@ -226,7 +226,7 @@ function Config:CreateMenu()
 	-- Unmark Pets Button
 	UIConfig.unmarkPetsButton = self:CreateButton(UIConfig.markPetsButton, "Unmark Pets", Config.UnmarkPets);
 
-	-- Pet-Priority Dropdown
+	-- Self-Pet Priority Dropdown
 	local function ArenaMarker_Pet_DropDown_OnClick(self, arg1, arg2, checked)
 		local j = -1;
 		for i = #core.marker_strings + 1, 1, -1 do
@@ -247,7 +247,7 @@ function Config:CreateMenu()
 	end
 
 	function ArenaMarkerDropDownMenu(frame, level, menuList)
-		local info = UIDropDownMenu_CreateInfo()
+		local info = UIDropDownMenu_CreateInfo();
 		info.func = ArenaMarker_Pet_DropDown_OnClick
 		local function AddMark(marker, boolean, i)
 			info.text, info.checked = marker, boolean;
@@ -308,7 +308,7 @@ function Config:CreateMenu()
 	end
 
 	function ArenaMarkerDropDownMenuTwo(frame, level, menuList)
-		local info = UIDropDownMenu_CreateInfo()
+		local info = UIDropDownMenu_CreateInfo();
 		info.func = ArenaMarker_Pet_DropDown_Two_OnClick
 		local function AddMark(marker, boolean, i)
 			info.text, info.checked = marker, boolean;
@@ -363,7 +363,7 @@ function Config:CreateMenu()
 	end
 
 	function ArenaMarkerDropDownMenuThree(frame, level, menuList)
-		local info = UIDropDownMenu_CreateInfo()
+		local info = UIDropDownMenu_CreateInfo();
 		info.func = ArenaMarker_Pet_DropDown_Three_OnClick
 		local function AddMark(marker, boolean, i)
 			info.text, info.checked = marker, boolean;
