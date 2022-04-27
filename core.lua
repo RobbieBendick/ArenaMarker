@@ -140,16 +140,9 @@ end
 
 function AM:CheckExistingMarksOnPlayers()
     -- reset table
-    core.unused_markers = {
-        ["star"] = 1,
-        ["circle"] = 2,
-        ["diamond"] = 3,
-        ["triangle"] = 4,
-        ["moon"] = 5,
-        ["square"] = 6,
-        ["cross"] = 7,
-        ["skull"] = 8
-    }
+    for i = 1, #core.unused_markers do
+        core.unused_markers[core.marker_strings[i]] = i;
+    end
     -- update which marks are currently being used on players(not pets)
     if GetRaidTargetIndex("player") then
         local marker = core.marker_strings[GetRaidTargetIndex("player")];
