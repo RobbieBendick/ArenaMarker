@@ -124,7 +124,7 @@ end
 local petCastEvent = CreateFrame("FRAME")
 petCastEvent:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 
-function AM:PetCastEventHandler(caster, ...)
+function AM:PetCastEventHandler(self, caster, ...)
     local inInstance, instanceType = IsInInstance()
     if instanceType ~= "arena" then return end
     if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
@@ -193,9 +193,10 @@ function AM:SetSummonsToOne()
         [883] = 1, -- Call Pet
         [34433] = 1, -- Shadowfiend
         [31687] = 1, -- Water Elemental
+        [697] = 1, -- Voidwalker
         [688] = 1, -- Imp
         [691] = 1, -- Felhunter
-        [697] = 1, -- Voidwalker
+    }
 end
 
 function AM:SetSummonsToZero()
@@ -228,7 +229,7 @@ function AM:IsOutOfArena()
     end
 end
 
-function AM:Main(txt, ...)
+function AM:Main(self, txt, ...)
     local inInstance, instanceType = IsInInstance()
     if instanceType ~= "arena" then return end
     if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
