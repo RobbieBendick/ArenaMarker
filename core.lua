@@ -120,7 +120,7 @@ function AM:MarkPets()
     end
 end
 
-function AM:Repopulate_Unused_Markers()
+function AM:RepopulateUnusedMarkers()
     -- re-populate table if user clicks remove_mark button(s)
     for i, v in pairs(core.removed_markers) do
         if not contains(core.unused_markers, v) then
@@ -151,7 +151,7 @@ function AM:UnmarkPets()
             end
         end
     end
-    AM:Repopulate_Unused_Markers();
+    AM:RepopulateUnusedMarkers();
 end
 
 function AM:UnmarkPlayers()
@@ -170,7 +170,7 @@ function AM:UnmarkPlayers()
             SetRaidTarget("party" .. i, 0);
         end
     end
-    AM:Repopulate_Unused_Markers();
+    AM:RepopulateUnusedMarkers();
 end
 
 local petCastEvent = CreateFrame("FRAME")
