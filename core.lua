@@ -54,7 +54,7 @@ end
 
 function AM:FindUsableMark(target)
     local marker = "";
-    for k, v in pairs(table) do
+    for k, v in pairs(core.unused_markers) do
         if v ~= nil then
             marker = k;
             break
