@@ -158,8 +158,8 @@ function Config:CreateDropdownTitle(relativeFrame, dropText)
 	return dropTitle;
 end
 
-function Config:CreateDropdownIcon(relativeFrame)
-	local dropIcon = UIConfig:CreateTexture(nil, "MEDIUM", nil, 2);
+function Config:CreateDropdownIcon(relativeFrame, textureName)
+	local dropIcon = UIConfig:CreateTexture(textureName, "MEDIUM", nil, 2);
 	dropIcon:SetParent(relativeFrame);
 	dropIcon:SetPoint("LEFT", relativeFrame, 25, 2);
 	dropIcon:SetSize(16, 16);
@@ -255,7 +255,7 @@ function Config:CreateMenu()
 
 	function ArenaMarkerDropDownMenu(frame, level, menuList)
 		local info = UIDropDownMenu_CreateInfo();
-		info.func = ArenaMarker_Pet_DropDown_OnClick
+		info.func = ArenaMarker_Pet_DropDown_OnClick;
 		local function AddMark(marker, boolean, i)
 			info.text, info.checked = marker, boolean;
 			if i ~= nil then
@@ -316,7 +316,7 @@ function Config:CreateMenu()
 
 	function ArenaMarkerDropDownMenuTwo(frame, level, menuList)
 		local info = UIDropDownMenu_CreateInfo();
-		info.func = ArenaMarker_Pet_DropDown_Two_OnClick
+		info.func = ArenaMarker_Pet_DropDown_Two_OnClick;
 		local function AddMark(marker, boolean, i)
 			info.text, info.checked = marker, boolean;
 			if i ~= nil then
@@ -371,7 +371,7 @@ function Config:CreateMenu()
 
 	function ArenaMarkerDropDownMenuThree(frame, level, menuList)
 		local info = UIDropDownMenu_CreateInfo();
-		info.func = ArenaMarker_Pet_DropDown_Three_OnClick
+		info.func = ArenaMarker_Pet_DropDown_Three_OnClick;
 		local function AddMark(marker, boolean, i)
 			info.text, info.checked = marker, boolean;
 			if i ~= nil then
