@@ -4,5 +4,7 @@
 ## Notes: Gives your group class-based Raid Markers in arena.
 ## DefaultState: enabled
 ## SavedVariables: ArenaMarkerDB
+BurningCrusade.lua
+Retail.lua
 config.lua
 core.lua

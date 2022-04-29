@@ -17,33 +17,10 @@ local frame = CreateFrame("FRAME", "ArenaMarker")
         8 = White Skull; Priest
 --]]
 
--- HERE IS WHERE YOU WOULD CHANGE THE CLASS MARKER COMBINATIONS
-core.relatives = {
-    ["ROGUE"] = "star",
-    ["DRUID"] = "circle",
-    ["WARLOCK"] = "diamond",
-    ["PALADIN"] = "diamond",
-    ["HUNTER"] = "triangle",
-    ["MAGE"] = "moon",
-    ["SHAMAN"] = "square",
-    ["WARRIOR"] = "cross",
-    ["PRIEST"] = "skull"
-}
-
-
-
-
 function removeValue(table, value)
     local key = table[value];
     table[value] = nil;
     return key;
-end
-
-function contains(table, x)
-    for _, v in pairs(table) do
-        if v == x then return true end
-    end
-    return false;
 end
 
 function AM:SetMarkerAndRemove(unit, marker_string)
@@ -217,6 +194,9 @@ function AM:SetSummonsToOneAfterGates(txt)
         if GetLocale() == k then
             if string.find(txt, v) then
                 for i, _ in pairs(core.summons) do
+                    if core.summons[i] == 0 then
+                        table.insert(core.summonAfterGates, i)
+                    end
                     core.summons[i] = 1;
                 end
             end
@@ -268,7 +248,7 @@ local addonLoadedFrame = CreateFrame("Frame");
 addonLoadedFrame:RegisterEvent("ADDON_LOADED");
 local eventFrame = CreateFrame("Frame");
 function AM:Addon_Loaded()
-    -- Register all relevant events
+    -- register all relevant events
     for event, func in pairs(core.eventHandlerTable) do
         eventFrame:RegisterEvent(event);
     end
@@ -276,7 +256,7 @@ function AM:Addon_Loaded()
     SlashCmdList.ARENAMARKER = Config.Toggle;
 end
 
--- Event Handler
+-- event handler
 function AM:EventHandler(event, ...)
     return core.eventHandlerTable[event](self, ...);
 end
