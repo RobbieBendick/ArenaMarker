@@ -158,8 +158,8 @@ function Config:CreateDropdownTitle(relativeFrame, dropText)
 	return dropTitle;
 end
 
-function Config:CreateDropdownIcon(relativeFrame, textureName)
-	local dropIcon = UIConfig:CreateTexture(textureName, "MEDIUM", nil, 2);
+function Config:CreateDropdownIcon(relativeFrame)
+	local dropIcon = UIConfig:CreateTexture(nil, "MEDIUM", nil, 2);
 	dropIcon:SetParent(relativeFrame);
 	dropIcon:SetPoint("LEFT", relativeFrame, 25, 2);
 	dropIcon:SetSize(16, 16);
@@ -287,7 +287,7 @@ function Config:CreateMenu()
 	UIConfig.dropDownTitle = self:CreateDropdownTitle(UIConfig.unmarkPetsButton, "Self-Pet Mark");
 	UIConfig.dropDown = CreateFrame("Frame", "ArenaMarkerDropDown", UIConfig, "UIDropDownMenuTemplate");
 	UIConfig.dropDown:SetPoint("CENTER", UIConfig.dropDownTitle, 0, -23);
-	UIConfig.dropDownIcon = self:CreateDropdownIcon(UIConfig.dropDown, "ArenaMarkerIcon");
+	UIConfig.dropDownIcon = self:CreateDropdownIcon(UIConfig.dropDown);
 
 	--Second Prio Pet Dropdown
 	local function ArenaMarker_Pet_DropDown_Two_OnClick(self, arg1, arg2, checked)
@@ -342,7 +342,7 @@ function Config:CreateMenu()
 	UIConfig.dropDownTitleTwo = self:CreateDropdownTitle(UIConfig.dropDown, "Party-Pet Mark");
 	UIConfig.dropDownTwo = CreateFrame("Frame", "ArenaMarkerDropDownTwo", UIConfig, "UIDropDownMenuTemplate");
 	UIConfig.dropDownTwo:SetPoint("CENTER", UIConfig.dropDownTitleTwo, 0, -23);
-	UIConfig.dropDownIconTwo = self:CreateDropdownIcon(UIConfig.dropDownTwo, "ArenaMarkerIconTwo");
+	UIConfig.dropDownIconTwo = self:CreateDropdownIcon(UIConfig.dropDownTwo);
 
 	--Third Prio Pet Dropdown
 	local function ArenaMarker_Pet_DropDown_Three_OnClick(self, arg1, arg2, checked)
@@ -397,7 +397,7 @@ function Config:CreateMenu()
 	UIConfig.dropDownTitleThree = self:CreateDropdownTitle(UIConfig.dropDownTwo, "Extra Party-Pet Mark");
 	UIConfig.dropDownThree = CreateFrame("Frame", "ArenaMarkerDropDownThree", UIConfig, "UIDropDownMenuTemplate");
 	UIConfig.dropDownThree:SetPoint("CENTER", UIConfig.dropDownTitleThree, 0, -23);
-	UIConfig.dropDownIconThree = self:CreateDropdownIcon(UIConfig.dropDownThree, "ArenaMarkerIconThree");
+	UIConfig.dropDownIconThree = self:CreateDropdownIcon(UIConfig.dropDownThree);
 
 	self:InitDropdown(UIConfig.dropDown, ArenaMarkerDropDownMenu, ArenaMarkerDB.petDropDownClickID, ArenaMarkerDB.petDropDownMarkerID, UIConfig.dropDownIcon);
 	self:InitDropdown(UIConfig.dropDownTwo, ArenaMarkerDropDownMenuTwo, ArenaMarkerDB.petDropDownTwoClickID, ArenaMarkerDB.petDropDownTwoMarkerID, UIConfig.dropDownIconTwo);

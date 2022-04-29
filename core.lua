@@ -194,7 +194,7 @@ function AM:SetSummonsToOneAfterGates(txt)
 end
 
 function AM:SetSummonsToZero()
-    for i, v in pairs(core.summons) do
+    for i, _ in pairs(core.summons) do
         for j = 1, #core.summonAfterGates do
             if i == core.summonAfterGates[j] then
                 core.summons[i] = 0;
