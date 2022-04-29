@@ -81,7 +81,7 @@ end
 function AM:MarkPlayers()
     -- if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
     if members() > 5 then return end
-    if not GetRaidTargetIndex("player") then
+    if not GetRaidTargetIndex("player") or not core.unused_markers[GetRaidTargetIndex("player")] then
         Config:ChatFrame("Marking the group.");
     end
     -- mark self
