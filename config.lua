@@ -105,8 +105,8 @@ function Config:CreateDropdownTitle(relativeFrame, dropText)
 	return dropTitle;
 end
 
-function Config:CreateDropdownIcon(relativeFrame, textureName)
-	local dropIcon = UIConfig:CreateTexture(textureName, "MEDIUM", nil, 2);
+function Config:CreateDropdownIcon(relativeFrame)
+	local dropIcon = UIConfig:CreateTexture(nil, "MEDIUM", nil, 2);
 	dropIcon:SetParent(relativeFrame);
 	dropIcon:SetPoint("LEFT", relativeFrame, 25, 2);
 	dropIcon:SetSize(16, 16);
