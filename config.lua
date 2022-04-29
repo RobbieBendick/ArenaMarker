@@ -95,43 +95,6 @@ function Config:ChatFrame(t)
 	DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99ArenaMarker|r: " .. t);
 end
 
-function Config:UnmarkPlayers()
-	-- if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
-	if members() > 5 then return end
-	-- unmark self
-	if GetRaidTargetIndex("player") then
-		Config:ChatFrame("Unmarking the group.");
-		table.insert(core.removed_markers, GetRaidTargetIndex("player"));
-		SetRaidTarget("player", 0);
-	end
-	-- unmark party members
-	for i = 1, members() - 1 do
-		if GetRaidTargetIndex("party" .. i) then
-			table.insert(core.removed_markers, GetRaidTargetIndex("party" .. i));
-			SetRaidTarget("party" .. i, 0);
-		end
-	end
-end
-
-function Config:UnmarkPets()
-	-- if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
-	if members() > 5 then return end
-	if UnitExists("pet") then
-		if GetRaidTargetIndex("pet") then
-			table.insert(core.removed_markers, GetRaidTargetIndex("pet"));
-			SetRaidTarget("pet", 0);
-		end
-	end
-	for i = 1, members() - 1 do
-		if UnitExists("party" .. i .. "pet") then
-			if GetRaidTargetIndex("party" .. i .. "pet") then
-				table.insert(core.removed_markers, GetRaidTargetIndex("party" .. i .. "pet"));
-				SetRaidTarget("party" .. i .. "pet", 0);
-			end
-		end
-	end
-end
-
 function Config:CreateButton(relativeFrame, buttonText, funcName)
 	local btn = CreateFrame("Button", nil, relativeFrame, "GameMenuButtonTemplate");
 	btn:SetPoint("CENTER", relativeFrame, "CENTER", 0, -45);
@@ -225,13 +188,13 @@ function Config:CreateMenu()
 	UIConfig.markPlayersButton:SetPoint("CENTER", UIConfig.markPetsOnSummonCheckButton, "CENTER", 58, -45);
 
 	-- Unmark Players Button
-	UIConfig.unmarkPlayersButton = self:CreateButton(UIConfig.markPlayersButton, "Unmark Players", Config.UnmarkPlayers);
+	UIConfig.unmarkPlayersButton = self:CreateButton(UIConfig.markPlayersButton, "Unmark Players", AM.UnmarkPlayers);
 
 	-- Mark Pets Button
 	UIConfig.markPetsButton = self:CreateButton(UIConfig.unmarkPlayersButton, "Mark Pets", AM.MarkPets);
 
 	-- Unmark Pets Button
-	UIConfig.unmarkPetsButton = self:CreateButton(UIConfig.markPetsButton, "Unmark Pets", Config.UnmarkPets);
+	UIConfig.unmarkPetsButton = self:CreateButton(UIConfig.markPetsButton, "Unmark Pets", AM.UnmarkPets);
 
 	-- Self-Pet Priority Dropdown
 	local function ArenaMarker_Pet_DropDown_OnClick(self, arg1, arg2, checked)

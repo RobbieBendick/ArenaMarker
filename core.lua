@@ -81,7 +81,7 @@ end
 function AM:MarkPlayers()
     -- if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
     if members() > 5 then return end
-    if not GetRaidTargetIndex("player") or not core.unused_markers[GetRaidTargetIndex("player")] then
+    if not GetRaidTargetIndex("player") then
         Config:ChatFrame("Marking the group.");
     end
     -- mark self
@@ -118,6 +118,59 @@ function AM:MarkPets()
     for i = 1, members() - 1 do
         AM:MarkPetWithPriority("party" .. i);
     end
+end
+
+function AM:Repopulate_Unused_Markers()
+    -- re-populate table if user clicks remove_mark button(s)
+    for i, v in pairs(core.removed_markers) do
+        if not contains(core.unused_markers, v) then
+            for j = 1, #core.marker_strings do
+                if v == j then
+                    core.unused_markers[core.marker_strings[j]] = j;
+                    removeValue(core.removed_markers, i);
+                end
+            end
+        end
+    end
+end
+
+function AM:UnmarkPets()
+    -- if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
+    if members() > 5 then return end
+    if UnitExists("pet") then
+        if GetRaidTargetIndex("pet") then
+            table.insert(core.removed_markers, GetRaidTargetIndex("pet"));
+            SetRaidTarget("pet", 0);
+        end
+    end
+    for i = 1, members() - 1 do
+        if UnitExists("party" .. i .. "pet") then
+            if GetRaidTargetIndex("party" .. i .. "pet") then
+                table.insert(core.removed_markers, GetRaidTargetIndex("party" .. i .. "pet"));
+                SetRaidTarget("party" .. i .. "pet", 0);
+            end
+        end
+    end
+    AM:Repopulate_Unused_Markers();
+end
+
+function AM:UnmarkPlayers()
+    -- if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
+    if members() > 5 then return end
+    -- unmark self
+    if GetRaidTargetIndex("player") then
+        Config:ChatFrame("Unmarking the group.");
+        table.insert(core.removed_markers, GetRaidTargetIndex("player"));
+        SetRaidTarget("player", 0);
+    end
+    -- unmark party members
+    for i = 1, members() - 1 do
+        if GetRaidTargetIndex("party" .. i) then
+            table.insert(core.removed_markers, GetRaidTargetIndex("party" .. i));
+            SetRaidTarget("party" .. i, 0);
+        end
+    end
+    AM:Repopulate_Unused_Markers();
 end
 
 local petCastEvent = CreateFrame("FRAME")
@@ -158,27 +211,6 @@ function AM:CheckExistingMarks()
         Remove("party" .. i .. "pet");
     end
 end
-
-local update = CreateFrame("Frame")
-function AM:Removed_Mark_Handler()
-    -- exit function if removed_markers doesnt have a valid value
-    local c = 0;
-    for _, k in pairs(core.removed_markers) do if k ~= nil then c = c + 1 end end
-    if c == 0 then return end
-    for i, v in pairs(core.removed_markers) do
-        if not contains(core.unused_markers, v) then
-            -- re-populate table if user clicks remove_mark button(s)
-            for j = 1, #core.marker_strings do
-                if v == j then
-                    core.unused_markers[core.marker_strings[j]] = j;
-                    removeValue(core.removed_markers, i);
-                end
-            end
-        end
-    end
-end
-
-update:SetScript("OnUpdate", AM.Removed_Mark_Handler);
 
 function AM:SetSummonsToOneAfterGates(txt)
     for k, v in pairs(core.translations) do
