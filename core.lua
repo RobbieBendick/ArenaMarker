@@ -37,7 +37,7 @@ function AM:FindUsableMark(target)
             break
         end
     end
-    AM:SetMarkerAndRemove(target, marker)
+    AM:SetMarkerAndRemove(target, marker);
 end
 
 function AM:SetRaidTargetByClass(unit, ...)
@@ -46,7 +46,7 @@ function AM:SetRaidTargetByClass(unit, ...)
     for k, v in pairs(core.relatives) do
         if k == englishClass then
             if core.unused_markers[v] then
-                AM:SetMarkerAndRemove(unit, v)
+                AM:SetMarkerAndRemove(unit, v);
             else
                 AM:FindUsableMark(unit);
             end
@@ -150,8 +150,8 @@ function AM:UnmarkPlayers()
     AM:RepopulateUnusedMarkers();
 end
 
-local petCastEvent = CreateFrame("FRAME")
-petCastEvent:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
+local petCastEvent = CreateFrame("FRAME");
+petCastEvent:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED");
 
 function AM:PetCastEventHandler(self, caster, ...)
     local inInstance, instanceType = IsInInstance()

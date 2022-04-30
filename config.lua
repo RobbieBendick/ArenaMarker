@@ -3,10 +3,11 @@
 --------------------------------------
 local _, core = ...;
 core.Config = {};
+core.removed_markers = {};
+core.summonAfterGates = {};
 local Config = core.Config;
 local UIConfig;
 members = GetNumGroupMembers;
-core.removed_markers = {};
 core.translations = {
 	["enUS"] = "The Arena battle has begun!",
 	["enGB"] = "The Arena battle has begun!",
@@ -40,7 +41,6 @@ core.marker_strings = {
 	"cross",
 	"skull"
 }
-core.summonAfterGates = {}
 core.eventHandlerTable = {
 	["PLAYER_LOGIN"] = function(self) Config:Player_Login(self) end,
 	["CHAT_MSG_BG_SYSTEM_NEUTRAL"] = function(self, ...) AM:Main(self, ...) end,
