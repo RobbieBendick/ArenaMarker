@@ -75,7 +75,7 @@ function AM:MarkPetWithPriority(unit)
 
     local ans;
     if core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownMarkerID]] and unit == "player" then
-        ans = AM:SetMarkerAndRemove(unit .. "pet", core.marker_strings[ArenaMarkerDB.petDropDownMarkerID])
+        ans = AM:SetMarkerAndRemove(unit .. "pet", core.marker_strings[ArenaMarkerDB.petDropDownMarkerID]);
     elseif core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownTwoMarkerID]] then
         ans = AM:SetMarkerAndRemove(unit .. "pet", core.marker_strings[ArenaMarkerDB.petDropDownTwoMarkerID]);
     elseif core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownThreeMarkerID]] then
@@ -150,9 +150,6 @@ function AM:UnmarkPlayers()
     AM:RepopulateUnusedMarkers();
 end
 
-local petCastEvent = CreateFrame("FRAME");
-petCastEvent:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED");
-
 function AM:PetCastEventHandler(self, caster, ...)
     local inInstance, instanceType = IsInInstance()
     if instanceType ~= "arena" then return end
@@ -172,17 +169,15 @@ function AM:CheckExistingMarks()
     for i = 1, #core.marker_strings do
         core.unused_markers[core.marker_strings[i]] = i;
     end
-    -- update which marks are currently being used on players and pets
     local function Remove(unit)
         if not GetRaidTargetIndex(unit) then return end
         if not core.unused_markers[core.marker_strings[GetRaidTargetIndex(unit)]] then return end
         removeValue(core.unused_markers, core.marker_strings[GetRaidTargetIndex(unit)]);
     end
 
-    -- Player and Player's pet
+    -- update which marks are currently being used on players and pets
     Remove("player");
     Remove("pet");
-    -- Party and Party Pets
     for i = 1, members() - 1 do
         Remove("party" .. i);
         Remove("party" .. i .. "pet");

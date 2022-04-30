@@ -13,6 +13,8 @@ core.relatives = {
     ["WARRIOR"] = "cross",
     ["PRIEST"] = "skull"
 }
+-- 0 = dont mark in arena starting zone
+-- 1 = able to be marked when summoned in arena
 core.summons = {
     [883] = 1, -- Call Pet
     [34433] = 1, -- Shadowfiend
