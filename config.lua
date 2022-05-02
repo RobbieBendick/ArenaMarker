@@ -200,9 +200,9 @@ function Config:CreateMenu()
 		setDropdownIcon(UIConfig.dropDownIcon, j);
 	end
 
-	function Config:CreateDropdownMenu(disableOne, disableTwo)
+	function Config:CreateDropdownMenu(disableOne, disableTwo, func)
 		local info = UIDropDownMenu_CreateInfo();
-		info.func = ArenaMarker_Pet_DropDown_OnClick;
+		info.func = func;
 		local function AddMark(marker, boolean, i)
 			info.text, info.checked = marker, boolean;
 			if i ~= nil then
@@ -226,7 +226,7 @@ function Config:CreateMenu()
 	end
 
 	function ArenaMarkerDropDownMenu(frame, level, menuList)
-		Config:CreateDropdownMenu(ArenaMarkerDB.petDropDownThreeMarkerID, ArenaMarkerDB.petDropDownTwoMarkerID);
+		Config:CreateDropdownMenu(ArenaMarkerDB.petDropDownThreeMarkerID, ArenaMarkerDB.petDropDownTwoMarkerID, ArenaMarker_Pet_DropDown_OnClick);
 	end
 
 	function setDropdownText(dropdown, v) return UIDropDownMenu_SetText(dropdown, v) end
@@ -266,7 +266,7 @@ function Config:CreateMenu()
 	end
 
 	function ArenaMarkerDropDownMenuTwo(frame, level, menuList)
-		Config:CreateDropdownMenu(ArenaMarkerDB.petDropDownThreeMarkerID, ArenaMarkerDB.petDropDownMarkerID)
+		Config:CreateDropdownMenu(ArenaMarkerDB.petDropDownThreeMarkerID, ArenaMarkerDB.petDropDownMarkerID, ArenaMarker_Pet_DropDown_Two_OnClick)
 	end
 
 	UIConfig.dropDownTitleTwo = self:CreateDropdownTitle(UIConfig.dropDown, "Party-Pet Mark");
@@ -300,7 +300,7 @@ function Config:CreateMenu()
 	end
 
 	function ArenaMarkerDropDownMenuThree(frame, level, menuList)
-		Config:CreateDropdownMenu(ArenaMarkerDB.petDropDownTwoMarkerID, ArenaMarkerDB.petDropDownMarkerID)
+		Config:CreateDropdownMenu(ArenaMarkerDB.petDropDownTwoMarkerID, ArenaMarkerDB.petDropDownMarkerID, ArenaMarker_Pet_DropDown_Three_OnClick)
 	end
 
 	UIConfig.dropDownTitleThree = self:CreateDropdownTitle(UIConfig.dropDownTwo, "Extra Party-Pet Mark");
