@@ -240,14 +240,13 @@ function Config:CreateMenu()
 	UIConfig.dropDown:SetPoint("CENTER", UIConfig.dropDownTitle, 0, -23);
 	UIConfig.dropDownIcon = self:CreateDropdownIcon(UIConfig.dropDown);
 
-	--Second Prio Pet Dropdown
-	local function ArenaMarker_Pet_DropDown_Two_OnClick(self, arg1, arg2, checked)
+	function Config:CreatePetDropdownOnClick(disableOne, markerID, clickID)
 		local j = -1;
 		for i = #core.marker_strings + 1, 1, -1 do
 			if self:GetID() == i then
-				ArenaMarkerDB.petDropDownTwoMarkerID = j;
-				ArenaMarkerDB.petDropDownTwoClickID = self:GetID();
-				if i == 9 and ArenaMarkerDB.petDropDownThreeMarkerID == -1 then
+				markerID = j;
+				clickID = self:GetID();
+				if i == 9 and disableOne == -1 then
 					Config:SmallMenu();
 				else
 					Config:LargeMenu();
@@ -260,6 +259,11 @@ function Config:CreateMenu()
 				j = j + 1;
 			end
 		end
+	end
+
+	--Second Prio Pet Dropdown
+	local function ArenaMarker_Pet_DropDown_Two_OnClick(self, arg1, arg2, checked)
+		Config:CreatePetDropdownOnClick(ArenaMarkerDB.petDropDownThreeMarkerID, ArenaMarkerDB.petDropDownTwoMarkerID, ArenaMarkerDB.petDropDownTwoClickID)
 		setDropdownText(UIConfig.dropDownTwo, self.value);
 		setDropdownCheck(UIConfig.dropDownTwo, self:GetID());
 		setDropdownIcon(UIConfig.dropDownIconTwo, j);
