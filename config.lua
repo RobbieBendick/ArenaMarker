@@ -180,6 +180,37 @@ function Config:CreateMenu()
 	-- Unmark Pets Button
 	UIConfig.unmarkPetsButton = self:CreateButton(UIConfig.markPetsButton, "Unmark Pets", AM.UnmarkPets);
 
+	function setDropdownText(dropdown, v) return UIDropDownMenu_SetText(dropdown, v) end
+
+	function setDropdownCheck(dropdown, v) return UIDropDownMenu_SetSelectedID(dropdown, v) end
+
+	function setDropdownIcon(frame, j) if j == -1 then return frame:SetTexture(nil) end return frame:SetTexture(core.texture_path .. j) end
+
+	function Config:CreateDropdownMenu(disableOne, disableTwo, func)
+		local info = UIDropDownMenu_CreateInfo();
+		info.func = func;
+		local function AddMark(marker, boolean, i)
+			info.text, info.checked = marker, boolean;
+			if i ~= nil then
+				if i == disableOne or i == disableTwo then
+					info.disabled = true;
+				else
+					info.disabled = false;
+				end
+				info.icon = core.texture_path .. i;
+			else
+				info.icon = nil;
+				info.disabled = false;
+			end
+			return UIDropDownMenu_AddButton(info);
+		end
+
+		for i = #core.marker_strings, 1, -1 do
+			AddMark(core.marker_strings[i], false, i);
+		end
+		AddMark("none", false, nil);
+	end
+
 	-- Self-Pet Priority Dropdown
 	local function ArenaMarker_Pet_DropDown_OnClick(self, arg1, arg2, checked)
 		local j = -1;
@@ -201,35 +232,8 @@ function Config:CreateMenu()
 	end
 
 	function ArenaMarkerDropDownMenu(frame, level, menuList)
-		local info = UIDropDownMenu_CreateInfo();
-		info.func = ArenaMarker_Pet_DropDown_OnClick;
-		local function AddMark(marker, boolean, i)
-			info.text, info.checked = marker, boolean;
-			if i ~= nil then
-				if i == ArenaMarkerDB.petDropDownThreeMarkerID or i == ArenaMarkerDB.petDropDownTwoMarkerID then
-					info.disabled = true;
-				else
-					info.disabled = false;
-				end
-				info.icon = core.texture_path .. i;
-			else
-				info.icon = nil;
-				info.disabled = false;
-			end
-			return UIDropDownMenu_AddButton(info);
-		end
-
-		for i = #core.marker_strings, 1, -1 do
-			AddMark(core.marker_strings[i], false, i);
-		end
-		AddMark("none", false, nil);
+		Config:CreateDropdownMenu(ArenaMarkerDB.petDropDownThreeMarkerID, ArenaMarkerDB.petDropDownTwoMarkerID, ArenaMarker_Pet_DropDown_OnClick);
 	end
-
-	function setDropdownText(dropdown, v) return UIDropDownMenu_SetText(dropdown, v) end
-
-	function setDropdownCheck(dropdown, v) return UIDropDownMenu_SetSelectedID(dropdown, v) end
-
-	function setDropdownIcon(frame, j) if j == -1 then return frame:SetTexture(nil) end return frame:SetTexture(core.texture_path .. j) end
 
 	UIConfig.dropDownTitle = self:CreateDropdownTitle(UIConfig.unmarkPetsButton, "Self-Pet Mark");
 	UIConfig.dropDown = CreateFrame("Frame", "ArenaMarkerDropDown", UIConfig, "UIDropDownMenuTemplate");
@@ -262,28 +266,7 @@ function Config:CreateMenu()
 	end
 
 	function ArenaMarkerDropDownMenuTwo(frame, level, menuList)
-		local info = UIDropDownMenu_CreateInfo();
-		info.func = ArenaMarker_Pet_DropDown_Two_OnClick;
-		local function AddMark(marker, boolean, i)
-			info.text, info.checked = marker, boolean;
-			if i ~= nil then
-				if i == ArenaMarkerDB.petDropDownThreeMarkerID or i == ArenaMarkerDB.petDropDownMarkerID then
-					info.disabled = true;
-				else
-					info.disabled = false;
-				end
-				info.icon = core.texture_path .. i;
-			else
-				info.icon = nil;
-				info.disabled = false;
-			end
-			return UIDropDownMenu_AddButton(info);
-		end
-
-		for i = #core.marker_strings, 1, -1 do
-			AddMark(core.marker_strings[i], false, i);
-		end
-		AddMark("none", false, nil);
+		Config:CreateDropdownMenu(ArenaMarkerDB.petDropDownThreeMarkerID, ArenaMarkerDB.petDropDownMarkerID, ArenaMarker_Pet_DropDown_Two_OnClick);
 	end
 
 	UIConfig.dropDownTitleTwo = self:CreateDropdownTitle(UIConfig.dropDown, "Party-Pet Mark");
@@ -317,28 +300,7 @@ function Config:CreateMenu()
 	end
 
 	function ArenaMarkerDropDownMenuThree(frame, level, menuList)
-		local info = UIDropDownMenu_CreateInfo();
-		info.func = ArenaMarker_Pet_DropDown_Three_OnClick;
-		local function AddMark(marker, boolean, i)
-			info.text, info.checked = marker, boolean;
-			if i ~= nil then
-				if i == ArenaMarkerDB.petDropDownTwoMarkerID or i == ArenaMarkerDB.petDropDownMarkerID then
-					info.disabled = true;
-				else
-					info.disabled = false;
-				end
-				info.icon = core.texture_path .. i;
-			else
-				info.icon = nil;
-				info.disabled = false;
-			end
-			return UIDropDownMenu_AddButton(info);
-		end
-
-		for i = #core.marker_strings, 1, -1 do
-			AddMark(core.marker_strings[i], false, i);
-		end
-		AddMark("none", false, nil);
+		Config:CreateDropdownMenu(ArenaMarkerDB.petDropDownTwoMarkerID, ArenaMarkerDB.petDropDownMarkerID, ArenaMarker_Pet_DropDown_Three_OnClick);
 	end
 
 	UIConfig.dropDownTitleThree = self:CreateDropdownTitle(UIConfig.dropDownTwo, "Extra Party-Pet Mark");
