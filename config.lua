@@ -105,6 +105,12 @@ function Config:CreateDropdownTitle(relativeFrame, dropText)
 	return dropTitle;
 end
 
+function Config:CreateDropdown(relativeFrame, frameName)
+	dropDown = CreateFrame("Frame", frameName, UIConfig, "UIDropDownMenuTemplate");
+	dropDown:SetPoint("CENTER", relativeFrame, 0, -23);
+	return dropDown;
+end
+
 function Config:CreateDropdownIcon(relativeFrame)
 	local dropIcon = UIConfig:CreateTexture(nil, "MEDIUM", nil, 2);
 	dropIcon:SetParent(relativeFrame);
@@ -211,41 +217,13 @@ function Config:CreateMenu()
 		AddMark("none", false, nil);
 	end
 
-	-- Self-Pet Priority Dropdown
-	local function ArenaMarker_Pet_DropDown_OnClick(self, arg1, arg2, checked)
+	function Config:CreatePetDropdownOnClick(self, disableOne, markerIDString, clickIDString, frame, frameIcon)
 		local j = -1;
 		for i = #core.marker_strings + 1, 1, -1 do
 			if self:GetID() == i then
-				ArenaMarkerDB.petDropDownMarkerID = j;
-				ArenaMarkerDB.petDropDownClickID = self:GetID();
-				break
-			end
-			if j == -1 then
-				j = j + 2;
-			else
-				j = j + 1;
-			end
-		end
-		setDropdownText(UIConfig.dropDown, self.value);
-		setDropdownCheck(UIConfig.dropDown, self:GetID());
-		setDropdownIcon(UIConfig.dropDownIcon, j);
-	end
-
-	function ArenaMarkerDropDownMenu(frame, level, menuList)
-		Config:CreateDropdownMenu(ArenaMarkerDB.petDropDownThreeMarkerID, ArenaMarkerDB.petDropDownTwoMarkerID, ArenaMarker_Pet_DropDown_OnClick);
-	end
-
-	UIConfig.dropDownTitle = self:CreateDropdownTitle(UIConfig.unmarkPetsButton, "Self-Pet Mark");
-	UIConfig.dropDown = CreateFrame("Frame", "ArenaMarkerDropDown", UIConfig, "UIDropDownMenuTemplate");
-	UIConfig.dropDown:SetPoint("CENTER", UIConfig.dropDownTitle, 0, -23);
-	UIConfig.dropDownIcon = self:CreateDropdownIcon(UIConfig.dropDown);
-
-	function Config:CreatePetDropdownOnClick(disableOne, markerID, clickID)
-		local j = -1;
-		for i = #core.marker_strings + 1, 1, -1 do
-			if self:GetID() == i then
-				markerID = j;
-				clickID = self:GetID();
+				ArenaMarkerDB[markerIDString] = j;
+				ArenaMarkerDB[clickIDString] = self:GetID();
+				if frame:GetName() == "ArenaMarkerDropDown" then break end
 				if i == 9 and disableOne == -1 then
 					Config:SmallMenu();
 				else
@@ -259,14 +237,27 @@ function Config:CreateMenu()
 				j = j + 1;
 			end
 		end
+		setDropdownText(frame, self.value);
+		setDropdownCheck(frame, self:GetID());
+		setDropdownIcon(frameIcon, j);
 	end
+
+	-- Self-Pet Priority Dropdown
+	local function ArenaMarker_Pet_DropDown_OnClick(self, arg1, arg2, checked)
+		Config:CreatePetDropdownOnClick(self, nil, "petDropDownMarkerID", "petDropDownClickID", UIConfig.dropDown, UIConfig.dropDownIcon);
+	end
+
+	function ArenaMarkerDropDownMenu(frame, level, menuList)
+		Config:CreateDropdownMenu(ArenaMarkerDB.petDropDownThreeMarkerID, ArenaMarkerDB.petDropDownTwoMarkerID, ArenaMarker_Pet_DropDown_OnClick);
+	end
+
+	UIConfig.dropDownTitle = self:CreateDropdownTitle(UIConfig.unmarkPetsButton, "Self-Pet Mark");
+	UIConfig.dropDown = self:CreateDropdown(UIConfig.dropDownTitle, "ArenaMarkerDropDown")
+	UIConfig.dropDownIcon = self:CreateDropdownIcon(UIConfig.dropDown);
 
 	--Second Prio Pet Dropdown
 	local function ArenaMarker_Pet_DropDown_Two_OnClick(self, arg1, arg2, checked)
-		Config:CreatePetDropdownOnClick(ArenaMarkerDB.petDropDownThreeMarkerID, ArenaMarkerDB.petDropDownTwoMarkerID, ArenaMarkerDB.petDropDownTwoClickID)
-		setDropdownText(UIConfig.dropDownTwo, self.value);
-		setDropdownCheck(UIConfig.dropDownTwo, self:GetID());
-		setDropdownIcon(UIConfig.dropDownIconTwo, j);
+		Config:CreatePetDropdownOnClick(self, ArenaMarkerDB.petDropDownThreeMarkerID, "petDropDownTwoMarkerID", "petDropDownTwoClickID", UIConfig.dropDownTwo, UIConfig.dropDownIconTwo);
 	end
 
 	function ArenaMarkerDropDownMenuTwo(frame, level, menuList)
@@ -274,33 +265,12 @@ function Config:CreateMenu()
 	end
 
 	UIConfig.dropDownTitleTwo = self:CreateDropdownTitle(UIConfig.dropDown, "Party-Pet Mark");
-	UIConfig.dropDownTwo = CreateFrame("Frame", "ArenaMarkerDropDownTwo", UIConfig, "UIDropDownMenuTemplate");
-	UIConfig.dropDownTwo:SetPoint("CENTER", UIConfig.dropDownTitleTwo, 0, -23);
+	UIConfig.dropDownTwo = self:CreateDropdown(UIConfig.dropDownTitleTwo, "ArenaMarkerDropDownTwo");
 	UIConfig.dropDownIconTwo = self:CreateDropdownIcon(UIConfig.dropDownTwo);
 
 	--Third Prio Pet Dropdown
 	local function ArenaMarker_Pet_DropDown_Three_OnClick(self, arg1, arg2, checked)
-		local j = -1;
-		for i = #core.marker_strings + 1, 1, -1 do
-			if self:GetID() == i then
-				ArenaMarkerDB.petDropDownThreeMarkerID = j;
-				ArenaMarkerDB.petDropDownThreeClickID = self:GetID();
-				if i == 9 and ArenaMarkerDB.petDropDownTwoMarkerID == -1 then
-					Config:SmallMenu();
-				else
-					Config:LargeMenu();
-				end
-				break
-			end
-			if j == -1 then
-				j = j + 2;
-			else
-				j = j + 1;
-			end
-		end
-		setDropdownText(UIConfig.dropDownThree, self.value);
-		setDropdownCheck(UIConfig.dropDownThree, self:GetID());
-		setDropdownIcon(UIConfig.dropDownIconThree, j);
+		Config:CreatePetDropdownOnClick(self, ArenaMarkerDB.petDropDownTwoMarkerID, "petDropDownThreeMarkerID", "petDropDownThreeClickID", UIConfig.dropDownThree, UIConfig.dropDownIconThree);
 	end
 
 	function ArenaMarkerDropDownMenuThree(frame, level, menuList)
@@ -308,8 +278,7 @@ function Config:CreateMenu()
 	end
 
 	UIConfig.dropDownTitleThree = self:CreateDropdownTitle(UIConfig.dropDownTwo, "Extra Party-Pet Mark");
-	UIConfig.dropDownThree = CreateFrame("Frame", "ArenaMarkerDropDownThree", UIConfig, "UIDropDownMenuTemplate");
-	UIConfig.dropDownThree:SetPoint("CENTER", UIConfig.dropDownTitleThree, 0, -23);
+	UIConfig.dropDownThree = self:CreateDropdown(UIConfig.dropDownTitleThree, "ArenaMarkerDropDownThree");
 	UIConfig.dropDownIconThree = self:CreateDropdownIcon(UIConfig.dropDownThree);
 
 	self:InitDropdown(UIConfig.dropDown, ArenaMarkerDropDownMenu, ArenaMarkerDB.petDropDownClickID, ArenaMarkerDB.petDropDownMarkerID, UIConfig.dropDownIcon);
