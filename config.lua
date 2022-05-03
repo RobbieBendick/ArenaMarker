@@ -106,7 +106,7 @@ function Config:CreateDropdownTitle(relativeFrame, dropText)
 end
 
 function Config:CreateDropdown(relativeFrame, frameName)
-	dropDown = CreateFrame("Frame", frameName, UIConfig, "UIDropDownMenuTemplate");
+	local dropDown = CreateFrame("Frame", frameName, UIConfig, "UIDropDownMenuTemplate");
 	dropDown:SetPoint("CENTER", relativeFrame, 0, -23);
 	return dropDown;
 end
