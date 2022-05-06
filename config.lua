@@ -253,7 +253,7 @@ function Config:CreateMenu()
 				j = j + 1;
 			end
 		end
-		AM:SetDropdownInfo(frame, self.value, self:GetID(), frameIcon, j)
+		Config:SetDropdownInfo(frame, self.value, self:GetID(), frameIcon, j)
 	end
 
 	-- Self-Pet Priority Dropdown
