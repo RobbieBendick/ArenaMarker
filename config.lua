@@ -198,11 +198,15 @@ function Config:CreateMenu()
 	-- Unmark Pets Button
 	UIConfig.unmarkPetsButton = self:CreateButton(UIConfig.markPetsButton, "Unmark Pets", AM.UnmarkPets);
 
-	function setDropdownText(dropdown, v) return UIDropDownMenu_SetText(dropdown, v) end
-
-	function setDropdownCheck(dropdown, v) return UIDropDownMenu_SetSelectedID(dropdown, v) end
-
-	function setDropdownIcon(frame, j) if j == -1 then return frame:SetTexture(nil) end return frame:SetTexture(core.texture_path .. j) end
+	function Config:SetDropdownInfo(dropdown, textVal, selectedVal, iconFrame, j)
+		UIDropDownMenu_SetText(dropdown, textVal);
+		UIDropDownMenu_SetSelectedID(dropdown, selectedVal);
+		if j == -1 then
+			iconFrame:SetTexture(nil);
+		else
+			iconFrame:SetTexture(core.texture_path .. j);
+		end
+	end
 
 	function Config:CreateDropdownMenu(disableOne, disableTwo, func)
 		local info = UIDropDownMenu_CreateInfo();
@@ -249,9 +253,7 @@ function Config:CreateMenu()
 				j = j + 1;
 			end
 		end
-		setDropdownText(frame, self.value);
-		setDropdownCheck(frame, self:GetID());
-		setDropdownIcon(frameIcon, j);
+		AM:SetDropdownInfo(frame, self.value, self:GetID(), frameIcon, j)
 	end
 
 	-- Self-Pet Priority Dropdown
