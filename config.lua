@@ -127,6 +127,7 @@ function Config:InitDropdown(dropdown, menu, clickID, markerID, frame)
 end
 
 function Config:GetAndStoreConfigPoint()
+	-- store all necessary points
 	local t = { select(1, ArenaMarkerConfig:GetPoint()) };
 	for i = 1, #t do
 		if t[i] then
@@ -139,7 +140,7 @@ function Config:CreateMenu()
 	-- Menu
 	UIConfig = CreateFrame("Frame", "ArenaMarkerConfig", UIParent, "BasicFrameTemplateWithInset");
 	UIConfig:SetSize(MENU_WIDTH, MENU_HEIGHT);
-	UIConfig:SetPoint(ArenaMarkerDB.ArenaMarkerConfigPoint[1], nil, ArenaMarkerDB.ArenaMarkerConfigPoint[3], ArenaMarkerDB.ArenaMarkerConfigPoint[4], ArenaMarkerDB.ArenaMarkerConfigPoint[5]);
+	UIConfig:SetPoint(ArenaMarkerDB.ArenaMarkerConfigPoint[1], ArenaMarkerDB.ArenaMarkerConfigPoint[2], ArenaMarkerDB.ArenaMarkerConfigPoint[3], ArenaMarkerDB.ArenaMarkerConfigPoint[4], ArenaMarkerDB.ArenaMarkerConfigPoint[5]);
 
 	-- Make Menu Movable
 	UIConfig:SetMovable(true);
