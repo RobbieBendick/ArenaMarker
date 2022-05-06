@@ -123,7 +123,11 @@ function Config:InitDropdown(dropdown, menu, clickID, markerID, frame)
 	UIDropDownMenu_SetWidth(dropdown, 93);
 	UIDropDownMenu_Initialize(dropdown, menu);
 	UIDropDownMenu_SetSelectedID(dropdown, clickID);
-	setDropdownIcon(frame, markerID);
+	if markerID == -1 then
+		frame:SetTexture(nil);
+	else
+		frame:SetTexture(core.texture_path .. markerID);
+	end
 end
 
 function Config:GetAndStoreConfigPoint()
@@ -253,7 +257,7 @@ function Config:CreateMenu()
 				j = j + 1;
 			end
 		end
-		Config:SetDropdownInfo(frame, self.value, self:GetID(), frameIcon, j)
+		Config:SetDropdownInfo(frame, self.value, self:GetID(), frameIcon, j);
 	end
 
 	-- Self-Pet Priority Dropdown
