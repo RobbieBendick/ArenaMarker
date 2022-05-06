@@ -126,11 +126,20 @@ function Config:InitDropdown(dropdown, menu, clickID, markerID, frame)
 	setDropdownIcon(frame, markerID);
 end
 
+function Config:GetAndStoreConfigPoint()
+	for i = 1, 5 do
+		if i ~= 2 then
+			-- get all necessary points
+			ArenaMarkerDB.ArenaMarkerConfigPoint[i] = select(i, ArenaMarkerConfig:GetPoint());
+		end
+	end
+end
+
 function Config:CreateMenu()
 	-- Menu
 	UIConfig = CreateFrame("Frame", "ArenaMarkerConfig", UIParent, "BasicFrameTemplateWithInset");
 	UIConfig:SetSize(MENU_WIDTH, MENU_HEIGHT);
-	UIConfig:SetPoint("CENTER", 150, 50);
+	UIConfig:SetPoint(ArenaMarkerDB.ArenaMarkerConfigPoint[1], ArenaMarkerDB.ArenaMarkerConfigPoint[2], ArenaMarkerDB.ArenaMarkerConfigPoint[3], ArenaMarkerDB.ArenaMarkerConfigPoint[4], ArenaMarkerDB.ArenaMarkerConfigPoint[5]);
 
 	-- Make Menu Movable
 	UIConfig:SetMovable(true);
@@ -145,12 +154,14 @@ function Config:CreateMenu()
 		if button == "LeftButton" and self.isMoving then
 			self:StopMovingOrSizing();
 			self.isMoving = false;
+			Config:GetAndStoreConfigPoint();
 		end
 	end)
 	UIConfig:SetScript("OnHide", function(self)
 		if self.isMoving then
 			self:StopMovingOrSizing();
 			self.isMoving = false;
+			Config:GetAndStoreConfigPoint();
 		end
 	end)
 
@@ -302,6 +313,7 @@ end
 function Config:Player_Login()
 	if not ArenaMarkerDB then
 		ArenaMarkerDB = {};
+		ArenaMarkerDB["ArenaMarkerConfigPoint"] = { "CENTER", nil, "CENTER", 150, 50 };
 		ArenaMarkerDB["allowPets"] = true;
 		ArenaMarkerDB["markSummonedPets"] = true;
 		ArenaMarkerDB["petDropDownMarkerID"] = -1;
