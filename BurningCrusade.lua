@@ -13,14 +13,14 @@ core.relatives = {
     ["WARRIOR"] = "cross",
     ["PRIEST"] = "skull"
 }
--- 0 = dont mark in arena starting zone
--- 1 = able to be marked when summoned in arena
+-- false = dont mark in arena starting zone
+-- true = able to be marked when summoned in arena
 core.summons = {
-    [883] = 1, -- Call Pet
-    [34433] = 1, -- Shadowfiend
-    [31687] = 1, -- Water Elemental
-    [688] = 0, -- Imp
-    [691] = 0, -- Felhunter
-    [697] = 0, -- Voidwalker
-    [712] = 0, -- Succubus
+    [883] = true, -- Call Pet
+    [34433] = true, -- Shadowfiend
+    [31687] = true, -- Water Elemental
+    [688] = false, -- Imp
+    [691] = false, -- Felhunter
+    [697] = false, -- Voidwalker
+    [712] = false, -- Succubus
 }
