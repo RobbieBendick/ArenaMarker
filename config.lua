@@ -131,13 +131,8 @@ function Config:InitDropdown(dropdown, menu, clickID, markerID, frame)
 end
 
 function Config:GetAndStoreConfigPoint()
-	-- store all necessary points
-	local t = { ArenaMarkerConfig:GetPoint() };
-	for i = 1, #t do
-		if t[i] then
-			ArenaMarkerDB.ArenaMarkerConfigPoint[i] = t[i];
-		end
-	end
+	-- store all points
+	ArenaMarkerDB.ArenaMarkerConfigPoint = { ArenaMarkerConfig:GetPoint() };
 end
 
 function Config:CreateMenu()
