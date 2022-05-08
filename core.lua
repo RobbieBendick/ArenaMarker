@@ -56,7 +56,6 @@ function AM:SetRaidTargetByClass(unit, ...)
 end
 
 function AM:MarkPlayers()
-    -- if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
     if members() > 5 then return end
     if not GetRaidTargetIndex("player") then
         Config:ChatFrame("Marking the group.");
@@ -87,7 +86,6 @@ function AM:MarkPetWithPriority(unit)
 end
 
 function AM:MarkPets()
-    -- if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
     if members() > 5 then return end
     -- mark player's pet
     AM:MarkPetWithPriority("player");
