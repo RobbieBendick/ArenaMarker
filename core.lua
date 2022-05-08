@@ -110,7 +110,6 @@ function AM:RepopulateUnusedMarkers()
 end
 
 function AM:UnmarkPets()
-    -- if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
     if members() > 5 then return end
     if UnitExists("pet") then
         if GetRaidTargetIndex("pet") then
@@ -130,7 +129,6 @@ function AM:UnmarkPets()
 end
 
 function AM:UnmarkPlayers()
-    -- if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
     if members() > 5 then return end
     -- unmark self
     if GetRaidTargetIndex("player") then
