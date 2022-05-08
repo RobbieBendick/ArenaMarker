@@ -9,11 +9,11 @@ local frame = CreateFrame("FRAME", "ArenaMarker")
     Marker numbers:
         1 = Yellow 4-point Star; Rogue
         2 = Orange Circle; Druid
-        3 = Purple Diamond; Lock, Paladin
-        4 = Green Triangle; Hunter
+        3 = Purple Diamond; Lock, Paladin, (Demon Hunter on Retail)
+        4 = Green Triangle; Hunter, (Monk on Retail)
         5 = White Crescent Moon; Mage
         6 = Blue Square; Shaman
-        7 = Red "X" Cross; Warrior
+        7 = Red "X" Cross; Warrior, (Death Knight on Retail)
         8 = White Skull; Priest
 --]]
 
