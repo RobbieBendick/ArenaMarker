@@ -158,7 +158,7 @@ function AM:PetCastEventHandler(self, caster, ...)
     if caster == "raid1" then return end
     local _, spellID = ...;
     for key, val in pairs(core.summons) do
-        if spellID == key and val > 0 then
+        if spellID == key and val then
             C_Timer.After(0.5, function() AM:MarkPetWithPriority(caster) end);
         end
     end
@@ -184,26 +184,27 @@ function AM:CheckExistingMarks()
     end
 end
 
-function AM:SetSummonsToOneAfterGates(txt)
+function AM:SetSummonsToTrueAfterGates(txt)
     for k, v in pairs(core.translations) do
         if GetLocale() == k then
             if string.find(txt, v) then
                 for i, _ in pairs(core.summons) do
-                    if core.summons[i] == 0 then
+                    if not core.summons[i] then
                         table.insert(core.summonAfterGates, i)
                     end
-                    core.summons[i] = 1;
+                    core.summons[i] = true;
                 end
             end
         end
     end
 end
 
-function AM:SetSummonsToZero()
+function AM:SetSummonsToFalse()
     for i, _ in pairs(core.summons) do
         for j = 1, #core.summonAfterGates do
             if i == core.summonAfterGates[j] then
-                core.summons[i] = 0;
+                core.summons[i] = false;
+                removeValue(core.summonAfterGates, j);
             end
         end
     end
@@ -224,7 +225,7 @@ end
 function AM:IsOutOfArena()
     local inInstance, instanceType = IsInInstance()
     if instanceType ~= "arena" then
-        AM:SetSummonsToZero();
+        AM:SetSummonsToFalse();
     end
 end
 
@@ -236,7 +237,7 @@ function AM:Main(self, txt, ...)
     AM:CheckExistingMarks();
     AM:MarkPlayers();
     AM:MarkPetsWhenGatesOpen(txt);
-    AM:SetSummonsToOneAfterGates(txt);
+    AM:SetSummonsToTrueAfterGates(txt);
 end
 
 local addonLoadedFrame = CreateFrame("Frame");
