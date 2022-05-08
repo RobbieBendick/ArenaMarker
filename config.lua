@@ -132,7 +132,7 @@ end
 
 function Config:GetAndStoreConfigPoint()
 	-- store all necessary points
-	local t = { select(1, ArenaMarkerConfig:GetPoint()) };
+	local t = { ArenaMarkerConfig:GetPoint() };
 	for i = 1, #t do
 		if t[i] then
 			ArenaMarkerDB.ArenaMarkerConfigPoint[i] = t[i];
