@@ -4,7 +4,7 @@
 local _, core = ...;
 core.Config = {};
 core.removed_markers = {};
-core.summonAfterGates = {};
+core.summon_after_gates = {};
 local Config = core.Config;
 local UIConfig;
 members = GetNumGroupMembers;
@@ -212,7 +212,7 @@ function Config:CreateMenu()
 		info.func = func;
 		local function AddMark(marker, boolean, i)
 			info.text, info.checked = marker, boolean;
-			if i ~= nil then
+			if i then
 				if i == disableOne or i == disableTwo then
 					info.disabled = true;
 				else
@@ -268,7 +268,7 @@ function Config:CreateMenu()
 	UIConfig.dropDown = self:CreateDropdown(UIConfig.dropDownTitle, "ArenaMarkerDropDown");
 	UIConfig.dropDownIcon = self:CreateDropdownIcon(UIConfig.dropDown);
 
-	--Second Prio Pet Dropdown
+	-- Second Prio Pet Dropdown
 	local function ArenaMarker_Pet_DropDown_Two_OnClick(self, arg1, arg2, checked)
 		return Config:CreatePetDropdownOnClick(self, ArenaMarkerDB.petDropDownThreeMarkerID, "petDropDownTwoMarkerID", "petDropDownTwoClickID", UIConfig.dropDownTwo, UIConfig.dropDownIconTwo);
 	end
@@ -281,7 +281,7 @@ function Config:CreateMenu()
 	UIConfig.dropDownTwo = self:CreateDropdown(UIConfig.dropDownTitleTwo, "ArenaMarkerDropDownTwo");
 	UIConfig.dropDownIconTwo = self:CreateDropdownIcon(UIConfig.dropDownTwo);
 
-	--Third Prio Pet Dropdown
+	-- Third Prio Pet Dropdown
 	local function ArenaMarker_Pet_DropDown_Three_OnClick(self, arg1, arg2, checked)
 		return Config:CreatePetDropdownOnClick(self, ArenaMarkerDB.petDropDownTwoMarkerID, "petDropDownThreeMarkerID", "petDropDownThreeClickID", UIConfig.dropDownThree, UIConfig.dropDownIconThree);
 	end

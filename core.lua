@@ -32,7 +32,7 @@ end
 function AM:FindUsableMark(target)
     local marker = "";
     for k, v in pairs(core.unused_markers) do
-        if v ~= nil then
+        if v then
             marker = k;
             break
         end
@@ -186,9 +186,9 @@ function AM:SetSummonsToTrueAfterGates(txt)
             if string.find(txt, v) then
                 for i, _ in pairs(core.summons) do
                     if not core.summons[i] then
-                        table.insert(core.summonAfterGates, i)
+                        table.insert(core.summon_after_gates, i)
+                        core.summons[i] = true;
                     end
-                    core.summons[i] = true;
                 end
             end
         end
@@ -197,10 +197,10 @@ end
 
 function AM:SetSummonsToFalse()
     for i, _ in pairs(core.summons) do
-        for j = 1, #core.summonAfterGates do
-            if i == core.summonAfterGates[j] then
+        for j = 1, #core.summon_after_gates do
+            if i == core.summon_after_gates[j] then
                 core.summons[i] = false;
-                removeValue(core.summonAfterGates, j);
+                removeValue(core.summon_after_gates, j);
             end
         end
     end
