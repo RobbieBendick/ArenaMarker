@@ -246,6 +246,7 @@ function Config:CreateMenu()
 				end
 				break
 			end
+			-- j is finding the MarkerID from the ClickID
 			if j == -1 then
 				j = j + 2;
 			else
