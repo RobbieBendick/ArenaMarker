@@ -186,7 +186,7 @@ function AM:SetSummonsToTrueAfterGates(txt)
             if string.find(txt, v) then
                 for i, _ in pairs(core.summons) do
                     if not core.summons[i] then
-                        table.insert(core.summon_after_gates, i)
+                        table.insert(core.summon_after_gates, i);
                         core.summons[i] = true;
                     end
                 end

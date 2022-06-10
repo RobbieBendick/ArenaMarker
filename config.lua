@@ -130,7 +130,7 @@ function Config:InitDropdown(dropdown, menu, clickID, markerID, frame)
 	end
 end
 
-function Config:GetAndStoreConfigPoint()
+function Config:StoreConfigPoint()
 	-- store all points
 	ArenaMarkerDB.ArenaMarkerConfigPoint = { ArenaMarkerConfig:GetPoint() };
 end
@@ -154,14 +154,14 @@ function Config:CreateMenu()
 		if button == "LeftButton" and self.isMoving then
 			self:StopMovingOrSizing();
 			self.isMoving = false;
-			Config:GetAndStoreConfigPoint();
+			Config:StoreConfigPoint();
 		end
 	end)
 	UIConfig:SetScript("OnHide", function(self)
 		if self.isMoving then
 			self:StopMovingOrSizing();
 			self.isMoving = false;
-			Config:GetAndStoreConfigPoint();
+			Config:StoreConfigPoint();
 		end
 	end)
 
