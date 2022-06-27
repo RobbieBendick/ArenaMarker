@@ -3,7 +3,7 @@ local Config = core.Config;
 core.AM = {};
 AM = core.AM;
 members = GetNumGroupMembers;
-local frame = CreateFrame("FRAME", "ArenaMarker")
+local frame = CreateFrame("FRAME", "ArenaMarker");
 
 --[[
     Marker numbers:
