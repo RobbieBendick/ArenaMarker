@@ -1,4 +1,7 @@
-local _, core = ...;  -- Namespace
+--------------------------------------
+-- Namespace
+--------------------------------------
+local _, core = ...;
 local Config = core.Config;
 core.AM = {};
 AM = core.AM;
@@ -17,12 +20,9 @@ local frame = CreateFrame("FRAME", "ArenaMarker");
         8 = White Skull; Priest
 --]]
 
-function removeValue(table, value)
-    local key = table[value];
-    table[value] = nil;
-    return key;
-end
-
+--------------------------------------
+-- AM functions
+--------------------------------------
 function AM:SetMarkerAndRemove(unit, marker_string)
     if not unit or not core.unused_markers[marker_string] then return end
     SetRaidTarget(unit, core.unused_markers[marker_string]);
@@ -73,11 +73,11 @@ function AM:MarkPetWithPriority(unit)
     if GetRaidTargetIndex(unit .. "pet") then return end
 
     local ans;
-    if core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownMarkerID]] and unit == "player" then
+    if core.unused_markers[ core.marker_strings[ArenaMarkerDB.petDropDownMarkerID] ] and unit == "player" then
         ans = AM:SetMarkerAndRemove(unit .. "pet", core.marker_strings[ArenaMarkerDB.petDropDownMarkerID]);
-    elseif core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownTwoMarkerID]] then
+    elseif core.unused_markers[ core.marker_strings[ArenaMarkerDB.petDropDownTwoMarkerID] ] then
         ans = AM:SetMarkerAndRemove(unit .. "pet", core.marker_strings[ArenaMarkerDB.petDropDownTwoMarkerID]);
-    elseif core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownThreeMarkerID]] then
+    elseif core.unused_markers[ core.marker_strings[ArenaMarkerDB.petDropDownThreeMarkerID] ] then
         ans = AM:SetMarkerAndRemove(unit .. "pet", core.marker_strings[ArenaMarkerDB.petDropDownThreeMarkerID]);
     else
         ans = AM:FindUsableMark(unit .. "pet");
@@ -101,7 +101,7 @@ function AM:RepopulateUnusedMarkers()
         if not contains(core.unused_markers, v) then
             for j = 1, #core.marker_strings do
                 if v == j then
-                    core.unused_markers[core.marker_strings[j]] = j;
+                    core.unused_markers[ core.marker_strings[j] ] = j;
                     removeValue(core.removed_markers, i);
                 end
             end
@@ -163,11 +163,11 @@ end
 function AM:CheckExistingMarks()
     -- reset table
     for i = 1, #core.marker_strings do
-        core.unused_markers[core.marker_strings[i]] = i;
+        core.unused_markers[ core.marker_strings[i] ] = i;
     end
     local function Remove(unit)
         if not GetRaidTargetIndex(unit) then return end
-        if not core.unused_markers[core.marker_strings[GetRaidTargetIndex(unit)]] then return end
+        if not core.unused_markers[ core.marker_strings[GetRaidTargetIndex(unit)] ] then return end
         removeValue(core.unused_markers, core.marker_strings[GetRaidTargetIndex(unit)]);
     end
 

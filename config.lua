@@ -321,9 +321,10 @@ function Config:CreateMenu()
 	return UIConfig;
 end
 
--- Escape key functionality
+-- escape key functionality
 tinsert(UISpecialFrames, "ArenaMarkerConfig");
 
+-- small helper funcs
 function contains(table, x)
 	for _, v in pairs(table) do
 		if v == x then return true end
@@ -331,6 +332,13 @@ function contains(table, x)
 	return false;
 end
 
+function removeValue(table, value)
+	local key = table[value];
+	table[value] = nil;
+	return key;
+end
+
+-- init DB
 function Config:Player_Login()
 	if not ArenaMarkerDB then
 		ArenaMarkerDB = {};
