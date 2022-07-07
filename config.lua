@@ -245,9 +245,11 @@ function Config:CreateMenu()
 		local j = -1;
 		for i = #core.marker_strings + 1, 1, -1 do
 			if self:GetID() == i then
+				-- set marker & click ID
 				ArenaMarkerDB[markerIDString] = j;
 				ArenaMarkerDB[clickIDString] = self:GetID();
 				if frame:GetName() == "ArenaMarkerDropDown" then break end
+				-- check which menu we need
 				if i == 9 and disableOne == -1 then
 					Config:SmallMenu();
 				else
