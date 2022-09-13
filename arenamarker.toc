@@ -1,9 +1,10 @@
-## Interface: 20501
+## Interface: 30400
 ## Author: Mageiden
 ## Title: ArenaMarker
 ## Notes: Gives your group class-based Raid Markers in arena.
 ## DefaultState: enabled
 ## SavedVariables: ArenaMarkerDB
+WOTLK.lua
 BurningCrusade.lua
 Retail.lua
 config.lua
