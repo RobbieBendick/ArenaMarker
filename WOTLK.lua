@@ -17,12 +17,12 @@ core.relatives = {
 
 -- false = dont mark in arena starting zone
 -- true = able to be marked when summoned in arena
-
--- TODO: add wotlk pet-summon spells
 core.summons = {
     [883] = true, -- Call Pet
     [34433] = true, -- Shadowfiend
     [31687] = true, -- Water Elemental
+    [46584] = true, -- Ghoul
+    [49206] = true, -- Gargoyle
     [688] = false, -- Imp
     [691] = false, -- Felhunter
     [697] = false, -- Voidwalker
