@@ -11,8 +11,8 @@ core.relatives = {
     ["MAGE"] = "moon",
     ["SHAMAN"] = "square",
     ["WARRIOR"] = "cross",
+    ["DEATHKNIGHT"] = "cross",
     ["PRIEST"] = "skull",
-    ["DEATHKNIGHT"] = "skull",
 }
 
 -- false = dont mark in arena starting zone
