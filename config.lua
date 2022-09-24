@@ -6,7 +6,7 @@ core.Config = {};
 core.removed_markers = {};
 core.summon_after_gates = {};
 local Config = core.Config;
-local UIConfig;
+local AMConfig;
 members = GetNumGroupMembers;
 core.translations = {
 	["enUS"] = "The Arena battle has begun!",
@@ -53,9 +53,9 @@ core.texture_path = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_";
 --------------------------------------
 
 function Config:Toggle()
-	UIConfig:SetShown(not UIConfig:IsShown());
-	InterfaceOptionsFrame_OpenToCategory(UIConfig);
-	InterfaceOptionsFrame_OpenToCategory(UIConfig);
+	AMConfig:SetShown(not AMConfig:IsShown());
+	InterfaceOptionsFrame_OpenToCategory(AMConfig);
+	InterfaceOptionsFrame_OpenToCategory(AMConfig);
 
 	Config:CheckMenu();
 end
@@ -70,7 +70,7 @@ function Config:CreateButton(relativeFrame, buttonText, funcName, xOff, yOff)
 end
 
 function Config:CreateCheckButton(relativeFrame, buttonText, DB_var)
-	local checkbtn = CreateFrame("CheckButton", nil, UIConfig, "UICheckButtonTemplate");
+	local checkbtn = CreateFrame("CheckButton", nil, AMConfig, "UICheckButtonTemplate");
 	checkbtn:SetPoint("CENTER", relativeFrame, "CENTER", 0, -35);
 	checkbtn.text:SetText(buttonText);
 	checkbtn.text:SetFontObject("GameFontHighlight");
@@ -80,20 +80,20 @@ function Config:CreateCheckButton(relativeFrame, buttonText, DB_var)
 end
 
 function Config:CreateDropdownTitle(relativeFrame, dropText)
-	local dropTitle = UIConfig:CreateFontString(nil, "OVERLAY", "GameFontHighlight");
+	local dropTitle = AMConfig:CreateFontString(nil, "OVERLAY", "GameFontHighlight");
 	dropTitle:SetText(dropText);
 	dropTitle:SetPoint("CENTER", relativeFrame, 0, -32);
 	return dropTitle;
 end
 
 function Config:CreateDropdown(relativeFrame, frameName)
-	local dropDown = CreateFrame("Frame", frameName, UIConfig, "UIDropDownMenuTemplate");
+	local dropDown = CreateFrame("Frame", frameName, AMConfig, "UIDropDownMenuTemplate");
 	dropDown:SetPoint("CENTER", relativeFrame, 0, -23);
 	return dropDown;
 end
 
 function Config:CreateDropdownIcon(relativeFrame)
-	local dropIcon = UIConfig:CreateTexture(nil, "MEDIUM", nil, 2);
+	local dropIcon = AMConfig:CreateTexture(nil, "MEDIUM", nil, 2);
 	dropIcon:SetParent(relativeFrame);
 	dropIcon:SetPoint("LEFT", relativeFrame, 25, 2);
 	dropIcon:SetSize(16, 16);
@@ -112,23 +112,23 @@ function Config:InitDropdown(dropdown, menu, clickID, markerID, frame)
 end
 
 function Config:SmallMenu()
-	UIConfig.dropDownTitleThree:Hide();
-	UIConfig.dropDownThree:Hide();
+	AMConfig.dropDownTitleThree:Hide();
+	AMConfig.dropDownThree:Hide();
 end
 
 function Config:LargeMenu()
-	UIConfig.dropDownTitleThree:Show();
-	UIConfig.dropDownThree:Show();
+	AMConfig.dropDownTitleThree:Show();
+	AMConfig.dropDownThree:Show();
 end
 
 function Config:CheckMenu()
 	-- both party-pet options are 'none'
-	if ArenaMarkerDB.petDropDownThreeMarkerID == -1 and ArenaMarkerDB.petDropDownTwoMarkerID == -1 and UIConfig:IsShown() then
+	if ArenaMarkerDB.petDropDownThreeMarkerID == -1 and ArenaMarkerDB.petDropDownTwoMarkerID == -1 and AMConfig:IsShown() then
 		return Config:SmallMenu();
 	end
 	-- atleast 1 other party-pet option isnt 'none'
 	if not (ArenaMarkerDB.petDropDownThreeMarkerID == -1 and ArenaMarkerDB.petDropDownTwoMarkerID == -1) and
-		UIConfig:IsShown() then
+		AMConfig:IsShown() then
 		return Config:LargeMenu();
 	end
 end
@@ -139,42 +139,42 @@ end
 
 function Config:CreateMenu()
 	-- Menu
-	UIConfig = CreateFrame("Frame", "ArenaMarkerConfig", UIParent);
+	AMConfig = CreateFrame("Frame", "ArenaMarkerConfig", UIParent);
 
-	UIConfig.name = "ArenaMarker";
+	AMConfig.name = "ArenaMarker";
 
 	-- Options Title
-	UIConfig.title = UIConfig:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge");
-	UIConfig.title:SetParent(UIConfig);
-	UIConfig.title:SetPoint("TOPLEFT", 16, -16);
-	UIConfig.title:SetText("|cff33ff99" .. UIConfig.name .. "|r");
-	UIConfig.title:SetJustifyH("LEFT");
+	AMConfig.title = AMConfig:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge");
+	AMConfig.title:SetParent(AMConfig);
+	AMConfig.title:SetPoint("TOPLEFT", 16, -16);
+	AMConfig.title:SetText("|cff33ff99" .. AMConfig.name .. "|r");
+	AMConfig.title:SetJustifyH("LEFT");
 
 	-- Mark Pets Check Button
-	UIConfig.markPetsCheckButton = self:CreateCheckButton(UIConfig.title,
+	AMConfig.markPetsCheckButton = self:CreateCheckButton(AMConfig.title,
 		"Mark Pets (when arena gates open)", ArenaMarkerDB.allowPets)
-	UIConfig.markPetsCheckButton:SetPoint("BOTTOMLEFT", UIConfig.title, "BOTTOMLEFT", 0, -45);
-	UIConfig.markPetsCheckButton:SetScript("OnClick",
-		function() ArenaMarkerDB.allowPets = UIConfig.markPetsCheckButton:GetChecked() end);
+	AMConfig.markPetsCheckButton:SetPoint("BOTTOMLEFT", AMConfig.title, "BOTTOMLEFT", 0, -45);
+	AMConfig.markPetsCheckButton:SetScript("OnClick",
+		function() ArenaMarkerDB.allowPets = AMConfig.markPetsCheckButton:GetChecked() end);
 
 	-- Pet-Summon Check Button
-	UIConfig.markPetsOnSummonCheckButton = self:CreateCheckButton(UIConfig.markPetsCheckButton,
+	AMConfig.markPetsOnSummonCheckButton = self:CreateCheckButton(AMConfig.markPetsCheckButton,
 		"Mark Pets when summoned (in arena)", ArenaMarkerDB.markSummonedPets);
-	UIConfig.markPetsOnSummonCheckButton:SetScript("OnClick",
-		function() ArenaMarkerDB.markSummonedPets = UIConfig.markPetsOnSummonCheckButton:GetChecked() end);
+	AMConfig.markPetsOnSummonCheckButton:SetScript("OnClick",
+		function() ArenaMarkerDB.markSummonedPets = AMConfig.markPetsOnSummonCheckButton:GetChecked() end);
 
 	-- Mark Players Button
-	UIConfig.markPlayersButton = self:CreateButton(UIConfig.markPetsOnSummonCheckButton, "Mark Players", AM.MarkPlayers, 44
+	AMConfig.markPlayersButton = self:CreateButton(AMConfig.markPetsOnSummonCheckButton, "Mark Players", AM.MarkPlayers, 44
 		, -40);
 
 	-- Unmark Players Button
-	UIConfig.unmarkPlayersButton = self:CreateButton(UIConfig.markPlayersButton, "Unmark Players", AM.UnmarkPlayers, 120, 0);
+	AMConfig.unmarkPlayersButton = self:CreateButton(AMConfig.markPlayersButton, "Unmark Players", AM.UnmarkPlayers, 120, 0);
 
 	-- Mark Pets Button
-	UIConfig.markPetsButton = self:CreateButton(UIConfig.markPlayersButton, "Mark Pets", AM.MarkPets, 0, -45);
+	AMConfig.markPetsButton = self:CreateButton(AMConfig.markPlayersButton, "Mark Pets", AM.MarkPets, 0, -45);
 
 	-- Unmark Pets Button
-	UIConfig.unmarkPetsButton = self:CreateButton(UIConfig.markPetsButton, "Unmark Pets", AM.UnmarkPets, 120, 0);
+	AMConfig.unmarkPetsButton = self:CreateButton(AMConfig.markPetsButton, "Unmark Pets", AM.UnmarkPets, 120, 0);
 
 	function Config:SetDropdownInfo(dropdown, textVal, selectedVal, iconFrame, j)
 		UIDropDownMenu_SetText(dropdown, textVal);
@@ -239,8 +239,8 @@ function Config:CreateMenu()
 
 	-- Self-Pet Priority Dropdown
 	local function ArenaMarker_Pet_DropDown_OnClick(self, arg1, arg2, checked)
-		return Config:CreatePetDropdownOnClick(self, nil, "petDropDownMarkerID", "petDropDownClickID", UIConfig.dropDown,
-			UIConfig.dropDownIcon);
+		return Config:CreatePetDropdownOnClick(self, nil, "petDropDownMarkerID", "petDropDownClickID", AMConfig.dropDown,
+			AMConfig.dropDownIcon);
 	end
 
 	function ArenaMarkerDropDownMenu(frame, level, menuList)
@@ -248,14 +248,14 @@ function Config:CreateMenu()
 			ArenaMarker_Pet_DropDown_OnClick);
 	end
 
-	UIConfig.dropDownTitle = self:CreateDropdownTitle(UIConfig.markPetsButton, "Self-Pet Mark");
-	UIConfig.dropDown = self:CreateDropdown(UIConfig.dropDownTitle, "ArenaMarkerDropDown");
-	UIConfig.dropDownIcon = self:CreateDropdownIcon(UIConfig.dropDown);
+	AMConfig.dropDownTitle = self:CreateDropdownTitle(AMConfig.markPetsButton, "Self-Pet Mark");
+	AMConfig.dropDown = self:CreateDropdown(AMConfig.dropDownTitle, "ArenaMarkerDropDown");
+	AMConfig.dropDownIcon = self:CreateDropdownIcon(AMConfig.dropDown);
 
 	-- Second Prio Pet Dropdown
 	local function ArenaMarker_Pet_DropDown_Two_OnClick(self, arg1, arg2, checked)
 		return Config:CreatePetDropdownOnClick(self, ArenaMarkerDB.petDropDownThreeMarkerID, "petDropDownTwoMarkerID",
-			"petDropDownTwoClickID", UIConfig.dropDownTwo, UIConfig.dropDownIconTwo);
+			"petDropDownTwoClickID", AMConfig.dropDownTwo, AMConfig.dropDownIconTwo);
 	end
 
 	function ArenaMarkerDropDownMenuTwo(frame, level, menuList)
@@ -263,14 +263,14 @@ function Config:CreateMenu()
 			ArenaMarker_Pet_DropDown_Two_OnClick);
 	end
 
-	UIConfig.dropDownTitleTwo = self:CreateDropdownTitle(UIConfig.dropDown, "Party-Pet Mark");
-	UIConfig.dropDownTwo = self:CreateDropdown(UIConfig.dropDownTitleTwo, "ArenaMarkerDropDownTwo");
-	UIConfig.dropDownIconTwo = self:CreateDropdownIcon(UIConfig.dropDownTwo);
+	AMConfig.dropDownTitleTwo = self:CreateDropdownTitle(AMConfig.dropDown, "Party-Pet Mark");
+	AMConfig.dropDownTwo = self:CreateDropdown(AMConfig.dropDownTitleTwo, "ArenaMarkerDropDownTwo");
+	AMConfig.dropDownIconTwo = self:CreateDropdownIcon(AMConfig.dropDownTwo);
 
 	-- Third Prio Pet Dropdown
 	local function ArenaMarker_Pet_DropDown_Three_OnClick(self, arg1, arg2, checked)
 		return Config:CreatePetDropdownOnClick(self, ArenaMarkerDB.petDropDownTwoMarkerID, "petDropDownThreeMarkerID",
-			"petDropDownThreeClickID", UIConfig.dropDownThree, UIConfig.dropDownIconThree);
+			"petDropDownThreeClickID", AMConfig.dropDownThree, AMConfig.dropDownIconThree);
 	end
 
 	function ArenaMarkerDropDownMenuThree(frame, level, menuList)
@@ -278,21 +278,21 @@ function Config:CreateMenu()
 			ArenaMarker_Pet_DropDown_Three_OnClick);
 	end
 
-	UIConfig.dropDownTitleThree = self:CreateDropdownTitle(UIConfig.dropDownTwo, "Extra Party-Pet Mark");
-	UIConfig.dropDownThree = self:CreateDropdown(UIConfig.dropDownTitleThree, "ArenaMarkerDropDownThree");
-	UIConfig.dropDownIconThree = self:CreateDropdownIcon(UIConfig.dropDownThree);
+	AMConfig.dropDownTitleThree = self:CreateDropdownTitle(AMConfig.dropDownTwo, "Extra Party-Pet Mark");
+	AMConfig.dropDownThree = self:CreateDropdown(AMConfig.dropDownTitleThree, "ArenaMarkerDropDownThree");
+	AMConfig.dropDownIconThree = self:CreateDropdownIcon(AMConfig.dropDownThree);
 
-	self:InitDropdown(UIConfig.dropDown, ArenaMarkerDropDownMenu, ArenaMarkerDB.petDropDownClickID,
-		ArenaMarkerDB.petDropDownMarkerID, UIConfig.dropDownIcon);
-	self:InitDropdown(UIConfig.dropDownTwo, ArenaMarkerDropDownMenuTwo, ArenaMarkerDB.petDropDownTwoClickID,
-		ArenaMarkerDB.petDropDownTwoMarkerID, UIConfig.dropDownIconTwo);
-	self:InitDropdown(UIConfig.dropDownThree, ArenaMarkerDropDownMenuThree, ArenaMarkerDB.petDropDownThreeClickID,
-		ArenaMarkerDB.petDropDownThreeMarkerID, UIConfig.dropDownIconThree);
+	self:InitDropdown(AMConfig.dropDown, ArenaMarkerDropDownMenu, ArenaMarkerDB.petDropDownClickID,
+		ArenaMarkerDB.petDropDownMarkerID, AMConfig.dropDownIcon);
+	self:InitDropdown(AMConfig.dropDownTwo, ArenaMarkerDropDownMenuTwo, ArenaMarkerDB.petDropDownTwoClickID,
+		ArenaMarkerDB.petDropDownTwoMarkerID, AMConfig.dropDownIconTwo);
+	self:InitDropdown(AMConfig.dropDownThree, ArenaMarkerDropDownMenuThree, ArenaMarkerDB.petDropDownThreeClickID,
+		ArenaMarkerDB.petDropDownThreeMarkerID, AMConfig.dropDownIconThree);
 
 	self:CheckMenu();
 
-	UIConfig:Hide();
-	return InterfaceOptions_AddCategory(UIConfig);
+	AMConfig:Hide();
+	return InterfaceOptions_AddCategory(AMConfig);
 end
 
 -- small helper funcs
