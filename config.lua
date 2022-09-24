@@ -48,43 +48,19 @@ core.eventHandlerTable = {
 	["ZONE_CHANGED_NEW_AREA"] = function(self) AM:IsOutOfArena(self) end,
 }
 core.texture_path = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_";
-MENU_WIDTH, MENU_HEIGHT, LARGE_MENU_HEIGHT = 180, 410, 470;
 --------------------------------------
 -- Config functions
 --------------------------------------
-function Config:SmallMenu()
-	UIConfig.dropDownTitleThree:Hide();
-	ArenaMarkerDropDownThree:Hide();
-	UIConfig:SetSize(MENU_WIDTH, MENU_HEIGHT);
-end
-
-function Config:LargeMenu()
-	UIConfig.dropDownTitleThree:Show();
-	ArenaMarkerDropDownThree:Show();
-	UIConfig:SetSize(MENU_WIDTH, LARGE_MENU_HEIGHT);
-end
 
 function Config:Toggle()
-	local menu = UIConfig or Config:CreateMenu();
-	menu:SetShown(not menu:IsShown());
-
-	-- both party-pet options are 'none'
-	if ArenaMarkerDB.petDropDownThreeMarkerID == -1 and ArenaMarkerDB.petDropDownTwoMarkerID == -1 and menu:IsShown() then
-		Config:SmallMenu();
-	end
-	-- atleast 1 party-pet option isnt 'none'
-	if not (ArenaMarkerDB.petDropDownThreeMarkerID == -1 and ArenaMarkerDB.petDropDownTwoMarkerID == -1) and menu:IsShown() then
-		Config:LargeMenu();
-	end
+	UIConfig:SetShown(not UIConfig:IsShown());
+	InterfaceOptionsFrame_OpenToCategory(UIConfig);
+	InterfaceOptionsFrame_OpenToCategory(UIConfig);
 end
 
-function Config:ChatFrame(t)
-	DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99ArenaMarker|r: " .. t);
-end
-
-function Config:CreateButton(relativeFrame, buttonText, funcName)
+function Config:CreateButton(relativeFrame, buttonText, funcName, xOff, yOff)
 	local btn = CreateFrame("Button", nil, relativeFrame, "GameMenuButtonTemplate");
-	btn:SetPoint("CENTER", relativeFrame, "CENTER", 0, -45);
+	btn:SetPoint("CENTER", relativeFrame, "CENTER", xOff, yOff);
 	btn:SetSize(110, 30);
 	btn:SetText(buttonText);
 	btn:SetScript("OnClick", funcName);
@@ -133,57 +109,37 @@ function Config:InitDropdown(dropdown, menu, clickID, markerID, frame)
 	end
 end
 
-function Config:StoreConfigPoint()
-	-- store all points
-	ArenaMarkerDB.ArenaMarkerConfigPoint = { ArenaMarkerConfig:GetPoint() };
+function Config:ChatFrame(t)
+	DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99ArenaMarker|r: " .. t);
+end
+
+function Config:SmallMenu()
+	UIConfig.dropDownTitleThree:Hide();
+	UIConfig.dropDownThree:Hide();
+end
+
+function Config:LargeMenu()
+	UIConfig.dropDownTitleThree:Show();
+	UIConfig.dropDownThree:Show();
 end
 
 function Config:CreateMenu()
 	-- Menu
-	UIConfig = CreateFrame("Frame", "ArenaMarkerConfig", UIParent, "BasicFrameTemplateWithInset");
-	UIConfig:SetSize(MENU_WIDTH, MENU_HEIGHT);
-	UIConfig:SetPoint(ArenaMarkerDB.ArenaMarkerConfigPoint[1], ArenaMarkerDB.ArenaMarkerConfigPoint[2],
-		ArenaMarkerDB.ArenaMarkerConfigPoint[3], ArenaMarkerDB.ArenaMarkerConfigPoint[4],
-		ArenaMarkerDB.ArenaMarkerConfigPoint[5]);
+	UIConfig = CreateFrame("Frame", "ArenaMarkerConfig", UIParent);
 
-	-- Make Menu Movable
-	UIConfig:SetMovable(true);
-	UIConfig:EnableMouse(true);
-	UIConfig:SetScript("OnMouseDown", function(self, button)
-		if button == "LeftButton" and not self.isMoving then
-			self:StartMoving();
-			self.isMoving = true;
-		end
-	end)
-	UIConfig:SetScript("OnMouseUp", function(self, button)
-		if button == "LeftButton" and self.isMoving then
-			self:StopMovingOrSizing();
-			self.isMoving = false;
-			Config:StoreConfigPoint();
-		end
-	end)
-	UIConfig:SetScript("OnHide", function(self)
-		if self.isMoving then
-			self:StopMovingOrSizing();
-			self.isMoving = false;
-			Config:StoreConfigPoint();
-		end
-	end)
-
-	-- Options Close Button
-	UIConfig.CloseButton:SetScript("OnClick", Config.Toggle);
+	UIConfig.name = "ArenaMarker";
 
 	-- Options Title
-	UIConfig.title = UIConfig:CreateFontString(nil, "OVERLAY", "GameFontHighlight");
-	UIConfig.title:ClearAllPoints();
-	UIConfig.title:SetFontObject("GameFontHighlight");
-	UIConfig.title:SetPoint("LEFT", UIConfig.TitleBg, "LEFT", 5, 0);
-	UIConfig.title:SetText("|cff33ff99ArenaMarker|r Options");
+	UIConfig.title = UIConfig:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge");
+	UIConfig.title:SetParent(UIConfig);
+	UIConfig.title:SetPoint("TOPLEFT", 16, -16);
+	UIConfig.title:SetText("|cff33ff99" .. UIConfig.name .. "|r");
+	UIConfig.title:SetJustifyH("LEFT");
 
 	-- Mark Pets Check Button
-	UIConfig.markPetsCheckButton = self:CreateCheckButton(UIConfig.TitleBg,
+	UIConfig.markPetsCheckButton = self:CreateCheckButton(UIConfig.title,
 		"        Mark Pets\n      (when arena\n     gates open)", ArenaMarkerDB.allowPets)
-	UIConfig.markPetsCheckButton:SetPoint("CENTER", UIConfig.TitleBg, "CENTER", -45, -40);
+	UIConfig.markPetsCheckButton:SetPoint("BOTTOMLEFT", UIConfig.title, "BOTTOMLEFT", 0, -50);
 	UIConfig.markPetsCheckButton:SetScript("OnClick",
 		function() ArenaMarkerDB.allowPets = UIConfig.markPetsCheckButton:GetChecked() end);
 
@@ -194,17 +150,17 @@ function Config:CreateMenu()
 		function() ArenaMarkerDB.markSummonedPets = UIConfig.markPetsOnSummonCheckButton:GetChecked() end);
 
 	-- Mark Players Button
-	UIConfig.markPlayersButton = self:CreateButton(UIConfig.markPetsOnSummonCheckButton, "Mark Players", AM.MarkPlayers);
-	UIConfig.markPlayersButton:SetPoint("CENTER", UIConfig.markPetsOnSummonCheckButton, "CENTER", 58, -45);
+	UIConfig.markPlayersButton = self:CreateButton(UIConfig.markPetsOnSummonCheckButton, "Mark Players", AM.MarkPlayers, 44
+		, -52);
 
 	-- Unmark Players Button
-	UIConfig.unmarkPlayersButton = self:CreateButton(UIConfig.markPlayersButton, "Unmark Players", AM.UnmarkPlayers);
+	UIConfig.unmarkPlayersButton = self:CreateButton(UIConfig.markPlayersButton, "Unmark Players", AM.UnmarkPlayers, 120, 0);
 
 	-- Mark Pets Button
-	UIConfig.markPetsButton = self:CreateButton(UIConfig.unmarkPlayersButton, "Mark Pets", AM.MarkPets);
+	UIConfig.markPetsButton = self:CreateButton(UIConfig.markPlayersButton, "Mark Pets", AM.MarkPets, 0, -45);
 
 	-- Unmark Pets Button
-	UIConfig.unmarkPetsButton = self:CreateButton(UIConfig.markPetsButton, "Unmark Pets", AM.UnmarkPets);
+	UIConfig.unmarkPetsButton = self:CreateButton(UIConfig.markPetsButton, "Unmark Pets", AM.UnmarkPets, 120, 0);
 
 	function Config:SetDropdownInfo(dropdown, textVal, selectedVal, iconFrame, j)
 		UIDropDownMenu_SetText(dropdown, textVal);
@@ -278,7 +234,7 @@ function Config:CreateMenu()
 			ArenaMarker_Pet_DropDown_OnClick);
 	end
 
-	UIConfig.dropDownTitle = self:CreateDropdownTitle(UIConfig.unmarkPetsButton, "Self-Pet Mark");
+	UIConfig.dropDownTitle = self:CreateDropdownTitle(UIConfig.markPetsButton, "Self-Pet Mark");
 	UIConfig.dropDown = self:CreateDropdown(UIConfig.dropDownTitle, "ArenaMarkerDropDown");
 	UIConfig.dropDownIcon = self:CreateDropdownIcon(UIConfig.dropDown);
 
@@ -320,11 +276,8 @@ function Config:CreateMenu()
 		ArenaMarkerDB.petDropDownThreeMarkerID, UIConfig.dropDownIconThree);
 
 	UIConfig:Hide();
-	return UIConfig;
+	return InterfaceOptions_AddCategory(UIConfig);
 end
-
--- escape key functionality
-tinsert(UISpecialFrames, "ArenaMarkerConfig");
 
 -- small helper funcs
 function contains(table, x)
@@ -340,11 +293,10 @@ function removeValue(table, value)
 	return key;
 end
 
--- init DB
+-- init DB & menu
 function Config:Player_Login()
 	if not ArenaMarkerDB then
 		ArenaMarkerDB = {};
-		ArenaMarkerDB["ArenaMarkerConfigPoint"] = { "CENTER", nil, "CENTER", 150, 50 };
 		ArenaMarkerDB["allowPets"] = true;
 		ArenaMarkerDB["markSummonedPets"] = true;
 		ArenaMarkerDB["petDropDownMarkerID"] = -1;
@@ -354,5 +306,6 @@ function Config:Player_Login()
 		ArenaMarkerDB["petDropDownThreeMarkerID"] = -1;
 		ArenaMarkerDB["petDropDownThreeClickID"] = -1;
 	end
+	Config:CreateMenu();
 	DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99ArenaMarker|r by |cff69CCF0Mageiden|r. Type |cff33ff99/am|r for additional options.");
 end
