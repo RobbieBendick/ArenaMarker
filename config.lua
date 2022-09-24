@@ -56,6 +56,8 @@ function Config:Toggle()
 	UIConfig:SetShown(not UIConfig:IsShown());
 	InterfaceOptionsFrame_OpenToCategory(UIConfig);
 	InterfaceOptionsFrame_OpenToCategory(UIConfig);
+
+	Config:CheckMenu();
 end
 
 function Config:CreateButton(relativeFrame, buttonText, funcName, xOff, yOff)
@@ -109,10 +111,6 @@ function Config:InitDropdown(dropdown, menu, clickID, markerID, frame)
 	end
 end
 
-function Config:ChatFrame(t)
-	DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99ArenaMarker|r: " .. t);
-end
-
 function Config:SmallMenu()
 	UIConfig.dropDownTitleThree:Hide();
 	UIConfig.dropDownThree:Hide();
@@ -121,6 +119,22 @@ end
 function Config:LargeMenu()
 	UIConfig.dropDownTitleThree:Show();
 	UIConfig.dropDownThree:Show();
+end
+
+function Config:CheckMenu()
+	-- both party-pet options are 'none'
+	if ArenaMarkerDB.petDropDownThreeMarkerID == -1 and ArenaMarkerDB.petDropDownTwoMarkerID == -1 and UIConfig:IsShown() then
+		return Config:SmallMenu();
+	end
+	-- atleast 1 other party-pet option isnt 'none'
+	if not (ArenaMarkerDB.petDropDownThreeMarkerID == -1 and ArenaMarkerDB.petDropDownTwoMarkerID == -1) and
+		UIConfig:IsShown() then
+		return Config:LargeMenu();
+	end
+end
+
+function Config:ChatFrame(t)
+	DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99ArenaMarker|r: " .. t);
 end
 
 function Config:CreateMenu()
@@ -274,6 +288,8 @@ function Config:CreateMenu()
 		ArenaMarkerDB.petDropDownTwoMarkerID, UIConfig.dropDownIconTwo);
 	self:InitDropdown(UIConfig.dropDownThree, ArenaMarkerDropDownMenuThree, ArenaMarkerDB.petDropDownThreeClickID,
 		ArenaMarkerDB.petDropDownThreeMarkerID, UIConfig.dropDownIconThree);
+
+	self:CheckMenu();
 
 	UIConfig:Hide();
 	return InterfaceOptions_AddCategory(UIConfig);
