@@ -133,9 +133,7 @@ function Config:CheckMenu()
 	end
 end
 
-function Config:ChatFrame(t)
-	DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99ArenaMarker|r: " .. t);
-end
+function Config:ChatFrame(t) return DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99ArenaMarker|r: " .. t); end
 
 function Config:CreateMenu()
 	-- Menu
@@ -147,8 +145,8 @@ function Config:CreateMenu()
 	AMConfig.title = AMConfig:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge");
 	AMConfig.title:SetParent(AMConfig);
 	AMConfig.title:SetPoint("TOPLEFT", 16, -16);
-	AMConfig.title:SetText("|cff33ff99" .. AMConfig.name .. "|r");
 	AMConfig.title:SetJustifyH("LEFT");
+	AMConfig.title:SetText("|cff33ff99" .. AMConfig.name .. "|r");
 
 	-- Mark Pets Check Button
 	AMConfig.markPetsCheckButton = self:CreateCheckButton(AMConfig.title,
@@ -218,6 +216,7 @@ function Config:CreateMenu()
 				-- set marker & click ID
 				ArenaMarkerDB[markerIDString] = j;
 				ArenaMarkerDB[clickIDString] = self:GetID();
+				-- dont need to check anything with the first dropdown
 				if frame:GetName() == "ArenaMarkerDropDown" then break end
 				-- check which menu we need
 				if i == 9 and disableOne == -1 then
