@@ -87,7 +87,7 @@ function Config:CreateDropdownTitle(relativeFrame, dropText)
 end
 
 function Config:CreateDropdown(relativeFrame, frameName)
-	local dropDown = CreateFrame("Frame", frameName, AMConfig, "UIDropDownMenuTemplate");
+	local dropDown = CreateFrame("Frame", frameName or nil, AMConfig, "UIDropDownMenuTemplate");
 	dropDown:SetPoint("CENTER", relativeFrame, 0, -23);
 	return dropDown;
 end
@@ -264,7 +264,7 @@ function Config:CreateMenu()
 	end
 
 	AMConfig.dropDownTitleTwo = self:CreateDropdownTitle(AMConfig.dropDown, "Party-Pet Mark");
-	AMConfig.dropDownTwo = self:CreateDropdown(AMConfig.dropDownTitleTwo, "ArenaMarkerDropDownTwo");
+	AMConfig.dropDownTwo = self:CreateDropdown(AMConfig.dropDownTitleTwo);
 	AMConfig.dropDownIconTwo = self:CreateDropdownIcon(AMConfig.dropDownTwo);
 
 	-- Third Prio Pet Dropdown
@@ -279,7 +279,7 @@ function Config:CreateMenu()
 	end
 
 	AMConfig.dropDownTitleThree = self:CreateDropdownTitle(AMConfig.dropDownTwo, "Extra Party-Pet Mark");
-	AMConfig.dropDownThree = self:CreateDropdown(AMConfig.dropDownTitleThree, "ArenaMarkerDropDownThree");
+	AMConfig.dropDownThree = self:CreateDropdown(AMConfig.dropDownTitleThree);
 	AMConfig.dropDownIconThree = self:CreateDropdownIcon(AMConfig.dropDownThree);
 
 	self:InitDropdown(AMConfig.dropDown, ArenaMarkerDropDownMenu, ArenaMarkerDB.petDropDownClickID,
