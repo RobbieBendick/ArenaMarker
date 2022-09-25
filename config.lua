@@ -324,6 +324,8 @@ function Config:Player_Login()
 	Config:CreateMenu();
 	DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99" ..
 		AMConfig.name ..
-		"|r by" ..
-		"|cff69CCF0" .. GetAddonMetadata(AMConfig.name, "Author") .. "|r. Type |cff33ff99/am|r for additional options.");
+		"|r by " ..
+		"|cff69CCF0" ..
+		GetAddOnMetadata(AMConfig.name, "Author") ..
+		"|r. Type |cff33ff99/am|r for additional options.");
 end
