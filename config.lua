@@ -72,7 +72,7 @@ end
 function Config:CreateCheckButton(relativeFrame, buttonText, DB_var)
 	local checkbtn = CreateFrame("CheckButton", nil, AMConfig, "UICheckButtonTemplate");
 	checkbtn:SetPoint("CENTER", relativeFrame, "CENTER", 0, -35);
-	checkbtn.text:SetText(buttonText);
+	checkbtn.text:SetText(" " .. buttonText);
 	checkbtn.text:SetFontObject("GameFontHighlight");
 	checkbtn:SetChecked(DB_var);
 	checkbtn:SetScript("OnClick", function() DB_var = checkbtn:GetChecked() end);
@@ -145,7 +145,6 @@ function Config:CreateMenu()
 	AMConfig.title = AMConfig:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge");
 	AMConfig.title:SetParent(AMConfig);
 	AMConfig.title:SetPoint("TOPLEFT", 16, -16);
-	AMConfig.title:SetJustifyH("LEFT");
 	AMConfig.title:SetText("|cff33ff99" .. AMConfig.name .. "|r");
 
 	-- Mark Pets Check Button
