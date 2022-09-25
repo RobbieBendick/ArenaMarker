@@ -33,7 +33,7 @@ function AM:FindUsableMark(target)
     for k, v in pairs(core.unused_markers) do
         if v then
             marker = k;
-            break
+            break;
         end
     end
     AM:SetMarkerAndRemove(target, marker);
@@ -49,7 +49,7 @@ function AM:SetRaidTargetByClass(unit, ...)
             else
                 AM:FindUsableMark(unit);
             end
-            break
+            break;
         end
     end
 end

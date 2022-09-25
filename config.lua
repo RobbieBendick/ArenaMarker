@@ -223,7 +223,7 @@ function Config:CreateMenu()
 				else
 					Config:LargeMenu();
 				end
-				break
+				break;
 			end
 			-- j is finding the MarkerID from the ClickID
 			if j == -1 then
