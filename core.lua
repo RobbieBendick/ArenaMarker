@@ -18,21 +18,20 @@ members = GetNumGroupMembers;
         7 = Red "X" Cross; Warrior, (Death Knight on Retail)
         8 = White Skull; Priest
 --]]
-
 --------------------------------------
 -- AM functions
 --------------------------------------
-function AM:SetMarkerAndRemove(unit, marker_string)
-    if not unit or not core.unused_markers[marker_string] then return end
-    SetRaidTarget(unit, core.unused_markers[marker_string]);
-    removeValue(core.unused_markers, marker_string);
+function AM:SetMarkerAndRemove(unit, markerString)
+    if not unit or not core.unusedMarkers[markerString] then return end
+    SetRaidTarget(unit, core.unusedMarkers[markerString]);
+    removeValue(core.unusedMarkers, markerString);
 end
 
 function AM:FindUsableMark(target)
-    local marker = "";
-    for k, v in pairs(core.unused_markers) do
-        if v then
-            marker = k;
+    local unusedMarker = "";
+    for marker, val in pairs(core.unusedMarkers) do
+        if val then
+            unusedMarker = marker;
             break;
         end
     end
@@ -41,17 +40,17 @@ end
 
 function AM:SetRaidTargetByClass(unit, ...)
     if not unit or GetRaidTargetIndex(unit) then return end
-    local _, englishClass, _ = UnitClass(unit);
-    for k, v in pairs(core.relatives) do
-        if k == englishClass then
-            if core.unused_markers[v] then
-                AM:SetMarkerAndRemove(unit, v);
-            else
-                AM:FindUsableMark(unit);
+    local _, unitClass = UnitClass(unit);
+    for class, markerList in pairs(core.relatives) do
+        if class == unitClass then
+            for _, marker in pairs(markerList) do
+                if core.unusedMarkers[marker] then
+                    return AM:SetMarkerAndRemove(unit, marker);
+                end
             end
-            break;
         end
     end
+    return AM:FindUsableMark(unit);
 end
 
 function AM:MarkPlayers()
@@ -71,17 +70,15 @@ function AM:MarkPetWithPriority(unit)
     if not unit or not UnitExists(unit .. "pet") then return end
     if GetRaidTargetIndex(unit .. "pet") then return end
 
-    local ans;
-    if core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownMarkerID]] and unit == "player" then
-        ans = AM:SetMarkerAndRemove(unit .. "pet", core.marker_strings[ArenaMarkerDB.petDropDownMarkerID]);
-    elseif core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownTwoMarkerID]] then
-        ans = AM:SetMarkerAndRemove(unit .. "pet", core.marker_strings[ArenaMarkerDB.petDropDownTwoMarkerID]);
-    elseif core.unused_markers[core.marker_strings[ArenaMarkerDB.petDropDownThreeMarkerID]] then
-        ans = AM:SetMarkerAndRemove(unit .. "pet", core.marker_strings[ArenaMarkerDB.petDropDownThreeMarkerID]);
-    else
-        ans = AM:FindUsableMark(unit .. "pet");
+    if core.unusedMarkers[core.markerStrings[ArenaMarkerDB.petDropDownMarkerID]] and unit == "player" then
+        return AM:SetMarkerAndRemove(unit .. "pet", core.markerStrings[ArenaMarkerDB.petDropDownMarkerID]);
+    elseif core.unusedMarkers[core.markerStrings[ArenaMarkerDB.petDropDownTwoMarkerID]] then
+        return AM:SetMarkerAndRemove(unit .. "pet", core.markerStrings[ArenaMarkerDB.petDropDownTwoMarkerID]);
+    elseif core.unusedMarkers[core.markerStrings[ArenaMarkerDB.petDropDownThreeMarkerID]] then
+        return AM:SetMarkerAndRemove(unit .. "pet", core.markerStrings[ArenaMarkerDB.petDropDownThreeMarkerID]);
     end
-    return ans;
+
+    return AM:FindUsableMark(unit .. "pet");
 end
 
 function AM:MarkPets()
@@ -96,30 +93,55 @@ end
 
 function AM:RepopulateUnusedMarkers()
     -- re-populate table if user clicks remove_mark button(s)
-    for i, v in pairs(core.removed_markers) do
-        if not contains(core.unused_markers, v) then
-            for j = 1, #core.marker_strings do
-                if v == j then
-                    core.unused_markers[core.marker_strings[j]] = j;
-                    removeValue(core.removed_markers, i);
+    for i, markerValue in ipairs(core.removedMarkers) do
+        if not contains(core.unusedMarkers, markerValue) then
+            for j = 1, #core.markerStrings do
+                if markerValue == j then
+                    core.unusedMarkers[core.markerStrings[markerValue]] = markerValue;
+                    removeValue(core.removedMarkers, i);
                 end
             end
         end
     end
 end
 
+function AM:RemarkShadowmeld(self, ...)
+    local unit, _, spellID = ...;
+    if not unit or not spellID then return end
+    if unit:sub(1, #"nameplate") == "nameplate" then return end
+    if unit:sub(1, #"raid") == "raid" then return end
+    if not UnitInParty(unit) then return end
+
+    local shadowmeldSpellID = 58984;
+
+    if spellID == shadowmeldSpellID then
+        C_Timer.After(1.6, function()
+            AM:CheckExistingMarks();
+            AM:SetRaidTargetByClass(unit);
+        end);
+    end
+end
+
+function AM:HandleUnitSpellCastSucceeded(self, ...)
+    if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
+    local _, instanceType = IsInInstance();
+    if instanceType ~= "arena" then return end
+    AM:PetCastEventHandler(self, ...);
+    AM:RemarkShadowmeld(self, ...);
+end
+
 function AM:UnmarkPets()
     if members() > 5 then return end
     if UnitExists("pet") then
         if GetRaidTargetIndex("pet") then
-            table.insert(core.removed_markers, GetRaidTargetIndex("pet"));
+            table.insert(core.removedMarkers, GetRaidTargetIndex("pet"));
             SetRaidTarget("pet", 0);
         end
     end
     for i = 1, members() - 1 do
         if UnitExists("party" .. i .. "pet") then
             if GetRaidTargetIndex("party" .. i .. "pet") then
-                table.insert(core.removed_markers, GetRaidTargetIndex("party" .. i .. "pet"));
+                table.insert(core.removedMarkers, GetRaidTargetIndex("party" .. i .. "pet"));
                 SetRaidTarget("party" .. i .. "pet", 0);
             end
         end
@@ -132,60 +154,57 @@ function AM:UnmarkPlayers()
     -- unmark self
     if GetRaidTargetIndex("player") then
         Config:ChatFrame("Unmarking the group.");
-        table.insert(core.removed_markers, GetRaidTargetIndex("player"));
+        table.insert(core.removedMarkers, GetRaidTargetIndex("player"));
         SetRaidTarget("player", 0);
     end
     -- unmark party members
     for i = 1, members() - 1 do
         if GetRaidTargetIndex("party" .. i) then
-            table.insert(core.removed_markers, GetRaidTargetIndex("party" .. i));
+            table.insert(core.removedMarkers, GetRaidTargetIndex("party" .. i));
             SetRaidTarget("party" .. i, 0);
         end
     end
     AM:RepopulateUnusedMarkers();
 end
 
-function AM:PetCastEventHandler(self, caster, ...)
-    local inInstance, instanceType = IsInInstance()
-    if instanceType ~= "arena" then return end
-    if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
+function AM:PetCastEventHandler(self, ...)
+    local unit, _, spellID = ...;
     if not ArenaMarkerDB.markSummonedPets then return end
-    if caster == "raid1" then return end
-    local _, spellID = ...;
-    for key, val in pairs(core.summons) do
-        if spellID == key and val then
-            C_Timer.After(0.5, function() AM:MarkPetWithPriority(caster) end);
+    if unit:sub(1, #"raid") == "raid" then return end
+    for summonSpellID, summonIsAllowed in pairs(core.summons) do
+        if spellID == summonSpellID and summonIsAllowed then
+            C_Timer.After(0.5, function() AM:MarkPetWithPriority(unit) end);
         end
     end
 end
 
 function AM:CheckExistingMarks()
     -- reset table
-    for i = 1, #core.marker_strings do
-        core.unused_markers[core.marker_strings[i]] = i;
+    for i = 1, #core.markerStrings do
+        core.unusedMarkers[core.markerStrings[i]] = i;
     end
-    local function Remove(unit)
+    local function removeMarkerFromTable(unit)
         if not GetRaidTargetIndex(unit) then return end
-        if not core.unused_markers[core.marker_strings[GetRaidTargetIndex(unit)]] then return end
-        removeValue(core.unused_markers, core.marker_strings[GetRaidTargetIndex(unit)]);
+        if not core.unusedMarkers[core.markerStrings[GetRaidTargetIndex(unit)]] then return end
+        removeValue(core.unusedMarkers, core.markerStrings[GetRaidTargetIndex(unit)]);
     end
 
     -- update which marks are currently being used on players and pets
-    Remove("player");
-    Remove("pet");
+    removeMarkerFromTable("player");
+    removeMarkerFromTable("pet");
     for i = 1, members() - 1 do
-        Remove("party" .. i);
-        Remove("party" .. i .. "pet");
+        removeMarkerFromTable("party" .. i);
+        removeMarkerFromTable("party" .. i .. "pet");
     end
 end
 
 function AM:SetSummonsToTrueAfterGates(txt)
-    for k, v in pairs(core.translations) do
-        if GetLocale() == k then
-            if string.find(txt, v) then
-                for i, _ in pairs(core.summons) do
+    for region, regionText in pairs(core.translations) do
+        if GetLocale() == region then
+            if txt:find(regionText) then
+                for i in pairs(core.summons) do
                     if not core.summons[i] then
-                        table.insert(core.summon_after_gates, i);
+                        table.insert(core.summonAfterGates, i);
                         core.summons[i] = true;
                     end
                 end
@@ -195,11 +214,11 @@ function AM:SetSummonsToTrueAfterGates(txt)
 end
 
 function AM:SetSummonsToFalse()
-    for i, _ in pairs(core.summons) do
-        for j = 1, #core.summon_after_gates do
-            if i == core.summon_after_gates[j] then
+    for i in pairs(core.summons) do
+        for j = 1, #core.summonAfterGates do
+            if i == core.summonAfterGates[j] then
                 core.summons[i] = false;
-                removeValue(core.summon_after_gates, j);
+                removeValue(core.summonAfterGates, j);
             end
         end
     end
@@ -207,9 +226,9 @@ end
 
 function AM:MarkPetsWhenGatesOpen(txt)
     if not ArenaMarkerDB.allowPets then return end
-    for k, v in pairs(core.translations) do
-        if GetLocale() == k then
-            if string.find(txt, v) then
+    for region, regionText in pairs(core.translations) do
+        if GetLocale() == region then
+            if txt:find(regionText) then
                 AM:MarkPets();
                 AM:CheckExistingMarks();
             end
@@ -218,14 +237,14 @@ function AM:MarkPetsWhenGatesOpen(txt)
 end
 
 function AM:IsOutOfArena()
-    local inInstance, instanceType = IsInInstance()
+    local _, instanceType = IsInInstance();
     if instanceType ~= "arena" then
         AM:SetSummonsToFalse();
     end
 end
 
 function AM:Main(self, txt, ...)
-    local inInstance, instanceType = IsInInstance()
+    local _, instanceType = IsInInstance();
     if instanceType ~= "arena" then return end
     if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
     if members() <= 1 then return end
