@@ -35,7 +35,7 @@ function AM:FindUsableMark(target)
             break;
         end
     end
-    AM:SetMarkerAndRemove(target, marker);
+    AM:SetMarkerAndRemove(target, unusedMarker);
 end
 
 function AM:SetRaidTargetByClass(unit, ...)
