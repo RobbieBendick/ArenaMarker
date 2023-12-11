@@ -107,19 +107,17 @@ end
 
 function AM:RemarkShadowmeld(self, ...)
     local unit, _, spellID = ...;
+    local shadowmeldSpellID = 58984;
     if not unit or not spellID then return end
+    if spellID ~= shadowmeldSpellID then return end
     if unit:sub(1, #"nameplate") == "nameplate" then return end
     if unit:sub(1, #"raid") == "raid" then return end
     if not UnitInParty(unit) then return end
-
-    local shadowmeldSpellID = 58984;
-
-    if spellID == shadowmeldSpellID then
-        C_Timer.After(1.6, function()
-            AM:CheckExistingMarks();
-            AM:SetRaidTargetByClass(unit);
-        end);
-    end
+    
+    C_Timer.After(1.6, function()
+        AM:CheckExistingMarks();
+        AM:SetRaidTargetByClass(unit);
+    end);
 end
 
 function AM:HandleUnitSpellCastSucceeded(self, ...)
