@@ -1,11 +1,13 @@
 --------------------------------------
 -- Namespace
 --------------------------------------
+local addon_name = "ArenaMarker";
+local ArenaMarker = _G.LibStub("AceAddon-3.0"):NewAddon(addon_name, "AceConsole-3.0", "AceEvent-3.0");
 local _, core = ...;
 local Config = core.Config;
 core.AM = {};
 AM = core.AM;
-members = GetNumGroupMembers;
+local members = GetNumGroupMembers;
 
 --[[
     Marker numbers:

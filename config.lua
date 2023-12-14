@@ -2,89 +2,27 @@
 -- Namespace
 --------------------------------------
 local _, core = ...;
-
+local LibDBIcon = LibStub("LibDBIcon-1.0");
+local addon_name = "ArenaMarker";
 core.Config = {};
-core.removedMarkers = {};
-core.summonAfterGates = {};
 local Config = core.Config;
 local AMConfig;
-members = GetNumGroupMembers;
-core.RAID_TARGET_COLORS = {
-	[1] = "|c00FFFF00", -- Star (yellow)
-	[2] = "|c00FF7F00", -- Circle (orange)
-	[3] = "|cffd966ff", -- Diamond (purple)
-	[4] = "|c0000FF00", -- Triangle (green)
-	[5] = "|cffc7c7cf", -- slightly brighter gray (moon)
-	[6] = "|c000080FF", -- Square (blue)
-	[7] = "|c33FF0000", -- Cross (red)
-	[8] = "|c00FFFFFF", -- Skull (white)
-};
-core.translations = {
-	["enUS"] = "The Arena battle has begun!",
-	["enGB"] = "The Arena battle has begun!",
-	["frFR"] = "Le combat d'arène commence !",
-	["deDE"] = "Der Arenakampf hat begonnen!",
-	["ptBR"] = "A batalha na Arena começou!",
-	["esES"] = "¡La batalla en arena ha comenzado!",
-	["esMX"] = "¡La batalla en arena ha comenzado!",
-	["ruRU"] = "Бой начался!",
-	["zhCN"] = "竞技场的战斗开始了！",
-	["zhTW"] = "競技場戰鬥開始了!",
-	["koKR"] = "투기장 전투가 시작되었습니다!",
-};
-core.reversedMarkerValues = {
-	["star"] = 8,
-	["circle"] = 7,
-	["diamond"] = 6,
-	["triangle"] = 5,
-	["moon"] = 4,
-	["square"] = 3,
-	["cross"] = 2,
-	["skull"] = 1
-};
-core.markerValues = {
-	["star"] = 1,
-	["circle"] = 2,
-	["diamond"] = 3,
-	["triangle"] = 4,
-	["moon"] = 5,
-	["square"] = 6,
-	["cross"] = 7,
-	["skull"] = 8
-};
-core.unusedMarkers = {
-	["star"] = 1,
-	["circle"] = 2,
-	["diamond"] = 3,
-	["triangle"] = 4,
-	["moon"] = 5,
-	["square"] = 6,
-	["cross"] = 7,
-	["skull"] = 8
-};
-core.markerStrings = {
-	"star",
-	"circle",
-	"diamond",
-	"triangle",
-	"moon",
-	"square",
-	"cross",
-	"skull"
-};
-core.classes = {};
+local members = GetNumGroupMembers;
+
 core.eventHandlerTable = {
 	["PLAYER_LOGIN"] = function(self) Config:Player_Login(self) end,
 	["CHAT_MSG_BG_SYSTEM_NEUTRAL"] = function(self, ...) AM:Main(self, ...) end,
 	["UNIT_SPELLCAST_SUCCEEDED"] = function(self, ...) AM:HandleUnitSpellCastSucceeded(self, ...) end,
 	["ZONE_CHANGED_NEW_AREA"] = function(self) AM:IsOutOfArena(self) end,
 };
-core.markerTexturePath = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_";
 --------------------------------------
 -- Config functions
 --------------------------------------
 
 function Config:Toggle()
+	if AMConfig:IsShown() then
+		_G.SettingsPanel:Hide();
+	end
 	InterfaceOptionsFrame_OpenToCategory(AMConfig);
 	InterfaceOptionsFrame_OpenToCategory(AMConfig);
 end
@@ -562,13 +500,32 @@ function Config:CapitalizeFirstLetter(str)
 	return str:gsub("^%l", string.upper);
 end
 
+function Config:CreateMinimapIcon()
+	LibDBIcon:Register(addon_name, {
+		icon = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_3",
+		OnClick = self.Toggle,
+		OnTooltipShow = function(tt)
+			tt:AddLine(addon_name .. " |cff808080" .. GetAddOnMetadata(AMConfig.name, "Version"));
+			tt:AddLine("|cffCCCCCCClick|r to open options");
+			tt:AddLine("|cffCCCCCCDrag|r to move this button");
+		end,
+		text = addon_name,
+		iconCoords = {0.05, 0.95, 0.05, 0.95},
+	});
+
+	-- update position
+	if #ArenaMarkerDB.minimapCoords > 0 then
+		LibDBIcon:GetMinimapButton(addon_name):SetPoint(unpack(ArenaMarkerDB.minimapCoords));
+	end
+end
+
 function Config:OnInitialize()
 	if not ArenaMarkerDB then
 		ArenaMarkerDB = {};
 	end
 
 	-- check if saved variables have the expected structure for the current version of the addon
-	if not ArenaMarkerDB.classMarkers then
+	if not ArenaMarkerDB.minimapCoords then
 		-- saved variables are outdated, perform update
 		ArenaMarkerDB.allowPets = true;
 		ArenaMarkerDB.markSummonedPets = true;
@@ -583,6 +540,7 @@ function Config:OnInitialize()
 		ArenaMarkerDB.classMarkerDropDownMarkerID = -1;
 		ArenaMarkerDB.classString = "none";
 		ArenaMarkerDB.classMarkers = {};
+		ArenaMarkerDB.minimapCoords = {};
 	end
 
 	-- place all class/marker combinations into relatives
@@ -603,6 +561,8 @@ function Config:OnInitialize()
 		whileDead = true,
 		hideOnEscape = true,
 	};
+
+	self:CreateMinimapIcon();
 
 	DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99" ..
 		AMConfig.name ..
