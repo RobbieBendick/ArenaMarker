@@ -7,5 +7,5 @@
 WOTLK.lua
 BurningCrusade.lua
 Retail.lua
-config.lua
-core.lua
+Config.lua
+ArenaMarker.lua

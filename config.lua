@@ -104,7 +104,7 @@ function Config:CreateCheckButton(relativeFrame, buttonText, DB_var)
 	checkbtn.Text:SetText(" " .. buttonText);
 	checkbtn.Text:SetFontObject("GameFontHighlight");
 	checkbtn:SetChecked(DB_var);
-	checkbtn:SetScript("OnClick", function() DB_var = checkbtn:GetChecked() end);
+	checkbtn:SetScript("OnClick", function(self) DB_var = self:GetChecked() end);
 	return checkbtn;
 end
 
@@ -413,19 +413,16 @@ function Config:CreateMenu()
 		UIDropDownMenu_SetSelectedID(AMConfig.classDropDown, self:GetID());
 		UIDropDownMenu_SetSelectedValue(AMConfig.classDropDown, self.value);
 
-		-- set class marker dropdown id
+		-- set class marker dropdown stuff
 		UIDropDownMenu_SetSelectedID(AMConfig.classMarkerDropDown,
 			core.reversedMarkerValues[core.relatives[newSelfValue][1]]);
 
-		-- set class marker dropdown icon
 		local selectedMarkerID = core.markerValues[core.relatives[newSelfValue][1]];
 
-		-- set class marker dropdown text with colorCode
 		UIDropDownMenu_SetText(AMConfig.classMarkerDropDown,
 			core.RAID_TARGET_COLORS[selectedMarkerID] ..
 			Config:CapitalizeFirstLetter(core.relatives[newSelfValue][1]));
 
-		-- set class marker dropdown icon
 		AMConfig.classMarkerDropDownIcon:SetTexture(core.markerTexturePath ..
 			core.markerValues[core.relatives[newSelfValue][1]]);
 	end
@@ -460,12 +457,12 @@ function Config:CreateMenu()
 
 	function Config:HandleResetClick()
 		-- loop through all settings and reset them to their default values
-		for k, v in pairs(core.defaultClassMarkers) do
+		for class, markerList in pairs(core.defaultClassMarkers) do
 			-- set the new values in the database
-			ArenaMarkerDB.classMarkers[k] = v;
+			ArenaMarkerDB.classMarkers[class] = markerList;
 
 			-- set the new values in the relatives table
-			core.relatives[k][1] = v[1];
+			core.relatives[class][1] = markerList[1];
 		end
 
 		-- find what value is currently selected on the class dropdown
@@ -473,7 +470,6 @@ function Config:CreateMenu()
 
 		-- remove color codes from the dropdown value
 		dropdownValue = dropdownValue:gsub("|c........", ""):gsub("|r", "")
-
 		dropdownValue = Config:RemoveSpaces(dropdownValue);
 
 		-- get the first marker from the class we have selected
@@ -555,10 +551,9 @@ function Config:GetClasses()
 		core.classes[i] = Config:CapitalizeFirstLetter(class:lower());
 
 		if core.classes[i]:upper() == "DEATHKNIGHT" then
-			core.classes[i] = "Death Knight"
+			core.classes[i] = "Death Knight";
 		elseif core.classes[i]:upper() == "DEMONHUNTER" then
-			core.classes[i] = "Demon Hunter"
-
+			core.classes[i] = "Demon Hunter";
 		end
 	end
 end
@@ -608,6 +603,13 @@ function Config:OnInitialize()
 		whileDead = true,
 		hideOnEscape = true,
 	};
+
+	DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99" ..
+		AMConfig.name ..
+		"|r by " ..
+		"|cff69CCF0" ..
+		GetAddOnMetadata(AMConfig.name, "Author") ..
+		"|r. Type |cff33ff99/am|r for additional options.");
 end
 
 function Config:UpdatePriorityMarker(class, newMarker)
@@ -622,19 +624,17 @@ function Config:UpdatePriorityMarker(class, newMarker)
 	-- update the DB
 	ArenaMarkerDB.classMarkers[class] = core.relatives[class];
 
+	-- get class/marker color combo
+	local classColor = "|c" .. RAID_CLASS_COLORS[class:upper()].colorStr;
+	local markerColor = core.RAID_TARGET_COLORS[core.markerValues[newMarker]];
+
 	-- notify the user
 	self:ChatFrame("Updated priority marker for " ..
-		Config:CapitalizeFirstLetter(class:lower()) ..
-		" to " .. Config:CapitalizeFirstLetter(newMarker) .. ".");
+		classColor .. Config:CapitalizeFirstLetter(class:lower()) .. "|r" ..
+		" to " .. markerColor .. Config:CapitalizeFirstLetter(newMarker) .. "|r" .. ".");
 end
 
 -- init DB & menu
 function Config:Player_Login()
 	Config:OnInitialize();
-	DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99" ..
-		AMConfig.name ..
-		"|r by " ..
-		"|cff69CCF0" ..
-		GetAddOnMetadata(AMConfig.name, "Author") ..
-		"|r. Type |cff33ff99/am|r for additional options.");
 end
