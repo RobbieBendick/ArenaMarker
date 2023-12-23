@@ -12,5 +12,5 @@ Gives your group class specific raid markers in arena.
 - [x] Marks pets.
 - [x] Prioritized pet marks.
 - [x] Classic & Retail support.
-      <br>
-      <i>(Available on <b><a href="https://www.curseforge.com/wow/addons/arenamarker">CurseForge</a></b>)</i>
+<br>
+<i>(Available on <b><a href="https://www.curseforge.com/wow/addons/arenamarker">CurseForge</a></b>)</i>
