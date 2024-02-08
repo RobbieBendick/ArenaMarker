@@ -4,7 +4,6 @@
 --
 -- Allows addons to easily create a lightweight minimap icon as an alternative to heavier LDB displays.
 --
-
 local DBICON10 = "LibDBIcon-1.0"
 local DBICON10_MINOR = 44 -- Bump on changes
 if not LibStub then error(DBICON10 .. " requires LibStub.") end
@@ -200,8 +199,8 @@ local function onDragStop(self)
 			button.fadeOut:Play()
 		end
 	end
-
 	local point, relativeFrame, relativePoint, x, y = self:GetPoint();
+
 	ArenaMarkerDB.minimapCoords = {point, relativeFrame:GetName(), relativePoint, x, y};
 end
 

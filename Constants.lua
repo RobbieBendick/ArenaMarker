@@ -1,5 +1,6 @@
 local _, core = ...;
 
+core.addonName = "ArenaMarker";
 core.removedMarkers = {};
 core.summonAfterGates = {};
 core.RAID_TARGET_COLORS = {
@@ -66,5 +67,48 @@ core.markerStrings = {
 	"skull"
 };
 core.classes = {};
-
 core.markerTexturePath = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_";
+
+core.eventHandlerTable = {
+	["PLAYER_LOGIN"] = function(self) core.Config:Player_Login(self) end,
+	["CHAT_MSG_BG_SYSTEM_NEUTRAL"] = function(self, ...) AM:Main(self, ...) end,
+	["UNIT_SPELLCAST_SUCCEEDED"] = function(self, ...) AM:HandleUnitSpellCastSucceeded(self, ...) end,
+	["ZONE_CHANGED_NEW_AREA"] = function(self) AM:IsOutOfArena(self) end,
+};
+local options = {
+	["config"] = "/am config",
+	["hide"] = "/am hide",
+	["show"] = "/am show",
+}
+local message = "Available commands: ";
+for _, slashCommand in pairs(options) do
+    message = message .. slashCommand .. ", ";
+end
+message = message:sub(1, -3)
+
+core.optionsHandlerTable = {
+	["hide"] = function()
+		if _G["LibDBIcon10_"..core.addonName]:IsShown() then
+			_G["LibDBIcon10_"..core.addonName]:Hide();
+		else
+			core.Config:ChatFrame("Minimap icon already hidden.")
+		end
+		ArenaMarkerDB.hideMinimap = not _G["LibDBIcon10_"..core.addonName]:IsShown();
+	end,
+	["show"] = function()
+		if not _G["LibDBIcon10_"..core.addonName]:IsShown() then
+			_G["LibDBIcon10_"..core.addonName]:Show();
+		else
+			core.Config:ChatFrame("Minimap icon already shown.")
+		end
+		ArenaMarkerDB.hideMinimap = not _G["LibDBIcon10_"..core.addonName]:IsShown();
+	end,
+	["options"] = function()
+		core.Config:ChatFrame(message);
+	end,
+	["config"] = function() core.Config.Toggle() end,
+}
+
+for key, _ in pairs(core.optionsHandlerTable) do
+    table.insert(options, key);
+end

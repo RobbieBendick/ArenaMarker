@@ -3,18 +3,12 @@
 --------------------------------------
 local _, core = ...;
 local LibDBIcon = LibStub("LibDBIcon-1.0");
-local addon_name = "ArenaMarker";
+local addonName = "ArenaMarker";
 core.Config = {};
 local Config = core.Config;
 local AMConfig;
 local members = GetNumGroupMembers;
 
-core.eventHandlerTable = {
-	["PLAYER_LOGIN"] = function(self) Config:Player_Login(self) end,
-	["CHAT_MSG_BG_SYSTEM_NEUTRAL"] = function(self, ...) AM:Main(self, ...) end,
-	["UNIT_SPELLCAST_SUCCEEDED"] = function(self, ...) AM:HandleUnitSpellCastSucceeded(self, ...) end,
-	["ZONE_CHANGED_NEW_AREA"] = function(self) AM:IsOutOfArena(self) end,
-};
 --------------------------------------
 -- Config functions
 --------------------------------------
@@ -487,7 +481,6 @@ function Config:GetClasses()
 	end
 	for i, class in ipairs(core.classes) do
 		core.classes[i] = Config:CapitalizeFirstLetter(class:lower());
-
 		if core.classes[i]:upper() == "DEATHKNIGHT" then
 			core.classes[i] = "Death Knight";
 		elseif core.classes[i]:upper() == "DEMONHUNTER" then
@@ -501,24 +494,34 @@ function Config:CapitalizeFirstLetter(str)
 end
 
 function Config:CreateMinimapIcon()
-	LibDBIcon:Register(addon_name, {
+	LibDBIcon:Register(addonName, {
 		icon = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_3",
 		OnClick = self.Toggle,
 		OnTooltipShow = function(tt)
-			tt:AddLine(addon_name .. " |cff808080" .. GetAddOnMetadata(AMConfig.name, "Version"));
+			tt:AddLine(addonName .. " |cff808080" .. GetAddOnMetadata(AMConfig.name, "Version"));
 			tt:AddLine("|cffCCCCCCClick|r to open options");
 			tt:AddLine("|cffCCCCCCDrag|r to move this button");
 		end,
-		text = addon_name,
+		text = addonName,
 		iconCoords = {0.05, 0.95, 0.05, 0.95},
 	});
+	
+	C_Timer.After(0.25, function ()
+		if #ArenaMarkerDB.minimapCoords > 0 then
+			LibDBIcon:GetMinimapButton(addonName):SetPoint(unpack(ArenaMarkerDB.minimapCoords));
+		end
+		LibDBIcon:GetMinimapButton(addonName):SetScript("OnDragStop", function (self)
+			self:SetScript("OnUpdate", nil);
+			self.isMouseDown = false;
+			self.icon:UpdateCoord();
+			self:UnlockHighlight();
 
-	-- update position
-	if #ArenaMarkerDB.minimapCoords > 0 then
-		LibDBIcon:GetMinimapButton(addon_name):SetPoint(unpack(ArenaMarkerDB.minimapCoords));
-	end
+			local point, relativeFrame, relativePoint, x, y = self:GetPoint();
+			ArenaMarkerDB.minimapCoords = { unpack({point, relativeFrame:GetName(), relativePoint, x, y}) };
+		end);
+		LibDBIcon:GetMinimapButton(addonName):SetShown(not ArenaMarkerDB.hideMinimap);
+	end);
 end
-
 function Config:OnInitialize()
 	if not ArenaMarkerDB then
 		ArenaMarkerDB = {};
@@ -541,6 +544,7 @@ function Config:OnInitialize()
 		ArenaMarkerDB.classString = "none";
 		ArenaMarkerDB.classMarkers = {};
 		ArenaMarkerDB.minimapCoords = {};
+		ArenaMarkerDB.hideMinimap = false;
 	end
 
 	-- place all class/marker combinations into relatives
@@ -569,7 +573,8 @@ function Config:OnInitialize()
 		"|r by " ..
 		"|cff69CCF0" ..
 		GetAddOnMetadata(AMConfig.name, "Author") ..
-		"|r. Type |cff33ff99/am|r for additional options.");
+		"|r. Type |cff33ff99/am|r for the available commands.");
+
 end
 
 function Config:UpdatePriorityMarker(class, newMarker)

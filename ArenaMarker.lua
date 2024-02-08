@@ -1,8 +1,8 @@
 --------------------------------------
 -- Namespace
 --------------------------------------
-local addon_name = "ArenaMarker";
-local ArenaMarker = _G.LibStub("AceAddon-3.0"):NewAddon(addon_name, "AceConsole-3.0", "AceEvent-3.0");
+local addonName = "ArenaMarker";
+local ArenaMarker = _G.LibStub("AceAddon-3.0"):NewAddon(addonName, "AceConsole-3.0", "AceEvent-3.0");
 local _, core = ...;
 local Config = core.Config;
 core.AM = {};
@@ -257,13 +257,20 @@ end
 local addonLoadedFrame = CreateFrame("Frame");
 addonLoadedFrame:RegisterEvent("ADDON_LOADED");
 local eventFrame = CreateFrame("Frame");
-function AM:Addon_Loaded()
+function AM:AddonLoaded()
     -- register all relevant events
     for event, func in pairs(core.eventHandlerTable) do
         eventFrame:RegisterEvent(event);
     end
     SLASH_ARENAMARKER1 = "/am";
-    SlashCmdList.ARENAMARKER = Config.Toggle;
+    SlashCmdList.ARENAMARKER = function(txt)
+        if txt == "" then return core.optionsHandlerTable['options']() end
+        for option, func in pairs(core.optionsHandlerTable) do
+            if option == txt then
+                func();
+            end
+        end
+    end
 end
 
 -- event handler
@@ -271,5 +278,5 @@ function AM:EventHandler(event, ...)
     return core.eventHandlerTable[event](self, ...);
 end
 
-addonLoadedFrame:SetScript("OnEvent", AM.Addon_Loaded);
+addonLoadedFrame:SetScript("OnEvent", AM.AddonLoaded);
 eventFrame:SetScript("OnEvent", AM.EventHandler);
