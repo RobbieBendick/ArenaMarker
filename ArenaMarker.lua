@@ -107,15 +107,18 @@ function AM:RepopulateUnusedMarkers()
     end
 end
 
-function AM:RemarkShadowmeld(self, ...)
+function AM:RemarkOnSpecificSpells(self, ...)
+    local spellsToRemarkOn = {
+        ["Shadowmeld"] = 58984,
+        ["Mirror Image"] = 55342,
+    };
     local unit, _, spellID = ...;
-    local shadowmeldSpellID = 58984;
     if not unit or not spellID then return end
-    if spellID ~= shadowmeldSpellID then return end
+    if not contains(spellsToRemarkOn, spellID) then return end
     if unit:sub(1, #"nameplate") == "nameplate" then return end
     if unit:sub(1, #"raid") == "raid" then return end
     if not UnitInParty(unit) then return end
-    
+
     C_Timer.After(1.6, function()
         AM:CheckExistingMarks();
         AM:SetRaidTargetByClass(unit);
@@ -127,7 +130,7 @@ function AM:HandleUnitSpellCastSucceeded(self, ...)
     local _, instanceType = IsInInstance();
     if instanceType ~= "arena" then return end
     AM:PetCastEventHandler(self, ...);
-    AM:RemarkShadowmeld(self, ...);
+    AM:RemarkOnSpecificSpells(self, ...);
 end
 
 function AM:UnmarkPets()
