@@ -118,8 +118,8 @@ function AM:RemarkOnSpecificSpells(self, ...)
     if unit:sub(1, #"nameplate") == "nameplate" then return end
     if unit:sub(1, #"raid") == "raid" then return end
     if not UnitInParty(unit) then return end
-
-    C_Timer.After(1.6, function()
+    local necessaryTimeToWaitToRemark = 4;
+    C_Timer.After(necessaryTimeToWaitToRemark, function()
         AM:CheckExistingMarks();
         AM:SetRaidTargetByClass(unit);
     end);
