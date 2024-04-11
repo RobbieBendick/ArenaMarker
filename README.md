@@ -8,7 +8,7 @@ Gives your group class specific raid markers in arena.
 ## Features
 
 - [x] Customizable priority system for class specific raid markers.
-- [x] Remarks after you or someone in your party shadowmelds.
+- [x] Remarks after you or someone in your party casts shadowmeld or mirror image.
 - [x] Marks pets.
 - [x] Prioritized pet marks.
 - [x] Classic & Retail support.
