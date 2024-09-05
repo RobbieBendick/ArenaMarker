@@ -12,5 +12,6 @@ Cataclysm.lua
 WOTLK.lua
 BurningCrusade.lua
 Retail.lua
+SimpleConfig.lua
 Config.lua
 ArenaMarker.lua

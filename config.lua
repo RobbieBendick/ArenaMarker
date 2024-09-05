@@ -2,6 +2,10 @@
 -- Namespace
 --------------------------------------
 local _, core = ...;
+local TEMP_WOW_CATA_CLASSIC_ID = 14;
+
+if WOW_PROJECT_ID ~= TEMP_WOW_CATA_CLASSIC_ID then return end
+
 local LibDBIcon = LibStub("LibDBIcon-1.0");
 local addonName = "ArenaMarker";
 core.Config = {};
@@ -573,8 +577,9 @@ function Config:OnInitialize()
 		"|r by " ..
 		"|cff69CCF0" ..
 		GetAddOnMetadata(AMConfig.name, "Author") ..
-		"|r. Type |cff33ff99/am|r for the available commands.");
-
+		"|r." ..
+    	(WOW_PROJECT_ID == TEMP_WOW_CATA_CLASSIC_ID and " Type |cff33ff99/am|r for the available commands." or "")
+	);
 end
 
 function Config:UpdatePriorityMarker(class, newMarker)
@@ -596,7 +601,7 @@ function Config:UpdatePriorityMarker(class, newMarker)
 	-- notify the user
 	self:ChatFrame("Updated priority marker for " ..
 		classColor .. Config:CapitalizeFirstLetter(class:lower()) .. "|r" ..
-		" to " .. markerColor .. Config:CapitalizeFirstLetter(newMarker) .. "|r" .. ".");
+		" to " .. markerColor .. Config:CapitalizeFirstLetter(newMarker) .. "|r.");
 end
 
 -- init DB & menu

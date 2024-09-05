@@ -8,6 +8,7 @@ local Config = core.Config;
 core.AM = {};
 AM = core.AM;
 local members = GetNumGroupMembers;
+local TEMP_WOW_CATA_CLASSIC_ID = 14;
 
 --[[
     Marker numbers:
@@ -267,11 +268,15 @@ function AM:AddonLoaded()
     end
     SLASH_ARENAMARKER1 = "/am";
     SlashCmdList.ARENAMARKER = function(txt)
-        if txt == "" then return core.optionsHandlerTable['options']() end
-        for option, func in pairs(core.optionsHandlerTable) do
-            if option == txt then
-                func();
+        if WOW_PROJECT_ID == TEMP_WOW_CATA_CLASSIC_ID then
+            if txt == "" then return core.optionsHandlerTable['options']() end
+            for option, func in pairs(core.optionsHandlerTable) do
+                if option == txt then
+                    func();
+                end
             end
+        else
+            if txt == "" then return Config:ChatFrame("Options disabled on retail until I have time to fix. Everything else should work as intended.") end
         end
     end
 end
