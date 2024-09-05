@@ -42,10 +42,10 @@ function Config:OnInitialize()
 	end
 
 	DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99" ..
-		AMConfig.name ..
+		"ArenaMarker" ..
 		"|r by " ..
 		"|cff69CCF0" ..
-		GetAddOnMetadata(AMConfig.name, "Author") ..
-		"|r.");
+		C_AddOns.GetAddOnMetadata("ArenaMarker", "Author") ..
+		"|r loaded.");
 end
 
