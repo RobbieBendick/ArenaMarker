@@ -461,19 +461,7 @@ function Config:CreateMenu()
 	return InterfaceOptions_AddCategory(AMConfig);
 end
 
--- small helper funcs
-function contains(table, x)
-	for _, v in pairs(table) do
-		if v == x then return true end
-	end
-	return false;
-end
 
-function removeValue(table, value)
-	local key = table[value];
-	table[value] = nil;
-	return key;
-end
 
 function Config:RemoveSpaces(string)
     return string:gsub("%s+", "");
@@ -602,6 +590,20 @@ function Config:UpdatePriorityMarker(class, newMarker)
 	self:ChatFrame("Updated priority marker for " ..
 		classColor .. Config:CapitalizeFirstLetter(class:lower()) .. "|r" ..
 		" to " .. markerColor .. Config:CapitalizeFirstLetter(newMarker) .. "|r.");
+end
+
+-- small helper funcs
+function contains(table, x)
+	for _, v in pairs(table) do
+		if v == x then return true end
+	end
+	return false;
+end
+
+function removeValue(table, value)
+	local key = table[value];
+	table[value] = nil;
+	return key;
 end
 
 -- init DB & menu

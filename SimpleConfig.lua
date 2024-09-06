@@ -10,6 +10,7 @@ function Config:Player_Login()
 	Config:OnInitialize();
 end
 
+function Config:ChatFrame(t) return DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99ArenaMarker|r: " .. t); end
 
 function Config:OnInitialize()
 	if not ArenaMarkerDB then

@@ -240,6 +240,20 @@ function AM:MarkPetsWhenGatesOpen(txt)
     end
 end
 
+-- small helper funcs
+function contains(table, x)
+	for _, v in pairs(table) do
+		if v == x then return true end
+	end
+	return false;
+end
+
+function removeValue(table, value)
+	local key = table[value];
+	table[value] = nil;
+	return key;
+end
+
 function AM:IsOutOfArena()
     local _, instanceType = IsInInstance();
     if instanceType ~= "arena" then
