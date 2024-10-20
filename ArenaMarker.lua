@@ -290,7 +290,7 @@ function AM:AddonLoaded()
                 end
             end
         else
-            if txt == "" then return Config:ChatFrame("Options disabled on retail until I have time to fix. Everything else should work as intended.") end
+            if txt == "" then return Config:ChatFrame("Options disabled on retail until I have time to fix. Everything else should work as intended."); end
         end
     end
 end
