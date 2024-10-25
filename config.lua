@@ -102,7 +102,6 @@ end
 function Config:ChatFrame(t) return DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99ArenaMarker|r: " .. t); end
 
 function Config:CreateMenu()
-	-- Menu
 	AMConfig = CreateFrame("Frame", "ArenaMarkerConfig", UIParent);
 
 	AMConfig.name = "ArenaMarker";
@@ -405,7 +404,7 @@ function Config:CreateMenu()
 		local dropdownValue = UIDropDownMenu_GetText(AMConfig.classDropDown);
 
 		-- remove color codes from the dropdown value
-		dropdownValue = dropdownValue:gsub("|c........", ""):gsub("|r", "")
+		dropdownValue = dropdownValue:gsub("|c........", ""):gsub("|r", "");
 		dropdownValue = Config:RemoveSpaces(dropdownValue);
 
 		-- get the first marker from the class we have selected
