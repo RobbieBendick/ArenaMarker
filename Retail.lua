@@ -1,8 +1,8 @@
-local _, core = ...;
-
+local _, addon = ...;
+local ArenaMarker = LibStub("AceAddon-3.0"):GetAddon(addon.name);
 if WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE then return end
 
-core.relatives = {
+ArenaMarker.relatives = {
     ["ROGUE"] = { "star" },
     ["DRUID"] = { "circle" },
     ["WARLOCK"] = { "diamond" },
@@ -18,7 +18,7 @@ core.relatives = {
     ["PRIEST"] = { "skull" }
 };
 
-core.defaultClassMarkers = {
+ArenaMarker.defaultClassMarkers = {
     ["ROGUE"] = { "star" },
     ["DRUID"] = { "circle" },
     ["WARLOCK"] = { "diamond" },
@@ -35,7 +35,7 @@ core.defaultClassMarkers = {
 };
 
 -- false = dont mark in arena starting zone
-core.summons = {
+ArenaMarker.summons = {
     [883] = true,   -- Call Pet 1
     [83242] = true, -- Call pet 2
     [83243] = true, -- Call pet 3

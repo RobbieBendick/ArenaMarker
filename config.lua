@@ -1,594 +1,444 @@
---------------------------------------
--- Namespace
---------------------------------------
-local _, core = ...;
-local TEMP_WOW_CATA_CLASSIC_ID = 14;
-
-if WOW_PROJECT_ID ~= TEMP_WOW_CATA_CLASSIC_ID then return end
+local _, addon = ...;
+local ArenaMarker = LibStub("AceAddon-3.0"):GetAddon(addon.name);
+local AceConfig = LibStub("AceConfig-3.0");
+local AceConfigDialog = LibStub("AceConfigDialog-3.0");
+local GetAddOnMetadata = GetAddOnMetadata or C_AddOns.GetAddOnMetadata;
 
 local LibDBIcon = LibStub("LibDBIcon-1.0");
-local addonName = "ArenaMarker";
-core.Config = {};
-local Config = core.Config;
 local AMConfig;
 local members = GetNumGroupMembers;
 
---------------------------------------
--- Config functions
---------------------------------------
-
-function Config:Toggle()
-	if AMConfig:IsShown() then
-		_G.SettingsPanel:Hide();
-	end
-	InterfaceOptionsFrame_OpenToCategory(AMConfig);
-	InterfaceOptionsFrame_OpenToCategory(AMConfig);
+function ArenaMarker:Toggle()
+    if Settings and Settings.OpenToCategory then
+        Settings.OpenToCategory(addon.name);
+    else
+        InterfaceOptionsFrame_OpenToCategory(addon.name);
+        InterfaceOptionsFrame_OpenToCategory(addon.name);
+    end
 end
 
-function Config:CreateButton(relativeFrame, buttonText, funcName, xOff, yOff)
-	local btn = CreateFrame("Button", nil, relativeFrame, "GameMenuButtonTemplate");
-	btn:SetPoint("CENTER", relativeFrame, "CENTER", xOff, yOff);
-	btn:SetSize(110, 30);
-	btn:SetText(buttonText);
-	btn:SetScript("OnClick", funcName);
-	return btn;
-end
-
-function Config:CreateCheckButton(relativeFrame, buttonText, DB_var)
-	local checkbtn = CreateFrame("CheckButton", nil, AMConfig, "UICheckButtonTemplate");
-	checkbtn:SetPoint("CENTER", relativeFrame, "CENTER", 0, -35);
-	checkbtn.Text:SetText(" " .. buttonText);
-	checkbtn.Text:SetFontObject("GameFontHighlight");
-	checkbtn:SetChecked(DB_var);
-	checkbtn:SetScript("OnClick", function(self) DB_var = self:GetChecked() end);
-	return checkbtn;
-end
-
-function Config:CreateDropdownTitle(relativeFrame, dropText)
-	local dropTitle = AMConfig:CreateFontString(nil, "OVERLAY", "GameFontHighlight");
-	dropTitle:SetText(dropText);
-	dropTitle:SetPoint("CENTER", relativeFrame, 0, -32);
-	return dropTitle;
-end
-
-function Config:CreateDropdown(relativeFrame, frameName)
-	local dropDown = CreateFrame("Frame", frameName or nil, AMConfig, "UIDropDownMenuTemplate");
-	dropDown:SetPoint("CENTER", relativeFrame, 0, -23);
-	return dropDown;
-end
-
-function Config:CreateDropdownIcon(relativeFrame)
-	local dropIcon = AMConfig:CreateTexture(nil, "ARTWORK", nil, 2);
-	dropIcon:SetParent(relativeFrame);
-	dropIcon:SetPoint("LEFT", relativeFrame, 25, 2);
-	dropIcon:SetSize(16, 16);
-	return dropIcon;
-end
-
-function Config:InitDropdown(dropdown, menu, clickID, markerID, frame)
-	UIDropDownMenu_SetWidth(dropdown, 93);
-	UIDropDownMenu_Initialize(dropdown, menu);
-	UIDropDownMenu_SetSelectedID(dropdown, clickID);
-
-	if not markerID then return end
-	if markerID == -1 then
-		frame:SetTexture(nil);
-	else
-		frame:SetTexture(core.markerTexturePath .. markerID);
-	end
-end
-
-function Config:SmallMenu()
-	AMConfig.dropDownTitleThree:Hide();
-	AMConfig.dropDownThree:Hide();
-end
-
-function Config:LargeMenu()
-	AMConfig.dropDownTitleThree:Show();
-	AMConfig.dropDownThree:Show();
-end
-
-function Config:CheckMenu()
-	-- both party-pet options are 'none'
-	if ArenaMarkerDB.petDropDownThreeMarkerID == -1 and ArenaMarkerDB.petDropDownTwoMarkerID == -1 then
-		return Config:SmallMenu();
-	end
-	-- atleast 1 other party-pet option isnt 'none'
-	if not (ArenaMarkerDB.petDropDownThreeMarkerID == -1 and ArenaMarkerDB.petDropDownTwoMarkerID == -1) then
-		return Config:LargeMenu();
-	end
-end
-
-function Config:ChatFrame(t) return DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99ArenaMarker|r: " .. t); end
-
-function Config:CreateMenu()
+function ArenaMarker:CreateMenu()
 	AMConfig = CreateFrame("Frame", "ArenaMarkerConfig", UIParent);
-
 	AMConfig.name = "ArenaMarker";
 
-	-- Options Title
-	AMConfig.title = AMConfig:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge");
-	AMConfig.title:SetParent(AMConfig);
-	AMConfig.title:SetPoint("TOPLEFT", 16, -16);
-	AMConfig.title:SetText(AMConfig.name);
+	local version = GetAddOnMetadata(AMConfig.name, "Version") or "Unknown";
+	local author = GetAddOnMetadata(AMConfig.name, "Author") or "Mageiden";
+	
+	local options = {
+		type = "group",
+		name = self.name,
+		args = {
+			info = {
+				order = 1,
+				type = "description",
+				name = "|cffffd700Version|r " .. version .. "\n|cffffd700 Author|r " .. author,
+			},
+			settingsGroup = {
+				type = "group",
+				name = "Auto Mark Pets",
+				order = 2,
+				inline = true,
+				args = {
+					markPets = {
+						type = "toggle",
+						name = "Mark Pets When Arena Gates Open",
+						desc = "Enable or disable marking pets when the arena gates open.",
+						get = function(info) return self.db.profile.allowPets end,
+						set = function(info, value) self.db.profile.allowPets = value end,
+						order = 1,
+					},
+					markSummonedPets = {
+						type = "toggle",
+						name = "Mark Pets When Summoned In Arena",
+						desc = "Enable or disable marking pets when they are summoned.",
+						get = function(info) return self.db.profile.markSummonedPets end,
+						set = function(info, value) self.db.profile.markSummonedPets = value end,
+						order = 2,
+					},
+				},
+			},
+			partyPetsGroup = {
+				type = "group",
+				name = "Party Pet Settings",
+				order = 3,
+				inline = true,
+				args = {
+					selfPetDropdown = {
+						type = "select",
+						name = "Self-Pet Mark",
+						desc = "Select a marker for your pet.",
+						values = function()
+							local markers = {[-1] = "None"};
+							for name, id in pairs(self.markerValues) do
+								local color = self.RAID_TARGET_COLORS[id] or "|cFFFFFFFF";
+								local icon = "|T" .. self.markerTexturePath .. id .. ":16|t";
+								local label = self.markerStrings[id];
+								
+								if id == self.db.profile.petDropDownTwoMarkerID or id == self.db.profile.petDropDownThreeMarkerID then
+									-- grey out this option to show it's disabled
+									markers[id] = "|cff808080" .. icon .. " " .. label .. "|r";
+								else
+									markers[id] = color .. icon .. " " .. label .. "|r";
+								end
+							end
+							return markers;
+						end,
+						get = function(info) return self.db.profile.petDropDownMarkerID end,
+						set = function(info, value) 
+							if value ~= self.db.profile.petDropDownTwoMarkerID and value ~= self.db.profile.petDropDownThreeMarkerID then
+								self.db.profile.petDropDownMarkerID = value;
+							else
+								self:Print("|cffff0000This marker is already in use! Choose a different one.|r");
+							end
+							LibStub("AceConfigRegistry-3.0"):NotifyChange(self.name);
+						end,
+						order = 1,
+					},
+					partyPetDropdown = {
+						type = "select",
+						name = "Party-Pet Mark",
+						desc = "Select a marker for party pets.",
+						values = function()
+							local markers = {[-1] = "None"};
+							for name, id in pairs(self.markerValues) do
+								local color = self.RAID_TARGET_COLORS[id] or "|cFFFFFFFF";
+								local icon = "|T" .. self.markerTexturePath .. id .. ":16|t";
+								local label = self.markerStrings[id];
+								
+								if id == self.db.profile.petDropDownMarkerID or id == self.db.profile.petDropDownThreeMarkerID then
+									-- grey out this option to show it's disabled
+									markers[id] = "|cff808080" .. icon .. " " .. label .. "|r";
+								else
+									markers[id] = color .. icon .. " " .. label .. "|r";
+								end
+							end
+							return markers
+						end,
+						get = function(info) return self.db.profile.petDropDownTwoMarkerID end,
+						set = function(info, value) 
+							if value ~= self.db.profile.petDropDownMarkerID and value ~= self.db.profile.petDropDownThreeMarkerID then
+								self.db.profile.petDropDownTwoMarkerID = value;
+							else
+								self:Print("|cffff0000This marker is already in use! Choose a different one.|r");
+							end
+							LibStub("AceConfigRegistry-3.0"):NotifyChange(self.name);
+						end,
+						order = 2,
+					},
+					extraPartyPetDropdown = {
+						type = "select",
+						name = "Extra Party-Pet Mark",
+						desc = "Select a marker for additional party pets.",
+						values = function()
+							local markers = {[-1] = "None"};
+							for name, id in pairs(self.markerValues) do
+								local color = self.RAID_TARGET_COLORS[id] or "|cFFFFFFFF";
+								local icon = "|T" .. self.markerTexturePath .. id .. ":16|t";
+								local label = self.markerStrings[id];
+								
+								if id == self.db.profile.petDropDownMarkerID or id == self.db.profile.petDropDownTwoMarkerID then
+									-- grey out this option to show it's disabled
+									markers[id] = "|cff808080" .. icon .. " " .. label .. "|r";
+								else
+									markers[id] = color .. icon .. " " .. label .. "|r";
+								end
+							end
+							return markers
+						end,
+						get = function(info) return self.db.profile.petDropDownThreeMarkerID end,
+						set = function(info, value) 
+							if value ~= self.db.profile.petDropDownMarkerID and value ~= self.db.profile.petDropDownTwoMarkerID then
+								self.db.profile.petDropDownThreeMarkerID = value;
+							else
+								self:Print("|cffff0000This marker is already in use. Please choose a different one or adjust other pet marker settings.|r");
+							end
+							LibStub("AceConfigRegistry-3.0"):NotifyChange(self.name);
+						end,
+						order = 3,
+					}
+					
+				},
+			},
+			classSettingsGroup = {
+				type = "group",
+				name = "Class Priority Markers",
+				order = 5,
+				inline = true,
+				args = {
+					classDropdown = {
+						type = "select",
+						name = "Class",
+						desc = "Select a class to set priority markers.",
+						values = function()
+							local classes = {};
+							for _, class in ipairs(self.classes) do
+								local color = RAID_CLASS_COLORS[class:upper()].colorStr;
+								local classText = class:sub(1,1) .. class:sub(2):lower();
+								classes[class] = "|c" .. color .. classText .. "|r";
+							end
+							return classes;
+						end,
+						get = function(info) return self.db.profile.selectedClass end,
+						set = function(info, value) self.db.profile.selectedClass = value end,
+						order = 1,
+					},
+					priorityMarkerDropdown = {
+						type = "select",
+						name = "Priority Marker",
+						desc = "Select a priority marker for the selected class.",
+						values = function()
+							local markers = {};
+							for name, id in pairs(self.markerValues) do
+								local color = self.RAID_TARGET_COLORS[id] or "|cFFFFFFFF";
+								local icon = "|T" .. self.markerTexturePath .. id .. ":16|t";
+								local label = self.markerStrings[id];
+								markers[name] = color .. icon .. " " .. label .. "|r";
+							end
+							return markers
+						end,
+						get = function(info)
+							local selectedClass = self.db.profile.selectedClass;
+							if selectedClass and self.db.profile.classMarkers[selectedClass] and self.db.profile.classMarkers[selectedClass][1] then
+								return self.db.profile.classMarkers[selectedClass][1];
+							else
+								return self.db.profile.priorityMarkerSelection;
+							end
+						end,
+						set = function(info, value)
+							self.db.profile.priorityMarkerSelection = value;
+							ArenaMarker:UpdatePriorityMarker(self.db.profile.selectedClass, value);
+						end,
+						order = 2,
+					},
+					spacer = {
+                        order = 3,
+                        type = "description",
+                        name = " ",
+                        width = 0.08,
+                    },
+					resetPriorityMarkers = {
+						type = "execute",
+						name = "Reset Class Markers",
+						desc = "Resets the class priority markers to their default values.",
+						func = function() StaticPopup_Show("RESET_ALL_CONFIRM") end,
+						order = 4,
+					},
+				},
+			},
+			actionButtonsGroup = {
+				order = 6,
+				type = "group",
+				name = "Manual Actions",
+				inline = true,
+				args = {
+					markPlayersButton = {
+						type = "execute",
+						name = "Mark Players",
+						func = function() self:MarkPlayers() end,
+						order = 1,
+					},
+					divider = {
+                        type = "description",
+                        name = " ",
+                        width = 0.2,
+						order = 2,
+                    },
+					markPetsButton = {
+						type = "execute",
+						name = "Mark Pets",
+						func = function() self:MarkPets() end,
+						order = 3,
+					},
+					spacerr = {
+                        order = 4,
+                        type = "description",
+                        name = " ",
+                        width = "full",
+						order = 4,
+                    },
+					unmarkPlayersButton = {
+						type = "execute",
+						name = "Unmark Players",
+						func = function() self:UnmarkPlayers() end,
+						order = 5,
+					},
+					dividerr = {
+                        type = "description",
+                        name = " ",
+                        width = 0.2,
+						order = 6,
+                    },
+					unmarkPetsButton = {
+						type = "execute",
+						name = "Unmark Pets",
+						func = function() self:UnmarkPets() end,
+						order = 7,
+					},
+				},
+			},
+		},
+	}
 
-	-- Mark Pets Check Button
-	AMConfig.markPetsCheckButton = self:CreateCheckButton(AMConfig.title,
-		"Mark Pets When Arena Gates Open", ArenaMarkerDB.allowPets)
-	AMConfig.markPetsCheckButton:SetPoint("BOTTOMLEFT", AMConfig.title, "BOTTOMLEFT", 0, -45);
-	AMConfig.markPetsCheckButton:SetScript("OnClick",
-		function() ArenaMarkerDB.allowPets = AMConfig.markPetsCheckButton:GetChecked() end);
+	LibStub("AceConfig-3.0"):RegisterOptionsTable(self.name, options);
+	LibStub("AceConfigDialog-3.0"):AddToBlizOptions(self.name, self.name);
+end
 
-	-- Pet-Summon Check Button
-	AMConfig.markPetsOnSummonCheckButton = self:CreateCheckButton(AMConfig.markPetsCheckButton,
-		"Mark Pets When Summoned In Arena", ArenaMarkerDB.markSummonedPets);
-	AMConfig.markPetsOnSummonCheckButton:SetScript("OnClick",
-		function() ArenaMarkerDB.markSummonedPets = AMConfig.markPetsOnSummonCheckButton:GetChecked() end);
-
-	-- Mark Players Button
-	AMConfig.markPlayersButton = self:CreateButton(AMConfig.markPetsOnSummonCheckButton, "Mark Players", AM.MarkPlayers,
-		44
-		, -40);
-
-	-- Unmark Players Button
-	AMConfig.unmarkPlayersButton = self:CreateButton(AMConfig.markPlayersButton, "Unmark Players", AM.UnmarkPlayers, 120,
-		0);
-
-	-- Mark Pets Button
-	AMConfig.markPetsButton = self:CreateButton(AMConfig.markPlayersButton, "Mark Pets", AM.MarkPets, 0, -45);
-
-	-- Unmark Pets Button
-	AMConfig.unmarkPetsButton = self:CreateButton(AMConfig.markPetsButton, "Unmark Pets", AM.UnmarkPets, 120, 0);
-
-	function Config:SetDropdownInfo(dropdown, textVal, selectedVal, iconFrame, j)
-		UIDropDownMenu_SetText(dropdown, textVal);
-		UIDropDownMenu_SetSelectedID(dropdown, selectedVal);
-		if not iconFrame then return end
-		if j == -1 then
-			iconFrame:SetTexture(nil);
-		else
-			iconFrame:SetTexture(core.markerTexturePath .. j);
-		end
+function ArenaMarker:HandleResetClick()
+	-- loop through all settings and reset them to their default values
+	for class, markerList in pairs(ArenaMarker.defaultClassMarkers) do
+		ArenaMarker.db.profile.classMarkers[class] = deepCopy(markerList);
+        ArenaMarker.relatives[class] = deepCopy(markerList);
 	end
 
-	function Config:CreateDropdownMenu(disableOne, disableTwo, func)
-		local info = UIDropDownMenu_CreateInfo();
-		info.func = func;
-		local function AddMark(marker, i)
-			info.text, info.checked = marker, false;
-			if i then
-				if i == disableOne or i == disableTwo then
-					info.disabled = true;
+	LibStub("AceConfigRegistry-3.0"):NotifyChange("ArenaMarker");
 
-					-- remove color codes
-					marker = marker:gsub("|c........", ""):gsub("|r", "")
-
-					-- set text to non color coded text
-					info.text = Config:CapitalizeFirstLetter(marker);
-				else
-					info.disabled = false;
-				end
-				info.icon = core.markerTexturePath .. i;
-			else
-				info.icon = nil;
-				info.disabled = false;
-			end
-			return UIDropDownMenu_AddButton(info);
-		end
-
-		for i = #core.markerStrings, 1, -1 do
-			AddMark(core.RAID_TARGET_COLORS[i] .. Config:CapitalizeFirstLetter(core.markerStrings[i]), i);
-		end
-		AddMark("None", false, nil);
-	end
-
-	function Config:CreatePetDropdownOnClick(self, disableOne, markerIDString, clickIDString, frame, iconFrame)
-		local j = -1;
-		for i = #core.markerStrings + 1, 1, -1 do
-			if self:GetID() == i then
-				-- set marker & click ID
-				ArenaMarkerDB[markerIDString] = j;
-				ArenaMarkerDB[clickIDString] = self:GetID();
-				break;
-			end
-			-- j is finding the MarkerID from the ClickID
-			if j == -1 then
-				j = j + 2;
-			else
-				j = j + 1;
-			end
-		end
-		Config:SetDropdownInfo(frame, self.value, self:GetID(), iconFrame, j);
-		Config:CheckMenu();
-	end
-
-	-- Self-Pet Priority Dropdown
-	local function arenaMarkerPetDropDownOnClick(self, arg1, arg2, checked)
-		return Config:CreatePetDropdownOnClick(self, nil, "petDropDownMarkerID", "petDropDownClickID", AMConfig.dropDown,
-			AMConfig.dropDownIcon);
-	end
-
-	function Config:ArenaMarkerDropDownMenu(frame, level, menuList)
-		return Config:CreateDropdownMenu(ArenaMarkerDB.petDropDownThreeMarkerID, ArenaMarkerDB.petDropDownTwoMarkerID,
-			arenaMarkerPetDropDownOnClick);
-	end
-
-	AMConfig.dropDownTitle = self:CreateDropdownTitle(AMConfig.markPetsButton, "Self-Pet Mark");
-	AMConfig.dropDown = self:CreateDropdown(AMConfig.dropDownTitle, "ArenaMarkerDropDown");
-	AMConfig.dropDownIcon = self:CreateDropdownIcon(AMConfig.dropDown);
-
-	-- Second Prio Pet Dropdown
-	local function arenaMarkerPetDropDownTwoOnClick(self, arg1, arg2, checked)
-		return Config:CreatePetDropdownOnClick(self, ArenaMarkerDB.petDropDownThreeMarkerID, "petDropDownTwoMarkerID",
-			"petDropDownTwoClickID", AMConfig.dropDownTwo, AMConfig.dropDownIconTwo);
-	end
-
-	function Config:ArenaMarkerDropDownMenuTwo(frame, level, menuList)
-		return Config:CreateDropdownMenu(ArenaMarkerDB.petDropDownThreeMarkerID, ArenaMarkerDB.petDropDownMarkerID,
-			arenaMarkerPetDropDownTwoOnClick);
-	end
-
-	AMConfig.dropDownTitleTwo = self:CreateDropdownTitle(AMConfig.dropDown, "Party-Pet Mark");
-	AMConfig.dropDownTwo = self:CreateDropdown(AMConfig.dropDownTitleTwo);
-	AMConfig.dropDownIconTwo = self:CreateDropdownIcon(AMConfig.dropDownTwo);
-
-	-- Third Prio Pet Dropdown
-	local function arenaMarkerPetDropDownThreeOnClick(self, arg1, arg2, checked)
-		return Config:CreatePetDropdownOnClick(self, ArenaMarkerDB.petDropDownTwoMarkerID, "petDropDownThreeMarkerID",
-			"petDropDownThreeClickID", AMConfig.dropDownThree, AMConfig.dropDownIconThree);
-	end
-
-	function Config:ArenaMarkerDropDownMenuThree(frame, level, menuList)
-		return Config:CreateDropdownMenu(ArenaMarkerDB.petDropDownTwoMarkerID, ArenaMarkerDB.petDropDownMarkerID,
-			arenaMarkerPetDropDownThreeOnClick);
-	end
-
-	AMConfig.dropDownTitleThree = self:CreateDropdownTitle(AMConfig.dropDownTwo, "Extra Party-Pet Mark");
-	AMConfig.dropDownThree = self:CreateDropdown(AMConfig.dropDownTitleThree);
-	AMConfig.dropDownIconThree = self:CreateDropdownIcon(AMConfig.dropDownThree);
-
-	-- Class Dropdown
-	AMConfig.classDropDownTitle = self:CreateDropdownTitle(AMConfig.dropDown, "Priority Class Marks");
-	AMConfig.classDropDownTitle:SetPoint("TOPRIGHT", AMConfig.dropDown, "TOPRIGHT", 128, 13);
-	AMConfig.classDropDown = self:CreateDropdown(AMConfig.classDropDownTitle, "ArenaMarkerClassDropDown");
-	AMConfig.classDropDownIcon = self:CreateDropdownIcon(AMConfig.classDropDown);
-	AMConfig.classDropDownIcon:SetTexture("Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES");
-
-	-- Class Marker Dropdown
-	AMConfig.classMarkerDropDownTitle = self:CreateDropdownTitle(AMConfig.classDropDown, "Priority Marker");
-	AMConfig.classMarkerDropDownTitle:SetPoint("CENTER", AMConfig.classDropDown, "CENTER", 0, -24);
-	AMConfig.classMarkerDropDown = self:CreateDropdown(AMConfig.classMarkerDropDownTitle,
-		"ArenaMarkerClassMarkerDropDown");
-	AMConfig.classMarkerDropDownIcon = self:CreateDropdownIcon(AMConfig.classMarkerDropDown);
-
-	-- Reset Class Markers Button
-	AMConfig.resetClassMarkersButton = self:CreateButton(AMConfig.classMarkerDropDown, "Reset To Default",
-		function() StaticPopup_Show("RESET_ALL_CONFIRM") end, 0, -25);
-
-	AMConfig.resetClassMarkersButton:SetSize(118, 23);
-
-	-- Class Marker Dropdown Onclick function
-	local function arenaMarkerClassMarkerDropDownOnClick(self, arg1, arg2, checked)
-		local j = -1;
-		for i = #core.markerStrings + 1, 1, -1 do
-			if self:GetID() == i then
-				-- set marker & click ID
-				ArenaMarkerDB["classMarkerDropDownClickID"] = self:GetID();
-				ArenaMarkerDB["classMarkerDropDownMarkerID"] = j;
-				break;
-			end
-			-- j is finding the MarkerID from the ClickID
-			if j == -1 then
-				j = j + 2;
-			else
-				j = j + 1;
-			end
-		end
-		-- set dropdown info
-		Config:SetDropdownInfo(AMConfig.classMarkerDropDown, self.value, self:GetID(), AMConfig.classMarkerDropDownIcon,
-			j);
-
-		-- find selected id from class dropdown
-		local classID = UIDropDownMenu_GetSelectedID(AMConfig.classDropDown);
-
-		-- prioritize marker
-		if classID == 1 then
-			Config:UpdatePriorityMarker(core.classes[classID]:upper(), core.markerStrings[j]);
-		else
-			Config:UpdatePriorityMarker(ArenaMarkerDB["classString"], core.markerStrings[j]);
-		end
-	end
-
-	-- Class Marker Dropdown Menu
-	local function arenaMarkerClassMarkerDropDownMenu(frame, level, menuList)
-		-- Create the dropdown menu
-		local info = UIDropDownMenu_CreateInfo();
-		info.func = arenaMarkerClassMarkerDropDownOnClick;
-		local function AddDropDownValue(marker, markerID)
-			info.text, info.checked = marker, false;
-			if markerID then
-				info.icon = core.markerTexturePath .. markerID;
-			else
-				info.icon = nil;
-			end
-			local markerColor = core.RAID_TARGET_COLORS[markerID];
-
-			if markerColor then
-				info.colorCode = markerColor;
-			end
-
-			return UIDropDownMenu_AddButton(info);
-		end
-
-		for i = #core.markerStrings, 1, -1 do
-			AddDropDownValue(Config:CapitalizeFirstLetter(core.markerStrings[i]), i);
-		end
-	end
-
-	local function arenaMarkerClassDropDownOnClick(self, arg1, arg2, checked)
-		for i = 1, #core.relatives do
-			if self:GetID() == i then
-				-- Set marker & click ID
-				ArenaMarkerDB["classDropDownClickID"] = self:GetID();
-				break;
-			end
-		end
-
-		local newSelfValue = Config:RemoveSpaces(self.value):upper();
-		ArenaMarkerDB["classString"] = self.value:upper();
-
-		-- get the coordinates of the class icon we want to use
-		local coords = CLASS_ICON_TCOORDS[newSelfValue];
-
-		-- set the coordinates of our texture
-		AMConfig.classDropDownIcon:SetTexCoord(unpack(coords));
-
-		-- set class dropdown stuff
-		UIDropDownMenu_SetText(AMConfig.classDropDown, self.value);
-		UIDropDownMenu_SetSelectedID(AMConfig.classDropDown, self:GetID());
-		UIDropDownMenu_SetSelectedValue(AMConfig.classDropDown, self.value);
-
-		-- set class marker dropdown stuff
-		UIDropDownMenu_SetSelectedID(AMConfig.classMarkerDropDown,
-			core.reversedMarkerValues[core.relatives[newSelfValue][1]]);
-
-		local selectedMarkerID = core.markerValues[core.relatives[newSelfValue][1]];
-
-		UIDropDownMenu_SetText(AMConfig.classMarkerDropDown,
-			core.RAID_TARGET_COLORS[selectedMarkerID] ..
-			Config:CapitalizeFirstLetter(core.relatives[newSelfValue][1]));
-
-		AMConfig.classMarkerDropDownIcon:SetTexture(core.markerTexturePath ..
-			core.markerValues[core.relatives[newSelfValue][1]]);
-	end
-
-	local function arenaMarkerClassDropDownMenu(frame, level, menuList)
-		local info = UIDropDownMenu_CreateInfo();
-		info.func = arenaMarkerClassDropDownOnClick;
-		local function AddDropDownValue(marker, coords)
-			info.text, info.checked, info.icon = marker, false,
-				"Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES";
-
-			-- DK/DH spaces
-			marker = Config:RemoveSpaces(marker);
-
-			-- get the color string for the class
-			if RAID_CLASS_COLORS[marker:upper()] then
-				info.colorCode = "|c" .. RAID_CLASS_COLORS[marker:upper()].colorStr;
-			end
-
-			-- set the coordinates of our texture
-			if coords then
-				info.tCoordLeft, info.tCoordRight, info.tCoordTop, info.tCoordBottom = unpack(coords);
-			end
-
-			return UIDropDownMenu_AddButton(info);
-		end
-		for i, class in ipairs(core.classes) do
-			local coords = CLASS_ICON_TCOORDS[Config:RemoveSpaces(class:upper())];
-			AddDropDownValue(class, coords);
-		end
-	end
-
-	function Config:HandleResetClick()
-		-- loop through all settings and reset them to their default values
-		for class, markerList in pairs(core.defaultClassMarkers) do
-			-- set the new values in the database
-			ArenaMarkerDB.classMarkers[class] = markerList;
-
-			-- set the new values in the relatives table
-			core.relatives[class][1] = markerList[1];
-		end
-
-		-- find what value is currently selected on the class dropdown
-		local dropdownValue = UIDropDownMenu_GetText(AMConfig.classDropDown);
-
-		-- remove color codes from the dropdown value
-		dropdownValue = dropdownValue:gsub("|c........", ""):gsub("|r", "");
-		dropdownValue = Config:RemoveSpaces(dropdownValue);
-
-		-- get the first marker from the class we have selected
-		local newMarker = core.relatives[dropdownValue:upper()][1];
-
-		-- get the color of the marker and capitalize the first letter
-		local coloredMarkerText = core.RAID_TARGET_COLORS[core.markerValues[newMarker]] ..
-			Config:CapitalizeFirstLetter(newMarker);
-
-		-- set click id of the marker dropdown
-		UIDropDownMenu_SetSelectedID(AMConfig.classMarkerDropDown, core.reversedMarkerValues[newMarker]);
-
-		-- set the marker icon on the classID we have selected
-		AMConfig.classMarkerDropDownIcon:SetTexture(core.markerTexturePath .. core.markerValues[newMarker]);
-
-		-- set the marker dropdown text on the classID we have selected
-		UIDropDownMenu_SetText(AMConfig.classMarkerDropDown, coloredMarkerText);
-
-		-- notify the user that settings have been reset
-		Config:ChatFrame("Class priority markers have been reset to their default values.");
-	end
-
-	-- init Dropdowns
-	self:InitDropdown(AMConfig.dropDown, Config.ArenaMarkerDropDownMenu, ArenaMarkerDB.petDropDownClickID,
-		ArenaMarkerDB.petDropDownMarkerID, AMConfig.dropDownIcon);
-	self:InitDropdown(AMConfig.dropDownTwo, Config.ArenaMarkerDropDownMenuTwo, ArenaMarkerDB.petDropDownTwoClickID,
-		ArenaMarkerDB.petDropDownTwoMarkerID, AMConfig.dropDownIconTwo);
-	self:InitDropdown(AMConfig.dropDownThree, Config.ArenaMarkerDropDownMenuThree, ArenaMarkerDB.petDropDownThreeClickID,
-		ArenaMarkerDB.petDropDownThreeMarkerID, AMConfig.dropDownIconThree);
-
-	self:InitDropdown(AMConfig.classDropDown, arenaMarkerClassDropDownMenu, 1, nil,
-		nil);
-	UIDropDownMenu_SetWidth(AMConfig.classDropDown, 110);
-
-	self:InitDropdown(AMConfig.classMarkerDropDown, arenaMarkerClassMarkerDropDownMenu,
-		nil, nil, nil);
-
-	-- set default values for class dropdown (hunter = default because its the first class in the dropdown)
-	local defaultClass = "HUNTER";
-	local coords = CLASS_ICON_TCOORDS[defaultClass];
-	AMConfig.classDropDownIcon:SetTexCoord(unpack(coords));
-	UIDropDownMenu_SetText(AMConfig.classMarkerDropDown, core.relatives[defaultClass][1]);
-
-	AMConfig.classMarkerDropDownIcon:SetTexture(core.markerTexturePath ..
-		core.markerValues[core.relatives[defaultClass][1]]);
-
-	UIDropDownMenu_SetSelectedID(AMConfig.classMarkerDropDown,
-		core.reversedMarkerValues[core.relatives[defaultClass][1]]);
-
-	self:CheckMenu();
-
-	AMConfig:Hide();
-	return InterfaceOptions_AddCategory(AMConfig);
+	ArenaMarker:Print('Successfully reset all class priorty markers to default settings.');
 end
 
 
-
-function Config:RemoveSpaces(string)
+function ArenaMarker:RemoveSpaces(string)
     return string:gsub("%s+", "");
 end
 
-function Config:GetClasses()
-	for class in pairs(core.relatives) do
-		table.insert(core.classes, class);
-	end
-	for i, class in ipairs(core.classes) do
-		core.classes[i] = Config:CapitalizeFirstLetter(class:lower());
-		if core.classes[i]:upper() == "DEATHKNIGHT" then
-			core.classes[i] = "Death Knight";
-		elseif core.classes[i]:upper() == "DEMONHUNTER" then
-			core.classes[i] = "Demon Hunter";
-		end
+
+function ArenaMarker:GetClasses()
+	for class in pairs(self.relatives) do
+		table.insert(self.classes, class);
 	end
 end
 
-function Config:CapitalizeFirstLetter(str)
+function ArenaMarker:CapitalizeFirstLetter(str)
 	return str:gsub("^%l", string.upper);
 end
 
-function Config:CreateMinimapIcon()
-	LibDBIcon:Register(addonName, {
+function ArenaMarker:CreateMinimapIcon()
+	LibDBIcon:Register(self.name, {
 		icon = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_3",
 		OnClick = self.Toggle,
 		OnTooltipShow = function(tt)
-			tt:AddLine(addonName .. " |cff808080" .. GetAddOnMetadata(AMConfig.name, "Version"));
+			tt:AddLine(self.name .. " |cff808080" .. GetAddOnMetadata(self.name, "Version"));
 			tt:AddLine("|cffCCCCCCClick|r to open options");
 			tt:AddLine("|cffCCCCCCDrag|r to move this button");
 		end,
-		text = addonName,
+		text = self.name,
 		iconCoords = {0.05, 0.95, 0.05, 0.95},
 	});
 	
 	C_Timer.After(0.25, function ()
-		if #ArenaMarkerDB.minimapCoords > 0 then
-			LibDBIcon:GetMinimapButton(addonName):SetPoint(unpack(ArenaMarkerDB.minimapCoords));
+		if #self.db.profile.minimapCoords > 0 then
+			LibDBIcon:GetMinimapButton(self.name):SetPoint(unpack(self.db.profile.minimapCoords));
 		end
-		LibDBIcon:GetMinimapButton(addonName):SetScript("OnDragStop", function (self)
+		LibDBIcon:GetMinimapButton(self.name):SetScript("OnDragStop", function (self)
 			self:SetScript("OnUpdate", nil);
 			self.isMouseDown = false;
 			self.icon:UpdateCoord();
 			self:UnlockHighlight();
 
 			local point, relativeFrame, relativePoint, x, y = self:GetPoint();
-			ArenaMarkerDB.minimapCoords = { unpack({point, relativeFrame:GetName(), relativePoint, x, y}) };
+			ArenaMarker.db.profile.minimapCoords = {point, relativeFrame:GetName(), relativePoint, x, y};
 		end);
-		LibDBIcon:GetMinimapButton(addonName):SetShown(not ArenaMarkerDB.hideMinimap);
+		LibDBIcon:GetMinimapButton(self.name):SetShown(not self.db.profile.hideMinimap);
 	end);
 end
-function Config:OnInitialize()
-	if not ArenaMarkerDB then
-		ArenaMarkerDB = {};
-	end
 
-	-- check if saved variables have the expected structure for the current version of the addon
-	if not ArenaMarkerDB.minimapCoords then
-		-- saved variables are outdated, perform update
-		ArenaMarkerDB.allowPets = true;
-		ArenaMarkerDB.markSummonedPets = true;
-		ArenaMarkerDB.petDropDownMarkerID = -1;
-		ArenaMarkerDB.petDropDownClickID = -1;
-		ArenaMarkerDB.petDropDownTwoMarkerID = -1;
-		ArenaMarkerDB.petDropDownTwoClickID = -1;
-		ArenaMarkerDB.petDropDownThreeMarkerID = -1;
-		ArenaMarkerDB.petDropDownThreeClickID = -1;
-		ArenaMarkerDB.classDropDownClickID = -1;
-		ArenaMarkerDB.classMarkerDropDownClickID = -1;
-		ArenaMarkerDB.classMarkerDropDownMarkerID = -1;
-		ArenaMarkerDB.classString = "none";
-		ArenaMarkerDB.classMarkers = {};
-		ArenaMarkerDB.minimapCoords = {};
-		ArenaMarkerDB.hideMinimap = false;
-	end
+local defaults = {
+    profile = {
+		allowPets = true,
+		markSummonedPets = true,
+		petDropDownMarkerID = -1,
+		petDropDownTwoMarkerID = -1,
+		petDropDownThreeMarkerID = -1,
+		classMarkerDropDownMarkerID = -1,
+		selectedClass = "",
+		classMarkers = {},
+		minimapCoords = {},
+		hideMinimap = false,
+    }
+};
 
-	-- place all class/marker combinations into relatives
-	for class, markerList in pairs(ArenaMarkerDB.classMarkers) do
-		core.relatives[class] = markerList;
-	end
-
-	Config:GetClasses();
-	Config:CreateMenu();
-
-	-- define reset class marker priorty dialog box
+function ArenaMarker:LoadStaticDialogs()
 	StaticPopupDialogs["RESET_ALL_CONFIRM"] = {
 		text = "Are you sure you want to reset class priority marker options?",
 		button1 = "Yes",
 		button2 = "No",
-		OnAccept = Config.HandleResetClick,
+		OnAccept = ArenaMarker.HandleResetClick,
 		timeout = 0,
 		whileDead = true,
 		hideOnEscape = true,
 	};
-
-	self:CreateMinimapIcon();
-
-	DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99" ..
-		AMConfig.name ..
-		"|r by " ..
-		"|cff69CCF0" ..
-		GetAddOnMetadata(AMConfig.name, "Author") ..
-		"|r." ..
-    	(WOW_PROJECT_ID == TEMP_WOW_CATA_CLASSIC_ID and " Type |cff33ff99/am|r for the available commands." or "")
-	);
 end
 
-function Config:UpdatePriorityMarker(class, newMarker)
-	class = Config:RemoveSpaces(class);
+function ArenaMarker:Options(txt)
+	if txt == "" then return self.optionsHandlerTable['options']() end
+	for option, func in pairs(self.optionsHandlerTable) do
+		if option == txt then
+			func();
+		end
+	end
+end
 
+
+function ArenaMarker:OnInitialize()
+	-- initialize saved variables with defaults
+	self.db = LibStub("AceDB-3.0"):New(self.name.."DB", defaults, true);
+
+	-- events
+    self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "IsOutOfArena");
+	self:RegisterEvent("CHAT_MSG_BG_SYSTEM_NEUTRAL", "Main");
+	self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", "HandleUnitSpellCastSucceeded");
+	
+	SLASH_ARENAMARKER1 = "/am";
+    SLASH_ARENAMARKER2 = "/arenamarker";
+    SlashCmdList["ARENAMARKER"] = function(msg)
+        self:Options(msg);
+    end
+
+	if not self.db.profile.classMarkers then
+		for class, markerList in pairs(self.relatives) do
+			self.db.profile.classMarkers[class] = deepCopy(markerList);
+		end
+	end
+	
+	-- place all class/marker combinations into relatives
+	for class, markerList in pairs(self.db.profile.classMarkers) do
+		self.relatives[class] = markerList;
+	end
+
+	self:GetClasses();
+	self:CreateMenu();
+	self:LoadStaticDialogs();
+	self:HandleLogin();
+	
+	self:CreateMinimapIcon();
+end
+
+function ArenaMarker:UpdatePriorityMarker(class, newMarker)
+	class = self:RemoveSpaces(class):upper();
 	-- if the new marker is already prioritized, do nothing
-	if core.relatives[class][1] == newMarker then return end
+	if self.relatives[class][1] == newMarker then return end
 
-	-- update the priority marker for the class
-	core.relatives[class][1] = newMarker;
+	self.relatives[class][1] = newMarker;
 
 	-- update the DB
-	ArenaMarkerDB.classMarkers[class] = core.relatives[class];
+	self.db.profile.classMarkers[class][1] = self.relatives[class][1];
 
 	-- get class/marker color combo
-	local classColor = "|c" .. RAID_CLASS_COLORS[class:upper()].colorStr;
-	local markerColor = core.RAID_TARGET_COLORS[core.markerValues[newMarker]];
+	local classColor = "|c" .. RAID_CLASS_COLORS[class].colorStr;
 
-	-- notify the user
-	self:ChatFrame("Updated priority marker for " ..
-		classColor .. Config:CapitalizeFirstLetter(class:lower()) .. "|r" ..
-		" to " .. markerColor .. Config:CapitalizeFirstLetter(newMarker) .. "|r.");
+	local markerColor = self.RAID_TARGET_COLORS[self.markerValues[newMarker]];
+
+	self:Print('Updated priority marker for ' .. classColor .. class:sub(1,1) .. class:sub(2):lower() .. '|r to '.. markerColor .. newMarker:sub(1,1):upper() .. newMarker:sub(2) .. "|r.");
+end
+
+function ArenaMarker:HandleLogin()
+	DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99" ..
+		self.name ..
+		"|r by " ..
+		"|cff69CCF0" ..
+		GetAddOnMetadata(self.name, "Author") ..
+		"|r." ..
+    	" Type |cff33ff99/am|r for the available commands."
+	);
 end
 
 -- small helper funcs
@@ -605,7 +455,17 @@ function removeValue(table, value)
 	return key;
 end
 
--- init DB & menu
-function Config:Player_Login()
-	Config:OnInitialize();
+function deepCopy(orig)
+    local orig_type = type(orig);
+    local copy;
+    if orig_type == 'table' then
+        copy = {};
+        for origKey, origValue in next, orig, nil do
+            copy[deepCopy(origKey)] = deepCopy(origValue);
+        end
+        setmetatable(copy, deepCopy(getmetatable(orig)));
+    else -- number, string, boolean, etc
+        copy = orig;
+    end
+    return copy;
 end
