@@ -25,7 +25,7 @@ function ArenaMarker:SetMarkerAndRemove(unit, markerString)
     removeValue(self.unusedMarkers, markerString);
 end
 
-function ArenaMarker:FindUsableMark(target)
+function ArenaMarker:FindUsableMark(unit)
     local unusedMarker = "";
     for marker, val in pairs(self.unusedMarkers) do
         if val then
@@ -33,7 +33,7 @@ function ArenaMarker:FindUsableMark(target)
             break;
         end
     end
-    self:SetMarkerAndRemove(target, unusedMarker);
+    self:SetMarkerAndRemove(unit, unusedMarker);
 end
 
 function ArenaMarker:SetRaidTargetByClass(unit, ...)

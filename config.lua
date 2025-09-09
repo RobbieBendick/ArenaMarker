@@ -6,7 +6,6 @@ local GetAddOnMetadata = GetAddOnMetadata or C_AddOns.GetAddOnMetadata;
 local LibDBIcon = LibStub("LibDBIcon-1.0");
 local members = GetNumGroupMembers;
 
-
 function ArenaMarker:Toggle()
     if Settings and Settings.OpenToCategory then
         Settings.OpenToCategory(addon.name);
@@ -17,6 +16,7 @@ function ArenaMarker:Toggle()
 end
 
 function ArenaMarker:CreateMenu()
+
 	local version = GetAddOnMetadata(self.name, "Version") or "Unknown";
 	local author = GetAddOnMetadata(self.name, "Author") or "Mageiden";
 	
@@ -30,37 +30,36 @@ function ArenaMarker:CreateMenu()
 				name = "|cffffd700Version|r " .. version .. "\n|cffffd700 Author|r " .. author,
 			},
 			settingsGroup = {
-				order = 2,
 				type = "group",
 				name = "Auto Mark Pets",
+				order = 2,
 				inline = true,
 				args = {
 					markPets = {
-						order = 1,
 						type = "toggle",
 						name = "Mark Pets When Arena Gates Open",
 						desc = "Enable or disable marking pets when the arena gates open.",
 						get = function(info) return self.db.profile.allowPets end,
 						set = function(info, value) self.db.profile.allowPets = value end,
+						order = 1,
 					},
 					markSummonedPets = {
-						order = 2,
 						type = "toggle",
 						name = "Mark Pets When Summoned In Arena",
 						desc = "Enable or disable marking pets when they are summoned.",
 						get = function(info) return self.db.profile.markSummonedPets end,
 						set = function(info, value) self.db.profile.markSummonedPets = value end,
+						order = 2,
 					},
 				},
 			},
 			partyPetsGroup = {
-				order = 3,
 				type = "group",
 				name = "Party Pet Settings",
+				order = 3,
 				inline = true,
 				args = {
 					selfPetDropdown = {
-						order = 1,
 						type = "select",
 						name = "Self-Pet Mark",
 						desc = "Select a marker for your pet.",
@@ -89,9 +88,9 @@ function ArenaMarker:CreateMenu()
 							end
 							LibStub("AceConfigRegistry-3.0"):NotifyChange(self.name);
 						end,
+						order = 1,
 					},
 					partyPetDropdown = {
-						order = 2,
 						type = "select",
 						name = "Party-Pet Mark",
 						desc = "Select a marker for party pets.",
@@ -109,7 +108,7 @@ function ArenaMarker:CreateMenu()
 									markers[id] = color .. icon .. " " .. label .. "|r";
 								end
 							end
-							return markers;
+							return markers
 						end,
 						get = function(info) return self.db.profile.petDropDownTwoMarkerID end,
 						set = function(info, value) 
@@ -120,9 +119,9 @@ function ArenaMarker:CreateMenu()
 							end
 							LibStub("AceConfigRegistry-3.0"):NotifyChange(self.name);
 						end,
+						order = 2,
 					},
 					extraPartyPetDropdown = {
-						order = 3,
 						type = "select",
 						name = "Extra Party-Pet Mark",
 						desc = "Select a marker for additional party pets.",
@@ -140,7 +139,7 @@ function ArenaMarker:CreateMenu()
 									markers[id] = color .. icon .. " " .. label .. "|r";
 								end
 							end
-							return markers;
+							return markers
 						end,
 						get = function(info) return self.db.profile.petDropDownThreeMarkerID end,
 						set = function(info, value) 
@@ -151,18 +150,18 @@ function ArenaMarker:CreateMenu()
 							end
 							LibStub("AceConfigRegistry-3.0"):NotifyChange(self.name);
 						end,
+						order = 3,
 					}
 					
 				},
 			},
 			classSettingsGroup = {
-				order = 5,
 				type = "group",
 				name = "Class Priority Markers",
+				order = 5,
 				inline = true,
 				args = {
 					classDropdown = {
-						order = 1,
 						type = "select",
 						name = "Class",
 						desc = "Select a class to set priority markers.",
@@ -177,9 +176,9 @@ function ArenaMarker:CreateMenu()
 						end,
 						get = function(info) return self.db.profile.selectedClass end,
 						set = function(info, value) self.db.profile.selectedClass = value end,
+						order = 1,
 					},
 					priorityMarkerDropdown = {
-						order = 2,
 						type = "select",
 						name = "Priority Marker",
 						desc = "Select a priority marker for the selected class.",
@@ -191,7 +190,7 @@ function ArenaMarker:CreateMenu()
 								local label = self.markerStrings[id];
 								markers[name] = color .. icon .. " " .. label .. "|r";
 							end
-							return markers;
+							return markers
 						end,
 						get = function(info)
 							local selectedClass = self.db.profile.selectedClass;
@@ -205,6 +204,7 @@ function ArenaMarker:CreateMenu()
 							self.db.profile.priorityMarkerSelection = value;
 							ArenaMarker:UpdatePriorityMarker(self.db.profile.selectedClass, value);
 						end,
+						order = 2,
 					},
 					spacer = {
                         order = 3,
@@ -213,11 +213,11 @@ function ArenaMarker:CreateMenu()
                         width = 0.08,
                     },
 					resetPriorityMarkers = {
-						order = 4,
 						type = "execute",
 						name = "Reset Class Markers",
 						desc = "Resets the class priority markers to their default values.",
 						func = function() StaticPopup_Show("RESET_ALL_CONFIRM") end,
+						order = 4,
 					},
 				},
 			},
@@ -288,7 +288,7 @@ function ArenaMarker:HandleResetClick()
 
 	LibStub("AceConfigRegistry-3.0"):NotifyChange("ArenaMarker");
 
-	ArenaMarker:Print('Successfully reset all class priority markers to default settings.');
+	ArenaMarker:Print('Successfully reset all class priorty markers to default settings.');
 end
 
 
