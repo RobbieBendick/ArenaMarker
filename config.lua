@@ -288,7 +288,7 @@ function ArenaMarker:HandleResetClick()
 
 	LibStub("AceConfigRegistry-3.0"):NotifyChange("ArenaMarker");
 
-	ArenaMarker:Print('Successfully reset all class priorty markers to default settings.');
+	ArenaMarker:Print('Successfully reset all class priority markers to default settings.');
 end
 
 

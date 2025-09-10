@@ -124,8 +124,8 @@ function ArenaMarker:HandleUnitSpellCastSucceeded(self, ...)
     if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
     local _, instanceType = IsInInstance();
     if instanceType ~= "arena" then return end
-    self:PetCastEventHandler(self, ...);
-    self:RemarkOnSpecificSpells(self, ...);
+    ArenaMarker:PetCastEventHandler(self, ...);
+    ArenaMarker:RemarkOnSpecificSpells(self, ...);
 end
 
 function ArenaMarker:UnmarkPets()
