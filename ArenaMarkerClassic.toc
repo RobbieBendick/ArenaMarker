@@ -1,4 +1,4 @@
-## Interface: 54851
+## Interface: 68775
 ## Author: Mageiden
 ## Title: ArenaMarker
 ## Notes: Gives your group class-based Raid Markers in arena.

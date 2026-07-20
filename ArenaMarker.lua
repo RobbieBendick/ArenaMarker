@@ -125,8 +125,8 @@ function ArenaMarker:HandleUnitSpellCastSucceeded(self, ...)
     if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
     local _, instanceType = IsInInstance();
     if instanceType ~= "arena" then return end
-    self:PetCastEventHandler(self, ...);
-    self:RemarkOnSpecificSpells(self, ...);
+    ArenaMarker:PetCastEventHandler(self, ...);
+    ArenaMarker:RemarkOnSpecificSpells(self, ...);
 end
 
 function ArenaMarker:UnmarkPets()
@@ -168,11 +168,11 @@ end
 
 function ArenaMarker:PetCastEventHandler(self, ...)
     local unit, _, spellID = ...;
-    if not self.db.profile.markSummonedPets then return end
+    if not ArenaMarker.db.profile.markSummonedPets then return end
     if unit:sub(1, #"raid") == "raid" then return end
-    for summonSpellID, summonIsAllowed in pairs(self.summons) do
+    for summonSpellID, summonIsAllowed in pairs(ArenaMarker.summons) do
         if spellID == summonSpellID and summonIsAllowed then
-            C_Timer.After(0.5, function() self:MarkPetWithPriority(unit) end);
+            C_Timer.After(0.5, function() ArenaMarker:MarkPetWithPriority(unit) end);
         end
     end
 end
