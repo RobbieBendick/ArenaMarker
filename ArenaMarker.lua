@@ -25,7 +25,7 @@ function ArenaMarker:SetMarkerAndRemove(unit, markerString)
     removeValue(self.unusedMarkers, markerString);
 end
 
-function ArenaMarker:FindUsableMark(unit)
+function ArenaMarker:FindUsableMark(target)
     local unusedMarker = "";
     for marker, val in pairs(self.unusedMarkers) do
         if val then
@@ -33,7 +33,7 @@ function ArenaMarker:FindUsableMark(unit)
             break;
         end
     end
-    self:SetMarkerAndRemove(unit, unusedMarker);
+    self:SetMarkerAndRemove(target, unusedMarker);
 end
 
 function ArenaMarker:SetRaidTargetByClass(unit, ...)
@@ -120,12 +120,13 @@ function ArenaMarker:RemarkOnSpecificSpells(self, ...)
     end);
 end
 
+
 function ArenaMarker:HandleUnitSpellCastSucceeded(self, ...)
     if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") then return end
     local _, instanceType = IsInInstance();
     if instanceType ~= "arena" then return end
-    ArenaMarker:PetCastEventHandler(self, ...);
-    ArenaMarker:RemarkOnSpecificSpells(self, ...);
+    self:PetCastEventHandler(self, ...);
+    self:RemarkOnSpecificSpells(self, ...);
 end
 
 function ArenaMarker:UnmarkPets()

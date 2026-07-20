@@ -3,22 +3,25 @@ local ArenaMarker = LibStub("AceAddon-3.0"):GetAddon(addon.name);
 local AceConfig = LibStub("AceConfig-3.0");
 local AceConfigDialog = LibStub("AceConfigDialog-3.0");
 local GetAddOnMetadata = GetAddOnMetadata or C_AddOns.GetAddOnMetadata;
+
 local LibDBIcon = LibStub("LibDBIcon-1.0");
+local AMConfig;
 local members = GetNumGroupMembers;
 
 function ArenaMarker:Toggle()
-    if Settings and Settings.OpenToCategory then
-        Settings.OpenToCategory(addon.name);
+    if Settings and Settings.OpenToCategory and self.settingsCategoryID then
+        Settings.OpenToCategory(self.settingsCategoryID);
     else
-        InterfaceOptionsFrame_OpenToCategory(addon.name);
-        InterfaceOptionsFrame_OpenToCategory(addon.name);
+        AceConfigDialog:Open(addon.name);
     end
 end
 
 function ArenaMarker:CreateMenu()
+	AMConfig = CreateFrame("Frame", "ArenaMarkerConfig", UIParent);
+	AMConfig.name = "ArenaMarker";
 
-	local version = GetAddOnMetadata(self.name, "Version") or "Unknown";
-	local author = GetAddOnMetadata(self.name, "Author") or "Mageiden";
+	local version = GetAddOnMetadata(AMConfig.name, "Version") or "Unknown";
+	local author = GetAddOnMetadata(AMConfig.name, "Author") or "Mageiden";
 	
 	local options = {
 		type = "group",
@@ -36,6 +39,7 @@ function ArenaMarker:CreateMenu()
 				inline = true,
 				args = {
 					markPets = {
+						width = 1.5,
 						type = "toggle",
 						name = "Mark Pets When Arena Gates Open",
 						desc = "Enable or disable marking pets when the arena gates open.",
@@ -44,6 +48,7 @@ function ArenaMarker:CreateMenu()
 						order = 1,
 					},
 					markSummonedPets = {
+						width = 1.5,
 						type = "toggle",
 						name = "Mark Pets When Summoned In Arena",
 						desc = "Enable or disable marking pets when they are summoned.",
@@ -84,7 +89,7 @@ function ArenaMarker:CreateMenu()
 							if value ~= self.db.profile.petDropDownTwoMarkerID and value ~= self.db.profile.petDropDownThreeMarkerID then
 								self.db.profile.petDropDownMarkerID = value;
 							else
-								self:Print("|cffff0000This marker is already in use. Please choose a different one or adjust other pet marker settings.|r");
+								self:Print("|cffff0000This marker is already in use! Choose a different one.|r");
 							end
 							LibStub("AceConfigRegistry-3.0"):NotifyChange(self.name);
 						end,
@@ -115,7 +120,7 @@ function ArenaMarker:CreateMenu()
 							if value ~= self.db.profile.petDropDownMarkerID and value ~= self.db.profile.petDropDownThreeMarkerID then
 								self.db.profile.petDropDownTwoMarkerID = value;
 							else
-								self:Print("|cffff0000This marker is already in use. Please choose a different one or adjust other pet marker settings.|r");
+								self:Print("|cffff0000This marker is already in use! Choose a different one.|r");
 							end
 							LibStub("AceConfigRegistry-3.0"):NotifyChange(self.name);
 						end,
@@ -269,14 +274,15 @@ function ArenaMarker:CreateMenu()
 						name = "Unmark Pets",
 						func = function() self:UnmarkPets() end,
 						order = 7,
-					},
+					},	
 				},
 			},
 		},
 	}
 
 	LibStub("AceConfig-3.0"):RegisterOptionsTable(self.name, options);
-	LibStub("AceConfigDialog-3.0"):AddToBlizOptions(self.name, self.name);
+	local _, categoryID = AceConfigDialog:AddToBlizOptions(self.name, self.name);
+	self.settingsCategoryID = categoryID;
 end
 
 function ArenaMarker:HandleResetClick()
@@ -288,14 +294,13 @@ function ArenaMarker:HandleResetClick()
 
 	LibStub("AceConfigRegistry-3.0"):NotifyChange("ArenaMarker");
 
-	ArenaMarker:Print('Successfully reset all class priority markers to default settings.');
+	ArenaMarker:Print('Successfully reset all class priorty markers to default settings.');
 end
 
 
 function ArenaMarker:RemoveSpaces(string)
     return string:gsub("%s+", "");
 end
-
 
 function ArenaMarker:GetClasses()
 	for class in pairs(self.relatives) do
@@ -310,7 +315,9 @@ end
 function ArenaMarker:CreateMinimapIcon()
 	LibDBIcon:Register(self.name, {
 		icon = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_3",
-		OnClick = self.Toggle,
+		OnClick = function()
+			ArenaMarker:Toggle();
+		end,
 		OnTooltipShow = function(tt)
 			tt:AddLine(self.name .. " |cff808080" .. GetAddOnMetadata(self.name, "Version"));
 			tt:AddLine("|cffCCCCCCClick|r to open options");
@@ -389,10 +396,8 @@ function ArenaMarker:OnInitialize()
         self:Options(msg);
     end
 
-	if not self.db.profile.classMarkers then
-		for class, markerList in pairs(self.relatives) do
-			self.db.profile.classMarkers[class] = deepCopy(markerList);
-		end
+	for class, markerList in pairs(self.relatives) do
+		self.db.profile.classMarkers[class] = deepCopy(markerList);
 	end
 	
 	-- place all class/marker combinations into relatives
@@ -465,3 +470,4 @@ function deepCopy(orig)
     end
     return copy;
 end
+

@@ -3,16 +3,15 @@
 ## Title: ArenaMarker
 ## Notes: Gives your group class-based Raid Markers in arena.
 ## DefaultState: enabled
-## Version: v2.2.6
+## Version: v2.2.7
 ## SavedVariables: ArenaMarkerDB
 embeds.xml
 Constants.lua
 
-MistsOfPandaria.lua
 Cataclysm.lua
 WOTLK.lua
 BurningCrusade.lua
 Retail.lua
-
 ArenaMarker.lua
 Config.lua
+MistsOfPandaria.lua
